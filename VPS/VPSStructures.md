@@ -96,7 +96,7 @@
         "server_port": 9001,            // 端口号
         "local_address": "127.0.0.1",
         "local_port": 1080,
-        "password": "xiaotijun1997.",   // 密码
+        "password": "yourpassword",   // 密码
         "timeout": 500,
         "method": "aes-256-cfb",        // 加密方式
         "fast_open": false,
