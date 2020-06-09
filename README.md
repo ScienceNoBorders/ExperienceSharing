@@ -1,5 +1,5 @@
 # 经验分享（ExperienceSharing）
-从今天开始，我将记录下我作为一名程序员所经历的经验、学习和坑，帮助我消化知识及巩固。倘若能恰好帮助到你，那将会使我快乐。
+从今天开始，我将记录下我作为一名程序员所经历的经验、学习和坑，帮助我消化知识及巩固。倘若能恰好帮助到你，那便是我快乐的源泉。
 
 From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you
 

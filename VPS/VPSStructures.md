@@ -1,6 +1,14 @@
 # VPS搭建教程
 - 不爱捣鼓VPS的程序员不是好程序员
 
+### 目录
+- [服务器选择及购买](#i服务器选择及购买)
+- [安装shadowsocks](#ii安装shadowsockspython版)
+- [安装客户端](#iii客户端安装)
+- [客户端连接](#iv客户端配置-mac为例)
+- [附录](#附录)
+- [END](#end)
+
 ## I、服务器选择及购买
 关于服务器选择已经做了一篇相关[服务器对比测试](VPSCompare.md)，比较了市面上较为知名的服务器厂，大家可根据个人需求或预算去选择。
 
@@ -115,8 +123,13 @@
 
 ## 附录
 -  当你使用一段时间后发现突然无法上网，可能就是你的端口被GFW检测时封掉了，你可上[端口查询](http://port.ping.pe/)网站看看你的端口是否被封，<p style="color:red">如若被封，将端口号换一个在重启ssserver即可!</p>
-  <p><img src="./image/ping-1.png" alt="image completions"></p>
+
+<p><img src="./image/ping-1.png" alt="image completions"></p>
+  
+-  这种情况就说明9002端口已经被国内封掉了
+
+<p><img src="./image/ping-2.png" alt="image completions"></p>
 
 # END
 - 若对你有所帮助，帮忙点个star。❤️❤️❤️
-- File bugs, feature requests in [GitHub Issues](https://github.com/XiaoTiJun/ExperienceSharing/issues).
+- File bugs, problems requests in [GitHub Issues](https://github.com/XiaoTiJun/ExperienceSharing/issues).
