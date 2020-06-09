@@ -2,11 +2,13 @@
 - 不爱捣鼓VPS的程序员不是好程序员
 
 ### 目录
-- [服务器选择及购买](#i服务器选择及购买)
-- [安装shadowsocks](#ii安装shadowsockspython版)
-- [安装客户端](#iii客户端安装)
-- [客户端连接](#iv客户端配置-mac为例)
-- [附录](#附录)
+- [VPS搭建教程](#vps搭建教程)
+    - [目录](#目录)
+  - [I、服务器选择及购买](#i服务器选择及购买)
+  - [II、安装shadowsocks（python版）](#ii安装shadowsockspython版)
+  - [III、客户端安装](#iii客户端安装)
+  - [IV、客户端配置 (MAC为例)](#iv客户端配置-mac为例)
+  - [附录](#附录)
 - [END](#end)
 
 ## I、服务器选择及购买
@@ -23,7 +25,7 @@
 
 
 - 服务器选型（注册完成后进入控制台选择，在这之前可以先去亚马逊各节点服务器[测速网站](https://www.cloudping.info/)查看ping值最低的区域，然后在此区域上搭建VPS速度将会更快。此示例选择的是香港地区服务器：
-- 
+ 
     <p><img src="./image/controller-1.png" alt="image completions"></p>   
 
     <p><img src="./image/controller-2.png" alt="image completions"></p>

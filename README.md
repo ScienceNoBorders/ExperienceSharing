@@ -15,8 +15,8 @@ From today on, I will record the experience, learning and pit I have gone throug
 
 ## VPS
 - VPS搭建教程 ([VPS structures](./VPS/VPSStructures.md)).
-- VPS各服务器厂家比较 ([vultr、AWS、Aliyun](./VPS/VPSCompare.md)).
+- VPS各服务器厂家比较 ([vultr、AWS、Aliyun to Compare](./VPS/VPSCompare.md)).
 
 
 ## OTHER
-- File bugs, feature requests in [GitHub Issues](https://github.com/XiaoTiJun/ExperienceSharing/issues).
+- File bugs, problems requests in [GitHub Issues](https://github.com/XiaoTiJun/ExperienceSharing/issues).
