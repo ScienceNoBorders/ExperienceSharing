@@ -3,12 +3,13 @@
 
 From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you
 
-[![version](https://img.shields.io/vscode-marketplace/v/yzhang.markdown-all-in-one.svg?style=flat-square&label=vscode%20marketplace)](https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing)
-[![installs](https://img.shields.io/vscode-marketplace/d/yzhang.markdown-all-in-one.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/yzhang-gh/vscode-markdown/CI?style=flat-square)](https://github.com/XiaoTiJun/ExperienceSharing/actions)
-[![GitHub stars](https://img.shields.io/github/stars/yzhang-gh/vscode-markdown.svg?style=flat-square&label=github%20stars)](https://github.com/XiaoTiJun/ExperienceSharing)
-[![GitHub Contributors](https://img.shields.io/github/contributors/yzhang-gh/vscode-markdown.svg?style=flat-square)](https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors)
-
+<p align="center">
+<a href="https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing"><img src="https://img.shields.io/github/issues/XiaoTiJun/ExperienceSharing" alt="Issue Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/actions"><img src="https://img.shields.io/github/workflow/status/XiaoTiJun/ExperienceSharing/CI?style=flat-square" alt="Actions Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors"><img src="https://img.shields.io/github/contributors/XiaoTiJun/ExperienceSharing.svg?style=flat-square" alt="Contributors Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/releases"><img src="https://img.shields.io/github/v/tag/XiaoTiJun/ExperienceSharing?label=version" alt="Issue Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing"><img src="https://img.shields.io/github/stars/XiaoTiJun/ExperienceSharing.svg?style=social&label=github%20stars" alt="Issue Status"></a>
+</p>
 
 ## JAVA
 - NULL
