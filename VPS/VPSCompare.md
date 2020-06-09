@@ -70,7 +70,7 @@
 | ------ | ---- | ---- | ---- | ---- | ---- |
 | Vultr  | 1CPU<br />1G内存<br />1T带宽/月 | $5月 | Los Angeles(洛杉矶，美国西部) | 230ms |    <img src="./image/Vultr-LosAngeles.png" alt="image completions"><center style="font-size:12px;color:#666;text-decoration:underline;">本机测试最快66M，最慢2M，稳定10M左右</center>    |
 | AWS    | 2CPU<br />1G内存 | 免费 | HongKong(香港，亚太) | 170ms |    <img src="./image/AWS-HongKong.png" alt="image completions"><center style="font-size:12px;color:#666;text-decoration:underline;">本机测试最快22M，最慢200Kb，稳定500Kb左右</center>    |
-| Aliyun | 1CPU<br />0.5G内存 | ¥260/年<br />¥0.53/G流量 | Singapore(新加坡，亚太) | 135ms |    <img src="./image/Ali-Singapore.png" alt="image completions"><center style="font-size:12px;color:#666;text-decoration:underline;">本机测试最快110M，最慢70M，稳定100M左右</center>  |
+| Aliyun | 1CPU<br />0.5G内存 | ¥260/年<br />¥0.53/G流量 | Singapore(新加坡，亚太) | 135ms |    <img src="./image/ali-Singapore.png" alt="image completions"><center style="font-size:12px;color:#666;text-decoration:underline;">本机测试最快110M，最慢70M，稳定100M左右</center>  |
 
 # END
 - 若对你有所帮助，帮忙点个star。❤️❤️❤️
