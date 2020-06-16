@@ -25,6 +25,8 @@ echo "
 ssserver -c ./config.json -d stop
 ssserver -c ./config.json -d start
 
+sleep 2
+
 if netstat -tunlp | grep -q $port
 then
   firewall-cmd --add-port=$port/tcp --permanent
