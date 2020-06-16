@@ -25,7 +25,16 @@ echo "
 ssserver -c ./config.json -d stop
 ssserver -c ./config.json -d start
 
-firewall-cmd --add-port=$port/tcp --permanent
-firewall-cmd --reload
+if netstat -tunlp | grep -q $port
+then
+  firewall-cmd --add-port=$port/tcp --permanent
+  firewall-cmd --reload
+  netstat -tunlp | grep $port
+else
+  echo "shadowsocks open fail, please try again!"
+fi
 
-netstat -tunlp | grep $port
+
+
+
+
