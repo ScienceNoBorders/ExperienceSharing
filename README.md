@@ -4,6 +4,10 @@
 From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you
 
 <p align="center">
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/blob/master/VPS/image/wechat.png"><img src="https://img.shields.io/static/v1?label=WeChat&message=XiaoTiJun97&color=violet&logo=wechat">
+</p>
+
+<p align="center">
 <a href="https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing"><img src="https://img.shields.io/github/issues/XiaoTiJun/ExperienceSharing" alt="Issue Status"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing/actions"><img src="https://img.shields.io/github/workflow/status/XiaoTiJun/ExperienceSharing/CI?style=flat-square" alt="Actions Status"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors"><img src="https://img.shields.io/github/contributors/XiaoTiJun/ExperienceSharing.svg?style=flat-square" alt="Contributors Status"></a>
