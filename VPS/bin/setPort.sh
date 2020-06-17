@@ -29,8 +29,8 @@ sleep 2
 
 if netstat -tunlp | grep -q $port
 then
-  firewall-cmd --add-port=$port/tcp --permanent
-  firewall-cmd --reload
+  echo "firewall open port($port) status: " $(firewall-cmd --add-port=9002/tcp --permanent)
+  echo "firewall reload status: " $(firewall-cmd --reload)
   netstat -tunlp | grep $port
 else
   echo "shadowsocks open fail, please try again!"
