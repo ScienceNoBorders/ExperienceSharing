@@ -5,7 +5,7 @@
 - [VPS搭建教程](#vps搭建教程)
     - [目录](#目录)
   - [I、服务器选择及购买](#i服务器选择及购买)
-  - [II、安装shadowsocks（python版）](#ii安装shadowsockspython版)
+  - [II、安装shadowsocks（python版）适合centos7-8](#ii安装shadowsockspython版适合centos7-8)
   - [III、客户端安装](#iii客户端安装)
   - [IV、客户端配置 (MAC为例)](#iv客户端配置-mac为例)
   - [附录](#附录)
@@ -47,7 +47,7 @@
 
     <p><img src="./image/link-2.png" alt="image completions"></p>
 
-## II、安装shadowsocks（python版）
+## II、安装shadowsocks（python版）适合centos7-8
   
     # 插件安装
     yum -y groupinstall development
@@ -112,6 +112,21 @@
     netstat -tunlp | grep python
     
 <p><img src="./image/start-1.png" alt="image completions"></p>
+
+-  第二种安装方式 (脚本安装):
+```
+  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/bin/VPS/bin/installSocks.sh
+
+  chmod a+x installSocks.sh
+
+  ./installSocks.sh
+
+  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/bin/VPS/bin/setPort.sh
+
+  chmod a+x setPort.sh
+
+  ./setPort.sh
+```
 
 ## III、客户端安装
   
