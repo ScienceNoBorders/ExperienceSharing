@@ -115,13 +115,13 @@
 
 -  第二种安装方式 (脚本安装):
 ```
-  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/bin/VPS/bin/installSocks.sh
+  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/master/VPS/bin/installSocks.sh
 
   chmod a+x installSocks.sh
 
   ./installSocks.sh
 
-  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/bin/VPS/bin/setPort.sh
+  wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/master/VPS/bin/setPort.sh
 
   chmod a+x setPort.sh
 

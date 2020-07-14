@@ -14,14 +14,14 @@
 
 
 ## 1、先fork你需要修改的开源项目
--  
-    <p><img src="./image/fork-1.png" alt="image completions"></p>
-    <center style="font-size:12px;color:#666;text-decoration:underline;">fork开源项目</center>
+
+<p><img src="./image/fork-1.png" alt="image completions"></p>
+    <center style="font-size:12px;color:#666;text-decoration:underline;margin-bottom:10px">fork开源项目</center>
 
 ## 2、git clone fork过来的项目路径
 
--   <p><img src="./image/fork-2.png" alt="image completions"></p>
-    <center style="font-size:12px;color:#666;text-decoration:underline;">git clone项目</center>
+<p><img src="./image/fork-2.png" alt="image completions"></p>
+    <center style="font-size:12px;color:#666;text-decoration:underline;margin-bottom:10px">git clone项目</center>
 
 ```
 git clone https://github.com/XiaoTiJun/taro-mall.git
@@ -44,9 +44,8 @@ git remote add upstream https://github.com/jiechud/taro-mall.git
 
 ## 5、去源项目下创建一个pull request，然后等待管理员将你的请求合并即可
 
--   
-    <p><img src="./image/fork-3.png" alt="image completions"></p>
-    <center style="font-size:12px;color:#666;text-decoration:underline;">提交pull request</center>
+<p><img src="./image/fork-3.png" alt="image completions"></p>
+    <center style="font-size:12px;color:#666;text-decoration:underline;margin-bottom:10px">提交pull request</center>
 
 合并之后github便会通过你所绑定的账号邮箱通知你，此时你也是该开源项目中的 [Contributions](https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors) 之一了。
 
