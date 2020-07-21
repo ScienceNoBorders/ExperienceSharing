@@ -29,7 +29,7 @@ sleep 2
 
 if netstat -tunlp | grep -q $port
 then
-  echo "firewall open port($port) status: " $(firewall-cmd --add-port=9002/tcp --permanent)
+  echo "firewall open port($port) status: " $(firewall-cmd --add-port=$port/tcp --permanent)
   echo "firewall reload status: " $(firewall-cmd --reload)
   netstat -tunlp | grep $port
 else
