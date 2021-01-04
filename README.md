@@ -26,6 +26,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 
 ## OTHER
 - [提交分支入开源项目](./other/fork-push-pullRequest.md).
+- [记一次pamdicks木马解决经历](./other/redis-virus-log.md).
 
 
 ## Issues
