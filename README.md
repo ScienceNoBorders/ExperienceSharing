@@ -31,3 +31,8 @@ From today on, I will record the experience, learning and pit I have gone throug
 
 ## Issues
 - File bugs, problems requests in [GitHub Issues](https://github.com/XiaoTiJun/ExperienceSharing/issues).
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/XiaoTiJun/ExperienceSharing.svg)](https://starchart.cc/XiaoTiJun/ExperienceSharing)
+  
