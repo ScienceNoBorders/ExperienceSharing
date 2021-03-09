@@ -8,10 +8,11 @@ From today on, I will record the experience, learning and pit I have gone throug
 </p>
 
 <p align="center">
-<a href="https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing"><img src="https://img.shields.io/github/issues/XiaoTiJun/ExperienceSharing" alt="Issue Status"></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing"><img src="https://img.shields.io/github/issues/XiaoTiJun/ExperienceSharing?color=red&style=flat-square" alt="Issue Status"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing/actions"><img src="https://img.shields.io/github/workflow/status/XiaoTiJun/ExperienceSharing/CI?style=flat-square" alt="Actions Status"></a>
-<a href="https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors"><img src="https://img.shields.io/github/contributors/XiaoTiJun/ExperienceSharing.svg?style=flat-square" alt="Contributors Status"></a>
-<a href="https://github.com/XiaoTiJun/ExperienceSharing/releases"><img src="https://img.shields.io/github/v/tag/XiaoTiJun/ExperienceSharing?label=release" alt="releases"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors"><img src="https://img.shields.io/github/contributors/XiaoTiJun/ExperienceSharing.svg?style=flat-square&color=orange" alt="Contributors Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/releases"><img src="https://img.shields.io/github/v/tag/XiaoTiJun/ExperienceSharing?label=releases&style=flat-square" alt="releases"></a>
+<p align="center">
 <a href="https://github.com/XiaoTiJun/ExperienceSharing"><img src="https://img.shields.io/github/stars/XiaoTiJun/ExperienceSharing.svg?style=social&label=github%20stars" alt="Issue Status"></a>
 </p>
 
