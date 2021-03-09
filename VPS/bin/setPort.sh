@@ -5,6 +5,7 @@ file_name="config.json"
 cd ~/shadowsocks
 
 read -p "Please Enter Shadowsocks port: " port
+read -p "Please Enter Shadowsocks password: " password
 
 rm -rf $file_name
 
@@ -14,11 +15,12 @@ echo "
 	\"server_port\": ${port},
 	\"local_address\": \"127.0.0.1\",
 	\"local_port\": 1080,
-	\"password\": \"xiaotijun1997.\",
+	\"password\": ${password},
 	\"timeout\": 500,
 	\"method\": \"aes-256-cfb\",
 	\"fast_open\": false,
-	\"workers\": 1
+	\"workers\": 1,
+	\"protocol_param\": "",
 }
 " > $file_name
 
