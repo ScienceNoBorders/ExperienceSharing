@@ -11,7 +11,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 <a href="https://marketplace.visualstudio.com/items?itemName=XiaoTiJun.ExperienceSharing"><img src="https://img.shields.io/github/issues/XiaoTiJun/ExperienceSharing" alt="Issue Status"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing/actions"><img src="https://img.shields.io/github/workflow/status/XiaoTiJun/ExperienceSharing/CI?style=flat-square" alt="Actions Status"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing/graphs/contributors"><img src="https://img.shields.io/github/contributors/XiaoTiJun/ExperienceSharing.svg?style=flat-square" alt="Contributors Status"></a>
-<a href="https://github.com/XiaoTiJun/ExperienceSharing/releases"><img src="https://img.shields.io/github/v/tag/XiaoTiJun/ExperienceSharing?label=version" alt="Issue Status"></a>
+<a href="https://github.com/XiaoTiJun/ExperienceSharing/releases"><img src="https://img.shields.io/github/v/tag/XiaoTiJun/ExperienceSharing?label=release" alt="releases"></a>
 <a href="https://github.com/XiaoTiJun/ExperienceSharing"><img src="https://img.shields.io/github/stars/XiaoTiJun/ExperienceSharing.svg?style=social&label=github%20stars" alt="Issue Status"></a>
 </p>
 
@@ -22,7 +22,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 - [VPS搭建教程 (VPS structures)](./VPS/VPSStructures.md).
 - [VPS各服务器厂家比较 (vultr、AWS、Aliyun to Compare)](./VPS/VPSCompare.md).
 - [Alibaba Cloud注册链接](https://www.alibabacloud.com/referral?referralCode=oug3oz)
-- [vultr注册链接--领100$使用券](https://www.vultr.com/?ref=8609380-6G)
+- [vultr注册链接--领100$使用券](https://www.vultr.com/?ref=8816052)
 
 ## OTHER
 - [提交分支入开源项目](./other/fork-push-pullRequest.md).
@@ -35,4 +35,3 @@ From today on, I will record the experience, learning and pit I have gone throug
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/XiaoTiJun/ExperienceSharing.svg)](https://starchart.cc/XiaoTiJun/ExperienceSharing)
-  
