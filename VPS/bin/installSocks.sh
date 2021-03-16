@@ -28,4 +28,25 @@ python3 get-pip.py
 pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 
 cd ~/
+mkdir libsodium
+cd libsodium
+
+wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+
+tar -xzvf LATEST.tar.gz
+
+cd libsodium*
+
+./configure --prefix=/usr/local/libsodium
+
+make -j8 && make install
+
+echo "/lib
+/usr/lib64
+/usr/local/lib
+/usr/local/libsodium/lib" >> /etc/ld.so.conf
+
+ldconfig
+
+cd ~/
 mkdir shadowsocks
