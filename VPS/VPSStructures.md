@@ -128,6 +128,13 @@
   ./setPort.sh
 ```
 
+- 安装shadowsocks-libev([安装教程](https://www.24kplus.com/linux/1371.html))：
+```
+wget https://down.24kplus.com/linux/shadowsocks/centos-shadowsocks-libev.sh
+
+chmod +x centos-shadowsocks-libev.sh && ./centos-shadowsocks-libev.sh
+```
+
 ## III、客户端安装
   
 - [MAC版包下载](https://github.com/shadowsocks/ShadowsocksX-NG/releases)
