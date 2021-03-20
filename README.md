@@ -36,3 +36,6 @@ From today on, I will record the experience, learning and pit I have gone throug
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/XiaoTiJun/ExperienceSharing.svg)](https://starchart.cc/XiaoTiJun/ExperienceSharing)
+
+## 网页打开统计
+[![](https://steins-gate-visitor-count.greenhandatsjtu.repl.co/ExperienceSharing)](https://github.com/XiaoTiJun/ExperienceSharing)
