@@ -19,8 +19,12 @@ tar -xvf nacos-server-2.0.0.tar.gz
 mysql -u root -p 
 
 create database nacos;
+
+quit
+# 进入nacos目录下的conf文件夹，执行命令
+mysql -u root -p nacos < nacos-mysql.sql
 </pre>
-- 然后退出数据库修改nacos目录下conf/application.properties文件中的数据库地址
+- 修改nacos目录下conf/application.properties文件中的数据库地址
 <p><img src="../image/nacos1.png" alt="image completions"></p>
     <center style="font-size:12px;color:#666;text-decoration:underline;">修改配置文件</center>
   

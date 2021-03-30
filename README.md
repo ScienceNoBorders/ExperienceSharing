@@ -17,6 +17,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 </p>
 
 ## JAVA
+- [Nacos与Eureka技术比对](./JAVA/nacos&eureka/document/nacos.pdf)
 - [Nacos安装与应用](./JAVA/nacos&eureka/nacos/installNacos.md)
 
 ## VPS
