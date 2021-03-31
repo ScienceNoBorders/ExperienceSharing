@@ -39,6 +39,13 @@ sh startup.sh -m standalone
 
 -  [Spring boot，Spring cloud 测试案例](https://github.com/XiaoTiJun/nacos2.0-example)<br>
 
+<p><img src="../image/nacos5.png" alt="image completions"></p>
+    <center style="font-size:12px;color:#666;text-decoration:underline;">nacos服务列表界面</center>
+<br>
+
+<p><img src="../image/nacos6.png" alt="image completions"></p>
+    <center style="font-size:12px;color:#666;text-decoration:underline;">nacos服务详情，可以分配权重，服务上下线等操作</center>
+
 
 # 4、参考
 https://nacos.io/zh-cn/docs/quick-start.html<br>

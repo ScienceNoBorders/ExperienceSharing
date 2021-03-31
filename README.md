@@ -24,7 +24,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 - [VPS搭建ShadowSocks教程 (VPS structures)](./VPS/VPSStructures.md).
 - [VPS各服务器厂家比较 (vultr、AWS、Aliyun to Compare)](./VPS/VPSCompare.md).
 - [Alibaba Cloud注册链接](https://www.alibabacloud.com/referral?referralCode=oug3oz)
-- [vultr注册链接--领100$使用券](https://www.vultr.com/?ref=8816052)
+- [vultr注册链接--领$10使用券](https://www.vultr.com/?ref=8816052)
 
 ## OTHER
 - [提交分支入开源项目](./other/fork-push-pullRequest.md).
