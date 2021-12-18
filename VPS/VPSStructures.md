@@ -130,7 +130,7 @@
 
 - 安装shadowsocks-libev([安装教程](https://www.24kplus.com/linux/1371.html))：
 ```
-    wget https://down.24kplus.com/linux/shadowsocks/centos-shadowsocks-libev.sh
+    wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/master/other/bin/centos-shadowsocks-libev.sh
 
     chmod +x centos-shadowsocks-libev.sh && ./centos-shadowsocks-libev.sh
 ```
