@@ -1,35 +1,5 @@
 # 目录
-<!-- TOC -->
-
-- [目录](#目录)
-  - [1、概述](#1概述)
-    - [1.1、初识IPFS](#11初识ipfs)
-    - [1.2、IPFS 与 Protocol Labs](#12ipfs-与-protocol-labs)
-    - [1.3、IPFS系统架构](#13ipfs系统架构)
-    - [1.3.1、IPFS network](#131ipfs-network)
-    - [1.3.2、IPFS routing](#132ipfs-routing)
-    - [1.3.3、IPFS exchange](#133ipfs-exchange)
-    - [1.3.4、IPFS merkledag](#134ipfs-merkledag)
-    - [1.3.5、IPFS naming](#135ipfs-naming)
-    - [1.3.6、IPLD](#136ipld)
-    - [1.3.7、libP2P](#137libp2p)
-    - [1.3.8、IPFS存储文件步骤](#138ipfs存储文件步骤)
-  - [2、安装go-ipfs](#2安装go-ipfs)
-    - [2.1、go语言环境安装](#21go语言环境安装)
-    - [2.2、安装go-ipfs](#22安装go-ipfs)
-    - [2.3、运行IPFS](#23运行ipfs)
-  - [3、配置ipfs-config](#3配置ipfs-config)
-  - [4、ipfs基本操作及命令](#4ipfs基本操作及命令)
-  - [5、安装gomobile-ipfs](#5安装gomobile-ipfs)
-    - [5.1、安装Android-SDK与Android-NDK](#51安装android-sdk与android-ndk)
-    - [5.2、源码安装gomobile及gobind](#52源码安装gomobile及gobind)
-    - [5.3、安装Flutter](#53安装flutter)
-    - [5.4、安装Java JDK](#54安装java-jdk)
-    - [5.5、启动gomobile-ipfs](#55启动gomobile-ipfs)
-  - [6、结语](#6结语)
-  - [7、ipfs参考外链](#7ipfs参考外链)
-
-<!-- /TOC -->
+[toc]
 ## 1、概述
 ### 1.1、初识IPFS
 星际文件系统（InterPlanetary File System，缩写为IPFS）是一个旨在实现文件的分布式存储、共享和持久化的网络传输协议。它是一种内容可寻址的对等超媒体分发协议[^1]。 
@@ -712,7 +682,7 @@ go version go1.16.14 darwin/amd64
 1. 源码下载地址，下载2.x以上版本即可：https://github.com/flutter/flutter/tags
 2. 解压安装包到你想安装的目录，如：
    ``` shell
-   cd ~/development
+   cd ~/Downloads
    unzip ~/Downloads/flutter-2.10.3.zip
    ```
 3. 在`~/.bash_profile`环境变量中加入
