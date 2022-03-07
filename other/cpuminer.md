@@ -19,5 +19,7 @@ chmod +x startMiner.sh
 ./startMiner.sh
 
 # 启动挖矿程序 --url是上图的pool1， --userpass是worker
-nohup ./minerd --url=stratum+tcp://sha256.poolbinance.com:443 --userpass=xiaotijun97.001:xiaotijun1997. > miner.log 2>&1 &
+nohup ./minerd --url=stratum+tcp://ckb.f2pool.com:4300 --userpass=xiaotijun97.001:xiaotijun1997. > logminer.log 2>&1 &
+
+tail -300f logminer.log
 </pre>
