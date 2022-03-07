@@ -21,7 +21,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 - [Nacos安装与应用](./JAVA/nacos&eureka/nacos/installNacos.md)
 
 ## IPFS
-
+- [go-ipfs与gomobile-ipfs安装](./IPFS/ipfs.md)
 
 ## VPS
 - [VPS搭建ShadowSocks教程 (VPS structures)](./VPS/VPSStructures.md).
