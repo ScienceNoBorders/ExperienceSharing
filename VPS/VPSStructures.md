@@ -132,6 +132,8 @@
 ```
     wget https://raw.githubusercontent.com/XiaoTiJun/ExperienceSharing/master/other/bin/centos-shadowsocks-libev.sh
 
+    wget https://down.24kplus.com/linux/shadowsocks/centos-shadowsocks-libev.sh
+
     chmod +x centos-shadowsocks-libev.sh && ./centos-shadowsocks-libev.sh
 ```
 
