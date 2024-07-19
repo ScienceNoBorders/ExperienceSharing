@@ -4,3 +4,4 @@ books/技术类/books/技术类/《人月神话[[:space:]]40周年中文纪念�
 books/技术类/深入理解计算机系统(第3版).pdf filter=lfs diff=lfs merge=lfs -text
 books/技术类/信息系统项目管理师第四版.pdf filter=lfs diff=lfs merge=lfs -text
 books/技术类/高性能MySQL[[:space:]]第3版[[:space:]]中文[[:space:]].pdf filter=lfs diff=lfs merge=lfs -text
+books/技术类/《人月神话[[:space:]]40周年中文纪念版》.pdf filter=lfs diff=lfs merge=lfs -text
