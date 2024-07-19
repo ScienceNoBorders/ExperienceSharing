@@ -63,6 +63,12 @@ From today on, I will record the experience, learning and pit I have gone throug
   - [ ]  [MyBatis技术内幕 [徐郡明]](./books/技术类/MyBatis技术内幕.pdf) <img src="https://img.shields.io/badge/-PDF-red" style="vertical-align:middle;">
 </details>
 <details open>
+  <summary>自留书单</summary>
+  
+  - [ ]  [毛泽东选集（全4套） [毛泽东]](./books/Kindle/2024/毛泽东选集（全4套）.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;"> <a href="./books/Kindle/multiple/Mao Ze Dong Xuan Ji (Tao Zhuang - Mao Ze Dong , SoBooKs.cc/Mao Ze Dong Xuan Ji (Tao Zhuang - Mao Ze Dong , SoBooKs.cc.epub" target="_blank"><img src="https://img.shields.io/badge/-EPUB-blue" style="vertical-align:middle;"></a> <a href="./books/Kindle/multiple/Mao Ze Dong Xuan Ji (Tao Zhuang - Mao Ze Dong , SoBooKs.cc/Mao Ze Dong Xuan Ji (Tao Zhuang - Mao Ze Dong , SoBooKs.cc.mobi" target="_blank"><img src="https://img.shields.io/badge/-MOBI-blue" style="vertical-align:middle;"></a>
+  - [x]  [抢单手记：销售就是要搞定人 [倪建伟]](./books/other/抢单手记：销售就是要搞定人.pdf) <img src="https://img.shields.io/badge/-PDF-red" style="vertical-align:middle;">
+</details>
+<details open>
   <summary>销售类</summary>
   
   - [x]  [从点子到产品：产品经理的价值观与方法论 [刘飞]](./books/other/从点子到产品_产品经理的价值观与方法论.pdf) <img src="https://img.shields.io/badge/-PDF-red" style="vertical-align:middle;">
@@ -93,6 +99,3 @@ From today on, I will record the experience, learning and pit I have gone throug
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/ScienceNoBorders/ExperienceSharing.svg)](https://starchart.cc/ScienceNoBorders/ExperienceSharing)
-
-## 网页打开统计
-[![](https://steins-gate-visitor-count.greenhandatsjtu.repl.co/ExperienceSharing)](https://github.com/ScienceNoBorders/ExperienceSharing)
