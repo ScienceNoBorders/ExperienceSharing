@@ -177,7 +177,7 @@ From today on, I will record the experience, learning and pit I have gone throug
   - [x] [遥远的救世主 [豆豆]](./books/Kindle/2022-12-11/遥远的救世主.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
   - [x] [雪崩 [尼尔·斯蒂芬森 / 郭泽]](./books/Kindle/2022-12-11/雪崩.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;"> <a href="./books/Kindle/multiple/雪崩/Xue Beng (Ya Ma Xun Wang Shang - Ni Er _Si Di Fen Sen.epub" target="_blank"><img src="https://img.shields.io/badge/-EPUB-blue" style="vertical-align:middle;"></a> <a href="./books/Kindle/multiple/雪崩/Xue Beng (Ya Ma Xun Wang Shang - Ni Er _Si Di Fen Sen.mobi" target="_blank"><img src="https://img.shields.io/badge/-MOBI-blue" style="vertical-align:middle;"></a>
   - [ ] [廊桥遗梦 [罗伯特•詹姆斯•沃勒 / 资中筠]](./books/Kindle/2023/《廊桥遗梦.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
-  - [ ] [成化十四年 [梦溪石]](./books/Kindle/2023/《成化十四年.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
+  - [x] [成化十四年 [梦溪石]](./books/Kindle/2023/《成化十四年.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
   - [ ] [格列佛游记 [斯威夫特 / 白马]](./books/Kindle/2023/《格列佛游记》.mobi) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
   - [ ] [红与黑 [司汤达 / 张冠尧]](./books/Kindle/2023/《红与黑》.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
   - [ ] [麦田里的守望者 [J. D. 塞林格 / 孙仲旭]](./books/Kindle/2023/《麦田里的守望者.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
@@ -187,7 +187,7 @@ From today on, I will record the experience, learning and pit I have gone throug
   - [x] [堂吉诃德 [塞万提斯·萨维德拉 / 唐民权]](./books/Kindle/2023/塞万提斯-堂吉诃德.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
   - [ ] [我的奋斗 [阿道夫·希特勒]](./books/Kindle/2023/我的奋斗—希特勒自传.mobi) <img src="https://img.shields.io/badge/-MOBI-red" style="vertical-align:middle;">
   - [x] [鬼吹灯全集 [天下霸唱]](./books/Kindle/2023/鬼吹灯全集.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
-  - [ ] [中县干部 [冯军旗]](./books/Kindle/2024/中县干部_冯军旗.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;"> <a href="./books/Kindle/multiple/中县干部_冯军旗.epub" target="_blank"><img src="https://img.shields.io/badge/-EPUB-blue" style="vertical-align:middle;"></a>
+  - [ ] [中县干部 [冯军旗]](./books/Kindle/2024/中县干部_冯军旗.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;"> <a href="./books/Kindle/multiple/中县干部_冯军旗.epub" target="_blank"><img src="https://img.shields.io/badge/-EPUB-blue" style="vertical-align:middle;"></a> <a href="./books/Kindle/multiple/中县干部/中县干部 (冯军旗) (Z-Library).pdf" target="_blank"><img src="https://img.shields.io/badge/-PDF-blue" style="vertical-align:middle;"></a>
   - [ ] [漫长的余生：一个北魏宫女和她的时代 [罗新]](./books/Kindle/2024/漫长的余生.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
   - [ ] [茶馆 [老舍]](./books/Kindle/2024/茶馆-老舍.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
   - [ ] [通往权力之路：叶卡捷琳娜大帝 [罗伯特·K·迈锡 / 徐海幈]](./books/Kindle/2024/通往权力之路：叶卡捷琳娜大帝.azw3) <img src="https://img.shields.io/badge/-AZW3-red" style="vertical-align:middle;">
