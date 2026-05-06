@@ -1,7 +1,9 @@
 # 经验分享（ExperienceSharing）
 从2020始，我将记录下我作为一名程序员所经历的经验、学习、读书记录和遇到的坑，帮助我消化知识及巩固。倘若能恰好帮助到你，那便是我快乐的源泉。
+当获取答案变得简单，好的问题才弥足珍贵。
 
-From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you
+From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you.
+When getting an answer becomes easy, a good question becomes all the more precious.
 
 <p align="center">
 <a href="https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/VPS/image/wechat.png"><img src="https://img.shields.io/static/v1?label=WeChat&message=nuoxiyue2224&color=violet&logo=wechat">
@@ -234,6 +236,7 @@ From today on, I will record the experience, learning and pit I have gone throug
 ## OTHER
 - [提交分支入开源项目](./other/fork-push-pullRequest.md).
 - [记一次pamdicks木马解决经历](./other/redis-virus-log.md).
+- [美股港股无境外实体卡开户与出入金方法](./other/us-hk-stock.md)
 
 
 ## Issues
