@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         X 未回关检测助手 (X Unfollowers Checker)
-// @namespace    https://github.com/ufs-tools/x-unfollow-checker
+// @name         X 互关检测助手 (X Unfollowers Checker)
+// @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user
 // @version      2.1.0
 // @description  自动滚动你在 X (Twitter) 上的关注列表，滚动过程中实时检测每个用户是否回关了你（读取列表卡片 data-testid="userFollowIndicator" 节点），并在页面右侧固定面板中展示"未互关"名单。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
-// @author       UFS Dev Team
+// @author       traderNathan(@nathan_9795)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        GM_setValue
@@ -16,7 +16,7 @@
 
 /*
  * ============================================================================
- * X 未回关检测助手
+ * X 互关检测助手
  * ----------------------------------------------------------------------------
  * 功能概述：
  *   1. 当用户访问 https://x.com/<用户名>/following 页面时自动启动。
