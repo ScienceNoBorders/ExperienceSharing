@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         X 互关检测助手 (X Unfollowers Checker)
+// @name         X互关检测助手 (X followers Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user
-// @version      2.1.0
-// @description  自动滚动你在 X (Twitter) 上的关注列表，滚动过程中实时检测每个用户是否回关了你（读取列表卡片 data-testid="userFollowIndicator" 节点），并在页面右侧固定面板中展示"未互关"名单。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
+// @version      2.3.0
+// @description  自动滚动你在 X (Twitter) 上的关注列表，滚动过程中实时检测每个用户是否回关了你，并在页面右侧固定面板中展示"未互关"名单。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       traderNathan(@nathan_9795)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
@@ -12,6 +12,7 @@
 // @grant        GM_setClipboard
 // @run-at       document-idle
 // @noframes     false
+// @license      Apache 2.0
 // ==/UserScript==
 
 /*
@@ -65,7 +66,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '1.0.0';
+  const SCRIPT_VERSION = '2.3.0';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -96,15 +97,19 @@
     RETRY_BACKOFF_BASE_MS: 1500,
 
     // 自动滚动关注列表相关。为保证数据准确性，采用"小步增量滚动 + 较长
-    // 随机等待 + 更多轮连续无变化才判定到底"的保守策略，而不是直接跳到
-    // 页面最底部——一次性跳到底部可能导致虚拟列表来不及渲染中间的用户
-    // 卡片（以及其中的 userFollowIndicator 回关标识），造成漏判/误判。
+    // 随机等待"的保守策略，而不是直接跳到页面最底部——一次性跳到底部
+    // 可能导致虚拟列表来不及渲染中间的用户卡片（以及其中的
+    // userFollowIndicator 回关标识），造成漏判/误判。
     SCROLL_STEP_RATIO: 0.7, // 每次滚动视口高度的比例。
     MIN_SCROLL_STEP_PX: 260, // 每次滚动的最小像素数（应对极小视口）。
-    SCROLL_WAIT_MIN_MS: 1600,
-    SCROLL_WAIT_MAX_MS: 2800,
-    IDLE_ROUNDS_TO_STOP: 6,
-    MUTATION_IDLE_MS: 3500,
+    // 判定"已经滚动到底"不再依赖对整个 document.body 的 MutationObserver
+    // （页面里与关注列表无关的其它区域——通知红点、动画、广告等——的变动
+    // 会不断刷新"最近一次变动时间"，导致永远无法判定为空闲，滚动停不
+    // 下来）。改为直接检测"页面是否已经到达可滚动的最底部 + 页面总高度
+    // 是否不再增长 + 本轮是否有新用户被处理"，三者同时满足才计入一次
+    // 空闲轮次，判定更直接、更贴近"真的到底了"这个事实。
+    BOTTOM_THRESHOLD_PX: 300, // 距离页面底部多少像素以内视为"已到底部"。
+    IDLE_ROUNDS_TO_STOP: 4,
 
     // 隐藏 iframe 探测相关。
     IFRAME_WIDTH_PX: 500,
@@ -124,7 +129,7 @@
     BLOB_REVOKE_DELAY_MS: 4000,
 
     // 缓存版本号，若未来数据结构变化可递增此值使旧缓存自然失效。
-    STORAGE_VERSION: 'v1',
+    STORAGE_VERSION: 'v2',
   });
 
   /** 关注列表 / 个人主页 URL 中需要排除的保留路径（非用户名）。 */
@@ -135,6 +140,19 @@
     'jobs', 'topics', 'moments', 'account', 'download', 'about',
     'verified_followers', 'connect_people',
   ]);
+
+  /**
+   * 本脚本支持自动运行的"列表类"页面类型（形如 /用户名/<类型>）。
+   * 目前支持"正在关注"列表与"已验证的关注者"列表，两者的检测方法
+   * 完全一致：都是读取每张用户卡片中的 [data-testid="userFollowIndicator"]。
+   */
+  const SUPPORTED_LIST_PAGE_TYPES = ['following', 'verified_followers'];
+
+  /** 各列表页面类型对应的中文展示名称，用于面板标题与日志。 */
+  const LIST_PAGE_TYPE_LABELS = {
+    following: '正在关注',
+    verified_followers: '已验证的关注者',
+  };
 
   /**
    * 判断"回关"状态不再使用任何文案匹配或 JSON 解析，只通过 X 最新版 DOM
@@ -262,21 +280,39 @@
     },
 
     /**
-     * 从形如 "/username/following" 的路径中提取所有者用户名。
+     * 从形如 "/username/following" 或 "/username/verified_followers" 的路径中
+     * 提取所有者用户名。
      * @param {string} pathname 当前页面路径。
      * @returns {string|null} 所有者用户名，若不匹配则返回 null。
      */
     extractOwnerUsernameFromPath(pathname) {
-      const match = pathname.match(/^\/([A-Za-z0-9_]{1,15})\/following\/?$/i);
+      const pattern = new RegExp(
+        `^\\/([A-Za-z0-9_]{1,15})\\/(?:${SUPPORTED_LIST_PAGE_TYPES.join('|')})\\/?$`, 'i'
+      );
+      const match = pathname.match(pattern);
       return match ? match[1] : null;
     },
 
     /**
-     * 判断给定路径是否为"关注列表"页面。
+     * 从路径中提取列表页面类型（'following' 或 'verified_followers'）。
+     * @param {string} pathname 当前页面路径。
+     * @returns {string|null} 页面类型，若不匹配任何受支持类型则返回 null。
+     */
+    extractListPageTypeFromPath(pathname) {
+      const pattern = new RegExp(
+        `^\\/[A-Za-z0-9_]{1,15}\\/(${SUPPORTED_LIST_PAGE_TYPES.join('|')})\\/?$`, 'i'
+      );
+      const match = pathname.match(pattern);
+      return match ? match[1].toLowerCase() : null;
+    },
+
+    /**
+     * 判断给定路径是否为本脚本支持自动运行的"列表类"页面
+     * （关注列表 / 已验证的关注者列表）。
      * @param {string} pathname 当前页面路径。
      * @returns {boolean} 是否匹配。
      */
-    isFollowingPagePath(pathname) {
+    isSupportedListPagePath(pathname) {
       return Utils.extractOwnerUsernameFromPath(pathname) !== null;
     },
 
@@ -403,6 +439,76 @@
   };
 
   /* ==========================================================================
+   * 3.5 滚动速度模块（ScrollSpeedManager）
+   *     滚动等待时间不再是写死的常量，而是可以在面板上用滑块实时调整的
+   *     "速度档位"。为了防止用户为了追求速度而把间隔调得过短、触发 X
+   *     的风控/反自动化检测，最快的一档也设有安全下限，无法再往下调。
+   *     当前档位通过 GM_setValue 持久化，刷新页面 / 下次打开仍然保留。
+   * ======================================================================== */
+
+  /**
+   * 速度档位表，从"很慢"到"很快"。每一档给出一个随机等待区间（毫秒），
+   * 实际等待时间会在区间内随机取值（而不是固定值），进一步降低被识别为
+   * 自动化脚本的概率。最后一档（最快）的下限就是本脚本认定的安全阈值，
+   * 不会再提供比它更快的选项。
+   */
+  const SCROLL_SPEED_PRESETS = Object.freeze([
+    { label: '很慢', min: 3200, max: 4800 },
+    { label: '慢', min: 2400, max: 3600 },
+    { label: '标准', min: 1600, max: 2800 },
+    { label: '快', min: 1100, max: 1900 },
+    { label: '很快（已达安全下限）', min: 900, max: 1500 },
+  ]);
+
+  /** 默认速度档位索引（对应"标准"档，即脚本原先的默认节奏）。 */
+  const DEFAULT_SPEED_INDEX = 2;
+
+  /** 用于持久化速度档位选择的 GM_setValue 键名（跨账号通用的 UI 偏好）。 */
+  const SCROLL_SPEED_STORAGE_KEY = 'ufs_scroll_speed_index_v1';
+
+  const ScrollSpeedManager = {
+    presets: SCROLL_SPEED_PRESETS,
+    currentIndex: DEFAULT_SPEED_INDEX,
+
+    /** 从 GM_getValue 中恢复上次选择的速度档位（越界或读取失败则回退默认档）。 */
+    load() {
+      let savedIndex = DEFAULT_SPEED_INDEX;
+      try {
+        const raw = GM_getValue(SCROLL_SPEED_STORAGE_KEY, DEFAULT_SPEED_INDEX);
+        const parsed = Number(raw);
+        if (Number.isInteger(parsed)) savedIndex = parsed;
+      } catch (error) {
+        Logger.warn('读取扫描速度设置失败，使用默认档位', error);
+      }
+      this.currentIndex = Utils.clampNumber(savedIndex, 0, this.presets.length - 1);
+    },
+
+    /**
+     * 设置并持久化新的速度档位。
+     * @param {number} index 档位索引。
+     */
+    setIndex(index) {
+      const clampedIndex = Utils.clampNumber(Math.round(index), 0, this.presets.length - 1);
+      this.currentIndex = clampedIndex;
+      try {
+        GM_setValue(SCROLL_SPEED_STORAGE_KEY, clampedIndex);
+      } catch (error) {
+        Logger.warn('保存扫描速度设置失败', error);
+      }
+    },
+
+    /** 获取当前档位的完整信息（label/min/max）。 */
+    getCurrent() {
+      return this.presets[this.currentIndex];
+    },
+
+    /** 获取档位数量，供面板滑块设置 max 属性使用。 */
+    getPresetCount() {
+      return this.presets.length;
+    },
+  };
+
+  /* ==========================================================================
    * 4. 缓存模块（Storage 类）
    *    基于 GM_setValue / GM_getValue 实现的命名空间化持久化存储。
    *    命名空间按"所有者用户名"隔离，避免不同账号数据互相污染。
@@ -410,11 +516,14 @@
 
   class Storage {
     /**
-     * @param {string} ownerUsername 关注列表页面所属的用户名（即"我"）。
+     * @param {string} ownerUsername 列表页面所属的用户名（即"我"）。
+     * @param {string} pageType 列表页面类型（'following' 或 'verified_followers'），
+     *   不同类型的数据分开缓存，避免互相覆盖。
      */
-    constructor(ownerUsername) {
+    constructor(ownerUsername, pageType = 'following') {
       this.ownerUsername = ownerUsername;
-      this.namespace = `ufs_${CONFIG.STORAGE_VERSION}_${ownerUsername.toLowerCase()}`;
+      this.pageType = pageType;
+      this.namespace = `ufs_${CONFIG.STORAGE_VERSION}_${ownerUsername.toLowerCase()}_${pageType}`;
     }
 
     /**
@@ -514,14 +623,19 @@
    * ======================================================================== */
 
   class Parser {
-    /** 判断当前页面是否为"关注列表"页面。 */
-    static isFollowingPage() {
-      return Utils.isFollowingPagePath(location.pathname);
+    /** 判断当前页面是否为本脚本支持的"列表类"页面（关注列表 / 已验证的关注者）。 */
+    static isSupportedListPage() {
+      return Utils.isSupportedListPagePath(location.pathname);
     }
 
-    /** 从当前 URL 中提取关注列表所属的用户名（即"我"）。 */
+    /** 从当前 URL 中提取列表所属的用户名（即"我"）。 */
     static getOwnerUsernameFromCurrentUrl() {
       return Utils.extractOwnerUsernameFromPath(location.pathname);
+    }
+
+    /** 从当前 URL 中提取列表页面类型（'following' 或 'verified_followers'）。 */
+    static getListPageTypeFromCurrentUrl() {
+      return Utils.extractListPageTypeFromPath(location.pathname);
     }
 
     /**
@@ -889,10 +1003,11 @@
 
   class Scanner {
     /**
-     * @param {{ownerUsername:string, storage:Storage, panel:Panel}} deps 依赖项。
+     * @param {{ownerUsername:string, pageType:string, storage:Storage, panel:Panel}} deps 依赖项。
      */
     constructor(deps) {
       this.ownerUsername = deps.ownerUsername;
+      this.pageType = deps.pageType || 'following';
       this.storage = deps.storage;
       this.panel = deps.panel;
       // Prober 现在只用于"重新扫描单个用户"时、且该用户的卡片已经不在
@@ -905,11 +1020,13 @@
       /** username -> { status, reason, checkedAt, retries } */
       this.scanResults = {};
       this.startTime = null;
+      // 只有用户主动点击"开始扫描"按钮（或"重新扫描"）之后，hasStarted
+      // 才会变为 true；在此之前脚本只会展示缓存中的既有结果，不会自动
+      // 滚动页面或进行任何检测。
+      this.hasStarted = false;
       this.isScanning = false;
       this.isPaused = false;
       this._resumeResolve = null;
-      this._mutationObserver = null;
-      this._lastMutationAt = 0;
       // 扫描代次：每次调用 scrollAndDetect() 都会递增，正在运行的旧一轮
       // 循环会在检测到代次变化后自然退出，用于安全地"重新开始"扫描。
       this._scanGeneration = 0;
@@ -922,13 +1039,20 @@
     }
 
     /**
-     * 主入口：启动"边滚动边探测"流程。
+     * 主入口：启动"边滚动边探测"流程。只有在用户主动点击面板上的
+     * "开始扫描"按钮时才会被调用，不会随页面匹配自动触发。
      * @returns {Promise<void>}
      */
     async start() {
+      this.hasStarted = true;
       this.startTime = Utils.nowTimestamp();
       this.isScanning = true;
       this.panel.setStatus('scanning');
+      // 等待时间线首批用户卡片渲染完成后再开始自动滚动，避免在 DOM
+      // 尚未就绪时误判为"已到底部/无新内容"。
+      await Utils.waitFor(() => Parser.findUserCells(document).length > 0, {
+        timeout: 8000, interval: 300,
+      });
       await this.scrollAndDetect();
       this.isScanning = false;
       this._finishScan();
@@ -938,17 +1062,22 @@
      * 核心流程：自动无限滚动关注列表，每当发现一个用户卡片就立即在该
      * 卡片的 DOM 内查询 [data-testid="userFollowIndicator"] 来判断对方
      * 是否回关，结果同步写入内存与缓存——不需要访问对方主页，不需要
-     * 隐藏 iframe，也不需要任何网络请求。滚动结束（自动检测到无限滚动
-     * 到底）的那一刻，全部结果已经就绪。
+     * 隐藏 iframe，也不需要任何网络请求。
+     *
+     * 判定"已经滚动到底、可以结束"的依据是：页面是否已经滚动到可视区域
+     * 底部、页面总高度是否连续保持不变、以及本轮是否还有新用户被处理，
+     * 三者同时满足才计入一次空闲轮次——不再依赖全局 MutationObserver，
+     * 避免页面上与列表无关的其它变动（通知红点、动画等）持续刷新计时器
+     * 导致永远无法判定为空闲、滚动停不下来的问题。
      * @returns {Promise<void>}
      */
     async scrollAndDetect() {
       const myGeneration = ++this._scanGeneration;
       const collectedUsernames = new Set(this.followingList);
-      this._attachMutationObserver();
 
       let idleRounds = 0;
       let lastProcessedCount = Object.keys(this.scanResults).length;
+      let lastScrollHeight = document.documentElement.scrollHeight;
 
       while (idleRounds < CONFIG.IDLE_ROUNDS_TO_STOP && myGeneration === this._scanGeneration) {
         // 若面板处于"暂停"状态，则在此处挂起，等待用户点击"继续"。
@@ -985,44 +1114,51 @@
         this.panel.setScanProgress(processedCount);
         this.panel.renderList(this.getAllRows());
 
+        const currentScrollHeight = document.documentElement.scrollHeight;
+        const heightUnchanged = currentScrollHeight === lastScrollHeight;
+        const atBottom = this._isPageScrolledToBottom();
         const noNewProgress = processedCount === lastProcessedCount;
-        const noRecentMutation = Date.now() - this._lastMutationAt > CONFIG.MUTATION_IDLE_MS;
-        if (noNewProgress && noRecentMutation) {
+
+        if (heightUnchanged && atBottom && noNewProgress) {
           idleRounds += 1;
         } else {
           idleRounds = 0;
         }
         lastProcessedCount = processedCount;
+        lastScrollHeight = currentScrollHeight;
+
+        if (idleRounds >= CONFIG.IDLE_ROUNDS_TO_STOP || myGeneration !== this._scanGeneration) {
+          break; // 已确认到底，直接结束，不再多滚动一次。
+        }
 
         // 小步增量滚动（而非直接跳到页面最底部），给虚拟列表充分的时间
         // 渲染每一批新出现的用户卡片及其回关标识，降低漏判/误判概率。
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
-        const scrollStepPx = Math.max(
-          CONFIG.MIN_SCROLL_STEP_PX,
-          Math.floor(viewportHeight * CONFIG.SCROLL_STEP_RATIO)
-        );
-        window.scrollBy(0, scrollStepPx);
-        await Utils.randomDelay(CONFIG.SCROLL_WAIT_MIN_MS, CONFIG.SCROLL_WAIT_MAX_MS);
+        // 若已经处于页面底部，则不再继续下滚，只是等待观察是否有懒加载
+        // 的新内容出现（对应上面的 heightUnchanged/atBottom 判定）。
+        if (!atBottom) {
+          const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+          const scrollStepPx = Math.max(
+            CONFIG.MIN_SCROLL_STEP_PX,
+            Math.floor(viewportHeight * CONFIG.SCROLL_STEP_RATIO)
+          );
+          window.scrollBy(0, scrollStepPx);
+        }
+        // 等待时间实时读取当前的速度档位（用户可以在面板上随时拖动
+        // 滑块调整，下一轮循环立刻生效），而不是固定写死的常量。
+        const currentSpeed = ScrollSpeedManager.getCurrent();
+        await Utils.randomDelay(currentSpeed.min, currentSpeed.max);
       }
-
-      this._detachMutationObserver();
     }
 
-    /** 挂载 MutationObserver，用于感知时间线是否仍在持续加载新内容。 */
-    _attachMutationObserver() {
-      this._lastMutationAt = Date.now();
-      this._mutationObserver = new MutationObserver(() => {
-        this._lastMutationAt = Date.now();
-      });
-      this._mutationObserver.observe(document.body, { childList: true, subtree: true });
-    }
-
-    /** 卸载 MutationObserver。 */
-    _detachMutationObserver() {
-      if (this._mutationObserver) {
-        this._mutationObserver.disconnect();
-        this._mutationObserver = null;
-      }
+    /**
+     * 判断页面当前是否已经滚动到（接近）可滚动区域的底部。
+     * @returns {boolean} 是否已到底部。
+     */
+    _isPageScrolledToBottom() {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+      const fullHeight = document.documentElement.scrollHeight;
+      return scrollY + viewportHeight >= fullHeight - CONFIG.BOTTOM_THRESHOLD_PX;
     }
 
     /** 收尾工作：保存元信息、更新面板为"完成"状态、输出汇总日志。 */
@@ -1166,6 +1302,7 @@
      * @returns {Promise<void>}
      */
     async rescanAll() {
+      this.hasStarted = true;
       this.isPaused = false;
       this.isScanning = false;
       this.scanResults = {};
@@ -1175,7 +1312,7 @@
       this.panel.renderList(this.getAllRows());
 
       window.scrollTo(0, 0);
-      await Utils.sleep(CONFIG.SCROLL_WAIT_MIN_MS);
+      await Utils.sleep(ScrollSpeedManager.getCurrent().min);
 
       this.startTime = Utils.nowTimestamp();
       this.isScanning = true;
@@ -1234,6 +1371,7 @@
       this._bindStaticEvents();
       this._bindDragEvents();
       this._applyInitialPosition();
+      this._initSpeedControl();
       this._onWindowResize = Utils.debounce(() => this._reclampToViewport(), 200);
       window.addEventListener('resize', this._onWindowResize);
     }
@@ -1290,6 +1428,16 @@
         #ufs-panel .ufs-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         #ufs-panel .ufs-btn.ufs-btn-primary { background: #1d9bf0; color: #fff; }
         #ufs-panel .ufs-btn.ufs-btn-primary:hover { background: #1a8cd8; }
+        #ufs-panel .ufs-speed-row { padding: 0 12px 10px; }
+        #ufs-panel .ufs-speed-label-row {
+          display: flex; justify-content: space-between; align-items: center;
+          font-size: 12px; color: #8b98a5; margin-bottom: 4px;
+        }
+        #ufs-panel .ufs-speed-label-row span:last-child { color: #e7e9ea; font-weight: 600; }
+        #ufs-panel .ufs-speed-slider {
+          width: 100%; accent-color: #1d9bf0; cursor: pointer; display: block;
+        }
+        #ufs-panel .ufs-speed-hint { font-size: 11px; color: #71767b; margin-top: 4px; }
         #ufs-panel .ufs-search-row { display: flex; gap: 6px; padding: 0 12px 8px; }
         #ufs-panel .ufs-search-input {
           flex: 1; background: #0f1317; border: 1px solid #2f3336; border-radius: 8px;
@@ -1341,7 +1489,7 @@
       root.id = 'ufs-panel';
       root.innerHTML = `
         <div class="ufs-header" id="ufs-header">
-          <div class="ufs-title">🔍 未回关检测 <span>v${SCRIPT_VERSION}</span></div>
+          <div class="ufs-title">🔍 互关检测助手 <span>v${SCRIPT_VERSION}</span></div>
           <div class="ufs-header-actions">
             <button class="ufs-icon-btn" id="ufs-collapse-btn" title="折叠/展开">▾</button>
             <button class="ufs-icon-btn" id="ufs-close-btn" title="关闭">✕</button>
@@ -1353,11 +1501,20 @@
             <div class="ufs-progress-bar-track"><div class="ufs-progress-bar-fill" id="ufs-progress-fill"></div></div>
           </div>
           <div class="ufs-controls">
-            <button class="ufs-btn ufs-btn-primary" id="ufs-toggle-btn">暂停</button>
+            <button class="ufs-btn ufs-btn-primary" id="ufs-toggle-btn">开始扫描</button>
             <button class="ufs-btn" id="ufs-rescan-btn">重新扫描</button>
             <button class="ufs-btn" id="ufs-export-csv-btn">导出CSV</button>
             <button class="ufs-btn" id="ufs-export-txt-btn">导出TXT</button>
             <button class="ufs-btn" id="ufs-copy-all-btn">复制列表</button>
+          </div>
+          <div class="ufs-speed-row">
+            <div class="ufs-speed-label-row">
+              <span>扫描速度</span>
+              <span id="ufs-speed-value">标准</span>
+            </div>
+            <input type="range" class="ufs-speed-slider" id="ufs-speed-slider" min="0" max="4" step="1"
+              title="为防止触发平台风控，最快档位已设有安全下限，无法调得更快" />
+            <div class="ufs-speed-hint" id="ufs-speed-hint">滚动间隔 1.6s ~ 2.8s</div>
           </div>
           <div class="ufs-search-row">
             <input class="ufs-search-input" id="ufs-search-input" placeholder="搜索用户名..." />
@@ -1394,6 +1551,9 @@
         copyAllBtn: this.root.querySelector('#ufs-copy-all-btn'),
         searchInput: this.root.querySelector('#ufs-search-input'),
         sortBtn: this.root.querySelector('#ufs-sort-btn'),
+        speedSlider: this.root.querySelector('#ufs-speed-slider'),
+        speedValue: this.root.querySelector('#ufs-speed-value'),
+        speedHint: this.root.querySelector('#ufs-speed-hint'),
         list: this.root.querySelector('#ufs-list'),
         footer: this.root.querySelector('#ufs-footer'),
         tabs: {
@@ -1424,12 +1584,13 @@
         event.stopPropagation();
         this.close();
       });
-      this.elements.toggleBtn.addEventListener('click', () => this._onTogglePauseResume());
+      this.elements.toggleBtn.addEventListener('click', () => this._onPrimaryButtonClick());
       this.elements.rescanBtn.addEventListener('click', () => this._onRescanAll());
       this.elements.exportCsvBtn.addEventListener('click', () => this._onExportCsv());
       this.elements.exportTxtBtn.addEventListener('click', () => this._onExportTxt());
       this.elements.copyAllBtn.addEventListener('click', () => this._onCopyAll());
       this.elements.sortBtn.addEventListener('click', () => this._onToggleSort());
+      this.elements.speedSlider.addEventListener('input', (event) => this._onSpeedChange(event.target.value));
 
       const debouncedSearch = Utils.debounce((value) => {
         this.searchKeyword = value.trim().toLowerCase();
@@ -1611,9 +1772,19 @@
       if (this.scanner) this.scanner.pause();
     }
 
-    /** 处理"暂停/继续"按钮点击。 */
-    _onTogglePauseResume() {
+    /**
+     * 处理面板主按钮点击：
+     *   - 尚未开始扫描时，按钮显示"开始扫描"，点击后调用 scanner.start()，
+     *     此时才会真正开始自动滚动与检测（而不是页面一匹配就自动执行）。
+     *   - 已经开始之后，按钮在"暂停"/"继续"之间切换，行为与之前一致。
+     */
+    _onPrimaryButtonClick() {
       if (!this.scanner) return;
+      if (!this.scanner.hasStarted) {
+        this.elements.toggleBtn.textContent = '暂停';
+        this.scanner.start().catch((error) => Logger.error('扫描流程异常', error));
+        return;
+      }
       if (this.elements.toggleBtn.textContent === '暂停') {
         this.scanner.pause();
         this.elements.toggleBtn.textContent = '继续';
@@ -1669,6 +1840,36 @@
     }
 
     /**
+     * 初始化速度滑块：设置滑块的最大值（对应档位数量）与当前值
+     * （读取 ScrollSpeedManager 中已持久化的用户偏好），并同步显示文案。
+     * 在面板构造时调用一次即可，之后由 _onSpeedChange 负责保持同步。
+     */
+    _initSpeedControl() {
+      this.elements.speedSlider.max = String(ScrollSpeedManager.getPresetCount() - 1);
+      this.elements.speedSlider.value = String(ScrollSpeedManager.currentIndex);
+      this._refreshSpeedDisplay();
+    }
+
+    /**
+     * 处理速度滑块的拖动：立即持久化新档位（下一轮滚动等待会实时读取
+     * 新的速度，无需重新开始扫描），并刷新面板上的档位文案显示。
+     * @param {string|number} rawIndex 滑块的原始 value。
+     */
+    _onSpeedChange(rawIndex) {
+      ScrollSpeedManager.setIndex(Number(rawIndex));
+      this._refreshSpeedDisplay();
+      Logger.info(`扫描速度已调整为「${ScrollSpeedManager.getCurrent().label}」`);
+    }
+
+    /** 根据当前速度档位刷新面板上的文案展示（档位名 + 实际等待区间）。 */
+    _refreshSpeedDisplay() {
+      const current = ScrollSpeedManager.getCurrent();
+      this.elements.speedValue.textContent = current.label;
+      this.elements.speedHint.textContent =
+        `滚动间隔 ${(current.min / 1000).toFixed(1)}s ~ ${(current.max / 1000).toFixed(1)}s`;
+    }
+
+    /**
      * 更新"滚动扫描中"阶段的进度文案。由于结果是在滚动过程中实时产生的，
      * 扫描结束前无法预知最终总人数，因此这里只展示"已处理"的累计人数，
      * 进度条以脉冲式动画表示"正在进行中"，而非精确百分比。
@@ -1680,12 +1881,17 @@
     }
 
     /**
-     * 更新整体状态展示（扫描中 / 已暂停 / 已完成）。
-     * @param {string} statusName 状态名称。
+     * 更新整体状态展示（待开始 / 扫描中 / 已暂停 / 已完成）。
+     * @param {string} statusName 状态名称：'idle' | 'scanning' | 'paused' | 'done'。
      * @param {object} extra 附加数据（例如完成时的耗时）。
      */
     setStatus(statusName, extra = {}) {
-      if (statusName === 'scanning') {
+      if (statusName === 'idle') {
+        this.elements.toggleBtn.textContent = '开始扫描';
+        this.elements.toggleBtn.disabled = false;
+        this.elements.progressText.textContent = '已加载缓存数据，点击"开始扫描"以检测/更新回关状态';
+        this.elements.progressFill.style.width = '0%';
+      } else if (statusName === 'scanning') {
         this.elements.toggleBtn.textContent = '暂停';
         this.elements.toggleBtn.disabled = false;
       } else if (statusName === 'paused') {
@@ -1695,6 +1901,7 @@
         this.elements.progressText.textContent =
           `完成，共扫描 ${this.rows.length} 人，耗时 ${elapsedText}`;
         this.elements.progressFill.style.width = '100%';
+        this.elements.toggleBtn.textContent = '暂停';
         this.elements.toggleBtn.disabled = true;
       }
     }
@@ -1836,26 +2043,39 @@
       const handledAsProbe = await respondToProbeIfNeeded();
       if (handledAsProbe) return;
 
+      // 恢复用户上次选择的扫描速度档位（若从未设置过则使用默认"标准"档）。
+      ScrollSpeedManager.load();
+
       /** 当前已初始化面板对应的所有者用户名，用于避免重复初始化。 */
       let currentOwnerUsername = null;
+      /** 当前已初始化面板对应的列表页面类型（'following' / 'verified_followers'）。 */
+      let currentPageType = null;
       /** 当前面板实例引用。 */
       let currentPanel = null;
       /** 当前扫描器实例引用。 */
       let currentScanner = null;
+      /**
+       * 标记"当前的暂停状态是否由离开页面自动触发"——只有这种情况下，
+       * 重新回到同一个列表页面时才会自动恢复扫描；如果是用户自己手动
+       * 点击了"暂停"按钮，则不会被这里的逻辑覆盖，尊重用户的主动选择。
+       */
+      let pausedByNavigation = false;
 
       /**
-       * 检查当前页面是否为"关注列表"页面，若是且尚未针对该所有者初始化过，
-       * 则创建 Storage / Panel / Scanner 三件套并启动扫描流程。
+       * 为当前页面（新的所有者 + 新的列表类型）创建一整套 Storage / Scanner /
+       * Panel，替换掉旧的实例。只负责展示面板、加载缓存数据，不会自动开始
+       * 扫描——扫描必须由用户主动点击面板上的"开始扫描"按钮触发。
+       * @param {string} ownerUsername 列表所有者用户名。
+       * @param {string} pageType 列表页面类型。
        * @returns {Promise<void>}
        */
-      async function bootForCurrentPage() {
-        if (!Parser.isFollowingPage()) return;
-        const ownerUsername = Parser.getOwnerUsernameFromCurrentUrl();
-        if (!ownerUsername) return;
-        if (ownerUsername === currentOwnerUsername && currentScanner) return;
-
+      async function initForNewTarget(ownerUsername, pageType) {
         currentOwnerUsername = ownerUsername;
-        Logger.info(`检测到关注列表页面，所有者: @${ownerUsername}`);
+        currentPageType = pageType;
+        pausedByNavigation = false;
+
+        const pageTypeLabel = LIST_PAGE_TYPE_LABELS[pageType] || pageType;
+        Logger.info(`检测到列表页面（${pageTypeLabel}），所有者: @${ownerUsername}`);
 
         if (currentPanel) {
           try {
@@ -1865,29 +2085,72 @@
           }
         }
 
-        const storage = new Storage(ownerUsername);
+        const storage = new Storage(ownerUsername, pageType);
         const panel = new Panel();
-        const scanner = new Scanner({ ownerUsername, storage, panel });
+        const scanner = new Scanner({ ownerUsername, pageType, storage, panel });
         panel.bindScanner(scanner);
 
         scanner.loadFromCache();
         panel.renderList(scanner.getAllRows());
+        panel.setStatus('idle');
 
         currentPanel = panel;
         currentScanner = scanner;
+      }
 
-        // 等待时间线首批用户卡片渲染完成后再开始自动滚动收集，
-        // 避免在页面刚切换、DOM 尚未就绪时读取到空列表。
-        await Utils.waitFor(() => Parser.findUserCells(document).length > 0, {
-          timeout: 8000, interval: 300,
-        });
+      /**
+       * 处理一次可能的路由变化：
+       *   - 若离开了当前正在使用的目标（不同所有者或不同页面类型，或者
+       *     新页面根本不是受支持的列表页面），且旧的 Scanner 仍在扫描中，
+       *     则自动暂停它，避免脚本在无关页面上继续滚动和读取 DOM。
+       *   - 若新页面不是受支持的列表页面，到此为止，保留旧的面板/扫描器
+       *     原样挂起，不做任何销毁，方便用户随时切回。
+       *   - 若重新回到了同一个目标页面，且之前是因为"离开页面"而被自动
+       *     暂停的，则自动恢复扫描；否则（例如用户手动暂停过）不做处理。
+       *   - 若目标确实发生了变化（不同所有者或不同页面类型），则视为全新
+       *     页面，重新初始化一整套 Storage / Scanner / Panel。
+       * @returns {Promise<void>}
+       */
+      async function handlePossibleRouteChange() {
+        const newOwnerUsername = Parser.getOwnerUsernameFromCurrentUrl();
+        const newPageType = Parser.getListPageTypeFromCurrentUrl();
 
-        scanner.start().catch((error) => Logger.error('扫描流程异常', error));
+        const isSameTarget = Boolean(
+          newOwnerUsername && newPageType &&
+          currentOwnerUsername && currentPageType &&
+          newOwnerUsername.toLowerCase() === currentOwnerUsername.toLowerCase() &&
+          newPageType === currentPageType
+        );
+
+        if (!isSameTarget && currentScanner && currentScanner.isScanning && !currentScanner.isPaused) {
+          // 离开了正在扫描的目标（无论新页面是否受支持），先自动暂停，
+          // 避免继续在无关页面上滚动、读取 DOM。
+          currentScanner.pause();
+          pausedByNavigation = true;
+          Logger.warn('已离开当前列表页面，扫描已自动暂停');
+        }
+
+        if (!newOwnerUsername || !newPageType) {
+          // 新页面不是受支持的列表页面，保留现有面板/扫描器，什么都不做。
+          return;
+        }
+
+        if (isSameTarget) {
+          if (pausedByNavigation && currentScanner && currentScanner.isPaused) {
+            currentScanner.resume();
+            pausedByNavigation = false;
+            Logger.info('已重新进入列表页面，扫描已自动恢复');
+          }
+          return;
+        }
+
+        // 所有者或页面类型发生了变化：视为全新目标，重新初始化。
+        await initForNewTarget(newOwnerUsername, newPageType);
       }
 
       /**
        * 监听 X 的 SPA 路由切换（history.pushState / replaceState / popstate），
-       * 当路径变化且新路径也是关注列表页面时，重新执行 bootForCurrentPage。
+       * 每当路径可能发生变化时调用 handlePossibleRouteChange 进行处理。
        */
       function watchUrlChanges() {
         let lastPathname = location.pathname;
@@ -1895,7 +2158,7 @@
         const handlePossibleChange = Utils.debounce(() => {
           if (location.pathname !== lastPathname) {
             lastPathname = location.pathname;
-            bootForCurrentPage();
+            handlePossibleRouteChange();
           }
         }, 400);
 
@@ -1921,7 +2184,13 @@
         bodyObserver.observe(document.body, { childList: true, subtree: false });
       }
 
-      await bootForCurrentPage();
+      // 首次加载：若当前页面本身就是受支持的列表页面，直接初始化面板
+      // （但不会自动开始扫描，需等待用户点击"开始扫描"）。
+      const initialOwnerUsername = Parser.getOwnerUsernameFromCurrentUrl();
+      const initialPageType = Parser.getListPageTypeFromCurrentUrl();
+      if (initialOwnerUsername && initialPageType) {
+        await initForNewTarget(initialOwnerUsername, initialPageType);
+      }
       watchUrlChanges();
     } catch (error) {
       Logger.error('脚本初始化过程中发生未捕获异常', error);
