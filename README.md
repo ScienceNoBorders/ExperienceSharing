@@ -5,8 +5,10 @@
 From today on, I will record the experience, learning and pit I have gone through in my career as a programmer, so that I can grow. It is my honor to help you.
 When getting an answer becomes easy, a good question becomes all the more precious.
 
+
 <p align="center">
-<a href="https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/VPS/image/wechat.png"><img src="https://img.shields.io/static/v1?label=WeChat&message=nuoxiyue2224&color=violet&logo=wechat">
+<a href="https://x.com/nathan_9795"><img src="https://img.shields.io/static/v1?label=Twitter&message=nathan_9795&color=blue&logo=x">
+<a href="https://t.me/nathan_9795"><img src="https://img.shields.io/static/v1?label=Telegram&message=nathan_9795&color=blue&logo=telegram">
 </p>
 
 <p align="center">
