@@ -7,7 +7,7 @@ When getting an answer becomes easy, a good question becomes all the more precio
 
 
 <p align="center">
-<a href="https://x.com/nathan_9795"><img src="https://img.shields.io/static/v1?label=Twitter&message=nathan_9795&color=blue&logo=x">
+<a href="https://x.com/xinzhizhu9795"><img src="https://img.shields.io/static/v1?label=Twitter&message=xinzhizhu9795&color=blue&logo=x">
 <a href="https://t.me/nathan_9795"><img src="https://img.shields.io/static/v1?label=Telegram&message=nathan_9795&color=blue&logo=telegram">
 </p>
 

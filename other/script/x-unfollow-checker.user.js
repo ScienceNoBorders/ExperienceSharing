@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         X互关检测助手 (X followers Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user
-// @version      2.3.0
-// @description  自动滚动你在 X (Twitter) 上的关注列表，滚动过程中实时检测每个用户是否回关了你，并在页面右侧固定面板中展示"未互关"名单。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
-// @author       traderNathan(@nathan_9795)
+// @version      2.6.1
+// @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，每人间隔约1~2秒模拟真实点击执行，进度会缓存到后台可断点续传。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
+// @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @grant        GM_setValue
@@ -66,7 +66,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '2.3.0';
+  const SCRIPT_VERSION = '2.6.1';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -118,12 +118,35 @@
     PROBE_MAX_WAIT_MS: 9000,
     PROBE_HARD_TIMEOUT_MS: 12000,
 
+    // 批量取消关注相关。要求"每秒最多处理一位"，因此下限不低于 1000ms；
+    // 上限再加一点随机浮动，避免间隔过于规律而被识别为自动化脚本。
+    UNFOLLOW_INTERVAL_MIN_MS: 1000,
+    UNFOLLOW_INTERVAL_MAX_MS: 1800,
+    // 点击"取消关注"后，等待二次确认弹窗（若出现）的超时时间。
+    UNFOLLOW_CONFIRM_WAIT_MS: 4000,
+    // 点击确认后，等待按钮状态变化以核实是否真的取消关注成功的超时时间。
+    UNFOLLOW_VERIFY_WAIT_MS: 5000,
+    // 取消关注某个用户时，若其卡片当前不在 DOM 中（多数情况下如此——
+    // 扫描完成后页面通常停在底部，早先见过的用户卡片已被虚拟列表回收），
+    // 需要重新滚动页面去定位该用户；以下控制这次"定位滚动"的节奏与
+    // 安全上限（避免因用户已不在列表中而无限滚动下去）。
+    UNFOLLOW_SEARCH_SCROLL_WAIT_MIN_MS: 700,
+    UNFOLLOW_SEARCH_SCROLL_WAIT_MAX_MS: 1300,
+    UNFOLLOW_SEARCH_MAX_ROUNDS: 80,
+
     // 面板相关。
     PANEL_WIDTH_PX: 340,
     PANEL_DEFAULT_TOP_PX: 70,
     PANEL_EDGE_MARGIN_PX: 16,
     PANEL_MIN_VISIBLE_PX: 60, // 拖拽时至少保留在视口内的可见像素，防止被拖出屏幕。
     DRAG_THRESHOLD_PX: 4, // 超过该移动距离才视为"拖拽"而非"点击"。
+
+    // 行内悬浮资料卡（HoverCard）相关：鼠标悬停在某一行上一小段时间后
+    // 才弹出（避免快速划过时频繁闪烁），移出后也留一小段"宽限期"再关闭
+    // （让用户可以把鼠标移进卡片本身点击里面的按钮）。
+    HOVER_CARD_WIDTH_PX: 280,
+    HOVER_CARD_SHOW_DELAY_MS: 350,
+    HOVER_CARD_HIDE_DELAY_MS: 200,
 
     // 导出文件时释放 Blob URL 的延迟（毫秒）。
     BLOB_REVOKE_DELAY_MS: 4000,
@@ -436,6 +459,34 @@
     clampNumber(value, min, max) {
       return Math.min(Math.max(value, min), max);
     },
+
+    /**
+     * 模拟一次真实的用户点击：依次派发 pointerdown / mousedown / pointerup /
+     * mouseup / click 事件序列，而不是只调用 element.click()，以尽量兼容
+     * 对事件时序有要求的前端框架。事件会使用目标元素自身所在文档的
+     * window（this.ownerDocument.defaultView）来构造，因此在隐藏 iframe
+     * 内的元素上调用也能正确工作。
+     * @param {Element} element 要点击的目标元素。
+     */
+    simulateClick(element) {
+      if (!element) return;
+      const view = (element.ownerDocument && element.ownerDocument.defaultView) || window;
+      const eventInit = { bubbles: true, cancelable: true, composed: true, view };
+      const dispatch = (eventType, isPointerEvent) => {
+        try {
+          const EventCtor = isPointerEvent && view.PointerEvent ? view.PointerEvent : view.MouseEvent;
+          element.dispatchEvent(new EventCtor(eventType, eventInit));
+        } catch (error) {
+          // 部分环境可能不支持 PointerEvent 或事件被拦截，忽略即可，
+          // 后续的 click 事件通常已经足以触发对应的处理函数。
+        }
+      };
+      dispatch('pointerdown', true);
+      dispatch('mousedown', false);
+      dispatch('pointerup', true);
+      dispatch('mouseup', false);
+      dispatch('click', false);
+    },
   };
 
   /* ==========================================================================
@@ -608,11 +659,26 @@
       this._writeJson('meta', meta);
     }
 
-    /** 清空当前所有者名下的全部缓存数据（关注列表、扫描结果、元信息）。 */
+    /**
+     * 获取尚未处理完的"待取消关注"队列（用户名数组）。这份队列在批量
+     * 取消关注过程中每处理完一人就会更新一次，因此刷新页面 / 重新打开
+     * 后仍能从断点继续，实现"缓存到后台慢慢取消"的效果。
+     */
+    getPendingUnfollowQueue() {
+      return this._readJson('pending_unfollow_queue', []);
+    }
+
+    /** 保存"待取消关注"队列。 */
+    savePendingUnfollowQueue(usernames) {
+      this._writeJson('pending_unfollow_queue', usernames);
+    }
+
+    /** 清空当前所有者名下的全部缓存数据（关注列表、扫描结果、元信息、待取消关注队列）。 */
     clearAll() {
       this._writeJson('following_list', []);
       this._writeJson('scan_results', {});
       this._writeJson('meta', { startedAt: null, updatedAt: null, scannedCount: 0, totalCount: 0, elapsedMs: 0 });
+      this._writeJson('pending_unfollow_queue', []);
     }
   }
 
@@ -675,6 +741,76 @@
         }
       }
       return null;
+    }
+
+    /**
+     * 从单个用户卡片中提取一份"资料摘要"（用户名、头像、昵称、认证徽章、
+     * 简介），供面板的悬浮资料卡使用，效果类似 X 原生头像悬浮卡
+     * （HoverCard），但数据来源是列表卡片本身、在扫描过程中顺手采集，
+     * 不需要额外触发悬浮交互或访问对方主页，因此没有额外的网络等待。
+     *
+     * 注意：这里的头像/昵称/简介提取采用的是通用 DOM 启发式规则（找卡片
+     * 内第一个 <img> 作为头像、卡片内第一个"像昵称"的短文本 span 作为
+     * 昵称、卡片内最长的一段 dir="auto" 文本作为简介），而不是依赖某个
+     * 具体的 data-testid——因为目前还没有拿到"普通列表卡片"完整 DOM
+     * 结构的截图来核实精确选择器。如果实际展示效果不理想（例如误把
+     * 某段其它文字当成了简介/昵称），把某一张卡片在 DevTools 里完整
+     * 展开的截图发过来，可以据此把选择器改得更精确。
+     * @param {Element} cellElement 用户卡片元素。
+     * @returns {{username:string|null, avatarUrl:string|null, displayName:string, isVerified:boolean, bio:string}} 资料摘要。
+     */
+    static extractProfileSummaryFromCell(cellElement) {
+      const avatarImg = cellElement.querySelector('img[src]');
+      const avatarUrl = avatarImg ? avatarImg.getAttribute('src') : null;
+
+      const verifiedBadge = cellElement.querySelector(
+        'svg[aria-label*="Verified" i], svg[aria-label*="验证"], [aria-label*="Verified account" i]'
+      );
+      const isVerified = Boolean(verifiedBadge);
+
+      const owner = Parser.getOwnerUsernameFromCurrentUrl();
+      let usernameAnchor = null;
+      let username = null;
+      const anchors = cellElement.querySelectorAll('a[role="link"][href^="/"]');
+      for (const anchor of anchors) {
+        const candidate = Utils.extractUsernameFromHref(anchor.getAttribute('href') || '');
+        if (candidate && (!owner || candidate.toLowerCase() !== owner.toLowerCase())) {
+          usernameAnchor = anchor;
+          username = candidate;
+          break;
+        }
+      }
+
+      // 显示昵称：在整张卡片范围内（而不是只局限在用户名锚点内部——
+      // 昵称和 @handle 在实际 DOM 里未必是同一个祖先节点）按文档顺序
+      // 查找第一个"像昵称"的短文本：不是 @handle 本身、长度适中（避免
+      // 误抓成大段简介）。找不到时才用用户名本身兜底。
+      let displayName = username || '';
+      const atHandle = username ? `@${username}` : null;
+      const allSpans = cellElement.querySelectorAll('span');
+      for (const span of allSpans) {
+        const text = (span.textContent || '').trim();
+        if (!text) continue;
+        if (text.startsWith('@')) continue;
+        if (atHandle && text === atHandle) continue;
+        if (text.length > 50) continue; // 太长大概率是简介而不是昵称。
+        displayName = text;
+        break;
+      }
+
+      let bio = '';
+      let longestLength = 0;
+      const bioCandidates = cellElement.querySelectorAll('div[dir="auto"], span[dir="auto"]');
+      bioCandidates.forEach((node) => {
+        if (usernameAnchor && usernameAnchor.contains(node)) return; // 排除昵称/用户名区域本身。
+        const text = (node.textContent || '').trim();
+        if (text.length >= 8 && text.length > longestLength) {
+          longestLength = text.length;
+          bio = text;
+        }
+      });
+
+      return { username, avatarUrl, displayName, isVerified, bio };
     }
 
     /**
@@ -769,6 +905,111 @@
       }
       return { status: SCAN_STATUS.FAILED, reason: 'timeout' };
     }
+
+    /**
+     * 在给定容器（用户卡片或整个文档）内查找"取消关注"按钮，即
+     * data-testid 以 "-unfollow" 结尾的按钮节点。
+     * @param {Element|Document} container 查找范围。
+     * @returns {Element|null} 找到的按钮，未找到则为 null。
+     */
+    static findUnfollowButton(container) {
+      return container.querySelector('[data-testid$="-unfollow"]');
+    }
+
+    /**
+     * 判断一个 follow/unfollow 按钮当前是否已经变为"未关注（可回关）"状态，
+     * 用于核实一次取消关注操作是否真正生效。注意 "-unfollow" 本身也以
+     * "follow" 结尾，因此必须排除它，只认严格的 "-follow" 后缀。
+     * @param {Element} button 按钮元素。
+     * @returns {boolean} 是否为"回关/关注"按钮（即已不再关注对方）。
+     */
+    static isFollowButton(button) {
+      const testId = (button && button.getAttribute('data-testid')) || '';
+      return testId.endsWith('-follow') && !testId.endsWith('-unfollow');
+    }
+
+    /**
+     * 在弹出的二次确认对话框中查找"确认取消关注"按钮。
+     *
+     * 经实际 DOM 结构核实（用户提供的 DevTools 截图）：
+     *   - 弹窗容器：data-testid="confirmationSheetDialog"
+     *   - 确认按钮：data-testid="confirmationSheetConfirm"（标题为
+     *     "取消关注 @xxx?" 的 <h1 role="heading"> 也在这个容器内）
+     *   - 取消按钮：data-testid="confirmationSheetCancel"
+     * 因此优先精确锁定到弹窗容器范围内查找确认按钮，既保证唯一命中
+     * （不会误触发页面上其它位置可能存在的同名按钮），又在容器一时
+     * 找不到时自动退化为全文档查找同一个 testid。若未来 X 改版导致这个
+     * testid 也失效，再兜底为"在任意看起来像对话框的容器内，按钮文案
+     * 精确匹配'Unfollow'或包含'取消关注'"。
+     * @param {Document} doc 目标文档对象。
+     * @returns {Element|null} 找到的确认按钮，未找到则为 null。
+     */
+    static findUnfollowConfirmButton(doc) {
+      const dialog = doc.querySelector('[data-testid="confirmationSheetDialog"]');
+      const scopedButton = dialog && dialog.querySelector('[data-testid="confirmationSheetConfirm"]');
+      if (scopedButton) return scopedButton;
+
+      const documentWideButton = doc.querySelector('[data-testid="confirmationSheetConfirm"]');
+      if (documentWideButton) return documentWideButton;
+
+      const dialogSelectors = ['[role="alertdialog"]', '[role="dialog"]', '[data-testid*="sheetDialog"]'];
+      const dialogRegions = [];
+      dialogSelectors.forEach((selector) => {
+        doc.querySelectorAll(selector).forEach((region) => dialogRegions.push(region));
+      });
+
+      for (const region of dialogRegions) {
+        const candidates = region.querySelectorAll('button, div[role="button"]');
+        for (const candidate of candidates) {
+          const text = (candidate.textContent || '').trim().toLowerCase();
+          if (text === 'unfollow' || text.includes('取消关注')) {
+            return candidate;
+          }
+        }
+      }
+      return null;
+    }
+
+    /**
+     * 点击一个"取消关注"按钮，并完整处理 X 常见的二次确认弹窗，最后核实
+     * 按钮状态是否已经从"取消关注"变为"关注/回关"，以此判断操作是否
+     * 真正成功。全程通过 Utils.simulateClick 模拟真实的用户点击事件序列，
+     * 并输出详细的诊断日志，便于在浏览器控制台定位具体在哪一步失败。
+     * @param {Element} button 取消关注按钮元素。
+     * @returns {Promise<boolean>} 是否确认取消关注成功。
+     */
+    static async clickUnfollowButtonAndVerify(button) {
+      const ownerDoc = button.ownerDocument || document;
+      const usernameHint = button.getAttribute('aria-label') || button.getAttribute('data-testid') || '';
+      Logger.debug(`点击取消关注按钮: ${usernameHint}`);
+      Utils.simulateClick(button);
+
+      // X 对取消关注这类破坏性操作通常会弹出二次确认框，等待其出现
+      // 并点击确认；如果这次操作没有弹出确认框（不同入口/版本可能不同），
+      // 也不视为错误，继续往下核实结果即可。
+      const confirmButton = await Utils.waitFor(
+        () => Parser.findUnfollowConfirmButton(ownerDoc),
+        { timeout: CONFIG.UNFOLLOW_CONFIRM_WAIT_MS, interval: 150 }
+      );
+      if (confirmButton) {
+        Logger.debug('检测到二次确认弹窗，点击确认');
+        Utils.simulateClick(confirmButton);
+      } else {
+        Logger.debug('未检测到二次确认弹窗（可能本来就不需要），直接核实结果');
+      }
+
+      const succeeded = await Utils.waitFor(() => {
+        // 若按钮元素已经不在文档中（例如该行被移除/替换），视为已成功。
+        if (!ownerDoc.contains(button)) return true;
+        return Parser.isFollowButton(button);
+      }, { timeout: CONFIG.UNFOLLOW_VERIFY_WAIT_MS, interval: 200 });
+
+      if (!succeeded) {
+        Logger.warn(`核实取消关注结果超时，按钮当前 data-testid: ${button.getAttribute('data-testid')}`);
+      }
+
+      return Boolean(succeeded);
+    }
   }
 
   /* ==========================================================================
@@ -822,7 +1063,6 @@
     resume() {
       if (!this.isPaused) return;
       this.isPaused = false;
-      Logger.info('扫描已继续');
       this._pump();
     }
 
@@ -911,11 +1151,15 @@
     }
 
     /**
-     * 探测指定用户名是否回关了当前登录账号。
-     * @param {string} username 待探测的用户名。
-     * @returns {Promise<{status:string, reason:string}>} 探测结果。
+     * 创建一个指向目标用户主页的隐藏 iframe，并返回一个会在收到对应
+     * postMessage 结果（或超时）后 resolve 的 Promise。probeUser 与
+     * requestUnfollow 共用这套基础设施，仅在 URL 上附加不同的动作参数、
+     * 在等待的消息 type 上加以区分。
+     * @param {string} username 目标用户名。
+     * @param {string} actionParam 附加在 URL 上的动作标记，如 'ufs_probe' 或 'ufs_unfollow'。
+     * @returns {Promise<object>} 对应动作的结果对象。
      */
-    probeUser(username) {
+    _openHiddenIframeAndWait(username, actionParam) {
       return new Promise((resolve) => {
         const token = Utils.generateId();
         const iframe = document.createElement('iframe');
@@ -932,10 +1176,10 @@
 
         const targetUrl =
           `${location.origin}/${encodeURIComponent(username)}` +
-          `?ufs_probe=1&ufs_token=${token}`;
+          `?${actionParam}=1&ufs_token=${token}`;
 
         const timeoutId = setTimeout(() => {
-          this._finish(token, { status: SCAN_STATUS.FAILED, reason: 'hard_timeout' });
+          this._finish(token, { status: SCAN_STATUS.FAILED, reason: 'hard_timeout', success: false });
         }, CONFIG.PROBE_HARD_TIMEOUT_MS);
 
         this.pending.set(token, { resolve, iframe, timeoutId });
@@ -945,19 +1189,39 @@
     }
 
     /**
+     * 探测指定用户名是否回关了当前登录账号。
+     * @param {string} username 待探测的用户名。
+     * @returns {Promise<{status:string, reason:string}>} 探测结果。
+     */
+    probeUser(username) {
+      return this._openHiddenIframeAndWait(username, 'ufs_probe');
+    }
+
+    /**
+     * 通过隐藏 iframe 访问对方主页并执行取消关注操作（兜底方案，仅在该
+     * 用户的卡片不在当前关注列表页面 DOM 中时使用）。
+     * @param {string} username 待取消关注的用户名。
+     * @returns {Promise<{success:boolean, reason:string}>} 操作结果。
+     */
+    requestUnfollow(username) {
+      return this._openHiddenIframeAndWait(username, 'ufs_unfollow');
+    }
+
+    /**
      * 监听来自子 iframe 的 postMessage 消息，匹配 token 后完成对应的 Promise。
      * @param {MessageEvent} event 消息事件对象。
      */
     _onMessage(event) {
       const data = event.data;
-      if (!data || data.__ufs !== true || data.type !== 'PROBE_RESULT') return;
+      if (!data || data.__ufs !== true) return;
+      if (data.type !== 'PROBE_RESULT' && data.type !== 'UNFOLLOW_RESULT') return;
       this._finish(data.token, data.result);
     }
 
     /**
      * 结束一次探测：清理定时器、移除 iframe、resolve 对应的 Promise。
      * @param {string} token 探测请求标识。
-     * @param {{status:string, reason:string}} result 探测结果。
+     * @param {object} result 探测或取消关注的结果对象。
      */
     _finish(token, result) {
       const entry = this.pending.get(token);
@@ -974,25 +1238,65 @@
   }
 
   /**
-   * 探测响应端逻辑：当脚本被加载在一个带有 ufs_probe 标记参数的隐藏
-   * iframe 中时，负责等待目标主页渲染完成、判断回关状态，并将结果通过
-   * postMessage 回传给父页面。若当前不处于探测场景，直接返回 false。
-   * @returns {Promise<boolean>} 是否处理了本次探测请求。
+   * 在隐藏 iframe 内执行"点击取消关注并核实结果"的完整流程：等待取消
+   * 关注按钮出现（若页面本身就不存在/已被封禁/账号已经不再关注，也能
+   * 明确识别），点击、处理二次确认弹窗、核实按钮状态是否已经翻转。
+   * @returns {Promise<{success:boolean, reason:string}>} 操作结果。
+   */
+  async function performUnfollowInCurrentDocument() {
+    if (Parser.isAccountSuspended(document)) {
+      return { success: false, reason: 'suspended' };
+    }
+    if (Parser.isProfileNotFound(document)) {
+      return { success: false, reason: 'not_found' };
+    }
+    const button = await Utils.waitFor(
+      () => Parser.findUnfollowButton(document),
+      { timeout: CONFIG.PROBE_MAX_WAIT_MS, interval: CONFIG.PROBE_POLL_INTERVAL_MS }
+    );
+    if (!button) {
+      // 找不到"取消关注"按钮：可能本来就已经没有关注对方了，视为已完成。
+      return { success: true, reason: 'already_not_following' };
+    }
+    const succeeded = await Parser.clickUnfollowButtonAndVerify(button);
+    return { success: succeeded, reason: succeeded ? 'ok' : 'verify_timeout' };
+  }
+
+  /**
+   * 探测/取消关注的响应端逻辑：当脚本被加载在一个带有 ufs_probe 或
+   * ufs_unfollow 标记参数的隐藏 iframe 中时，分别执行对应的检测或点击
+   * 操作，并将结果通过 postMessage 回传给父页面。若当前不处于这两种
+   * 场景之一，直接返回 false。
+   * @returns {Promise<boolean>} 是否处理了本次请求。
    */
   async function respondToProbeIfNeeded() {
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get('ufs_probe') !== '1') return false;
     if (window.self === window.top) return false; // 仅在被嵌入的 iframe 中响应。
-
+    const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get('ufs_token') || '';
-    Logger.debug(`探测响应模式启动: ${location.pathname}`);
-    const result = await Parser.waitAndDetectFollowState(document);
-    try {
-      window.parent.postMessage({ __ufs: true, type: 'PROBE_RESULT', token, result }, '*');
-    } catch (error) {
-      Logger.error('回传探测结果失败', error);
+
+    if (searchParams.get('ufs_probe') === '1') {
+      Logger.debug(`探测响应模式启动: ${location.pathname}`);
+      const result = await Parser.waitAndDetectFollowState(document);
+      try {
+        window.parent.postMessage({ __ufs: true, type: 'PROBE_RESULT', token, result }, '*');
+      } catch (error) {
+        Logger.error('回传探测结果失败', error);
+      }
+      return true;
     }
-    return true;
+
+    if (searchParams.get('ufs_unfollow') === '1') {
+      Logger.debug(`取消关注响应模式启动: ${location.pathname}`);
+      const result = await performUnfollowInCurrentDocument();
+      try {
+        window.parent.postMessage({ __ufs: true, type: 'UNFOLLOW_RESULT', token, result }, '*');
+      } catch (error) {
+        Logger.error('回传取消关注结果失败', error);
+      }
+      return true;
+    }
+
+    return false;
   }
 
   /* ==========================================================================
@@ -1010,8 +1314,9 @@
       this.pageType = deps.pageType || 'following';
       this.storage = deps.storage;
       this.panel = deps.panel;
-      // Prober 现在只用于"重新扫描单个用户"时、且该用户的卡片已经不在
-      // 当前 DOM 中（被虚拟列表回收）的兜底场景，不再用于批量扫描。
+      // Prober 用于两类"兜底"场景：1）重新扫描单个用户但其卡片已不在
+      // 当前 DOM 中；2）批量取消关注时目标用户的卡片已不在当前 DOM 中。
+      // 两者都不参与批量扫描本身（扫描现在是边滚动边读取列表 DOM）。
       this.prober = new Prober();
       // 手动重扫队列：并发受限（2~3），避免用户连续点击多个"重新扫描"
       // 按钮时一次性打开过多隐藏 iframe。
@@ -1030,12 +1335,21 @@
       // 扫描代次：每次调用 scrollAndDetect() 都会递增，正在运行的旧一轮
       // 循环会在检测到代次变化后自然退出，用于安全地"重新开始"扫描。
       this._scanGeneration = 0;
+
+      // ---- 批量取消关注相关状态 ----
+      /** 待处理的取消关注队列（用户名数组），会持久化到 Storage。 */
+      this.unfollowQueue = [];
+      /** 是否正在处理取消关注队列。 */
+      this.isUnfollowing = false;
+      /** 取消关注代次：递增后，正在运行的旧一轮处理循环会自然停止。 */
+      this._unfollowGeneration = 0;
     }
 
-    /** 从缓存中加载既有的关注列表与扫描结果到内存。 */
+    /** 从缓存中加载既有的关注列表、扫描结果、待取消关注队列到内存。 */
     loadFromCache() {
       this.followingList = this.storage.getFollowingList();
       this.scanResults = this.storage.getScanResults();
+      this.unfollowQueue = this.storage.getPendingUnfollowQueue();
     }
 
     /**
@@ -1091,18 +1405,36 @@
           collectedUsernames.add(username);
 
           const existingEntry = this.scanResults[username];
-          // 已经确认"已回关"的结果非常可靠（标识节点是明确的正向证据），
-          // 无需重复判断；但"未回关"的结果允许在后续轮次中重新核对——
-          // 如果该用户的卡片因为渲染时机较晚、这一轮才刚显示出回关标识，
-          // 就把结果从"未回关"升级为"已回关"，避免因首次读取过早而误判。
-          if (existingEntry && existingEntry.status === SCAN_STATUS.MUTUAL) continue;
+          const alreadyConfirmedMutual = Boolean(existingEntry && existingEntry.status === SCAN_STATUS.MUTUAL);
+          const needsProfileCapture = !existingEntry || !existingEntry.profile;
 
+          // 已经确认"已回关"的结果非常可靠（标识节点是明确的正向证据），
+          // 无需重复判断回关状态；但如果这份缓存还没有采集过资料摘要
+          // （例如来自升级前的旧版本缓存），这里顺手补采一次头像/昵称/
+          // 简介，供悬浮资料卡使用，然后就可以跳过了。
+          if (alreadyConfirmedMutual) {
+            if (needsProfileCapture) {
+              this.scanResults[username] = {
+                ...existingEntry,
+                profile: Parser.extractProfileSummaryFromCell(cell),
+              };
+            }
+            continue;
+          }
+
+          // "未回关"的结果允许在后续轮次中重新核对——如果该用户的卡片
+          // 因为渲染时机较晚、这一轮才刚显示出回关标识，就把结果从
+          // "未回关"升级为"已回关"，避免因首次读取过早而误判。
           const hasFollowBackBadge = Parser.cellHasFollowBackBadge(cell);
+          const profile = needsProfileCapture
+            ? Parser.extractProfileSummaryFromCell(cell)
+            : existingEntry.profile;
           this.scanResults[username] = {
             status: hasFollowBackBadge ? SCAN_STATUS.MUTUAL : SCAN_STATUS.NOT_BACK,
             reason: hasFollowBackBadge ? 'list_badge' : 'list_no_badge',
             checkedAt: Utils.nowTimestamp(),
             retries: 0,
+            profile,
           };
         }
 
@@ -1193,7 +1525,6 @@
      * @returns {Promise<void>}
      */
     async rescanUser(username) {
-      Logger.info(`重新扫描 @${username}`);
 
       const cell = this._findCellForUsername(username);
       if (cell) {
@@ -1203,6 +1534,7 @@
           reason: hasFollowBackBadge ? 'list_badge_rescan' : 'list_no_badge_rescan',
           checkedAt: Utils.nowTimestamp(),
           retries: 0,
+          profile: Parser.extractProfileSummaryFromCell(cell),
         };
         this.storage.saveScanResult(username, this.scanResults[username]);
         this.panel.renderList(this.getAllRows());
@@ -1265,6 +1597,200 @@
       return null;
     }
 
+    /**
+     * 将一批用户名加入"待取消关注"队列并持久化，若当前尚未在处理则
+     * 立即开始处理。重复加入已在队列中的用户名会被自动去重。
+     * 若扫描正在进行中，会先自动暂停扫描（避免两者同时操作/滚动页面
+     * 造成冲突），用户可以在取消关注完成后手动点击"继续"恢复扫描。
+     * @param {Array<string>} usernames 待取消关注的用户名数组。
+     */
+    enqueueUnfollow(usernames) {
+      if (!usernames || usernames.length === 0) return;
+      if (this.isScanning && !this.isPaused) {
+        this.pause();
+        Logger.warn('检测到扫描仍在进行，已自动暂停以避免与取消关注操作冲突');
+      }
+      const merged = Utils.uniqueArray([...this.unfollowQueue, ...usernames]);
+      this.unfollowQueue = merged;
+      this.storage.savePendingUnfollowQueue(this.unfollowQueue);
+      this.panel.setUnfollowProgress(this.unfollowQueue.length, null);
+      if (!this.isUnfollowing) {
+        this._processUnfollowQueue().catch((error) => Logger.error('批量取消关注流程异常', error));
+      }
+    }
+
+    /**
+     * 停止处理待取消关注队列。已经执行完成的取消关注不会被撤销，只是
+     * 不再继续处理队列中剩余的用户名（剩余部分会被清空，不再持久化）。
+     */
+    stopUnfollowQueue() {
+      this._unfollowGeneration += 1; // 让正在运行的处理循环在下一次检查时自然退出。
+      this.isUnfollowing = false;
+      this.unfollowQueue = [];
+      this.storage.savePendingUnfollowQueue([]);
+      this.panel.hideUnfollowProgress();
+      Logger.warn('已停止剩余的取消关注任务');
+    }
+
+    /**
+     * 后台处理"待取消关注"队列的核心循环：每处理完一人就立刻把剩余队列
+     * 写回缓存（实现"缓存到后台、断点续传"），处理间隔遵循
+     * UNFOLLOW_INTERVAL_MIN_MS ~ UNFOLLOW_INTERVAL_MAX_MS 的随机等待，
+     * 确保"每秒最多处理一位"且不完全规律。
+     * @returns {Promise<void>}
+     */
+    async _processUnfollowQueue() {
+      if (this.isUnfollowing) return;
+      this.isUnfollowing = true;
+      const myGeneration = ++this._unfollowGeneration;
+
+      while (this.unfollowQueue.length > 0 && myGeneration === this._unfollowGeneration) {
+        const username = this.unfollowQueue[0];
+        this.panel.setUnfollowProgress(this.unfollowQueue.length, username);
+
+        const success = await this._performUnfollow(username, myGeneration);
+        if (myGeneration !== this._unfollowGeneration) break; // 中途被停止。
+
+        // 无论成功与否都从队列中移除，避免对一个持续失败的用户反复重试
+        // 占用整个队列；失败的会在日志中明确提示，用户可以自行重新选择。
+        this.unfollowQueue.shift();
+        this.storage.savePendingUnfollowQueue(this.unfollowQueue);
+
+        if (success) {
+          delete this.scanResults[username];
+          this.followingList = this.followingList.filter((name) => name !== username);
+          this.storage.saveFollowingList(this.followingList);
+          this.storage.saveScanResults(this.scanResults);
+          this.panel.renderList(this.getAllRows());
+          Logger.success(`已取消关注 @${username}`);
+        } else {
+          Logger.warn(`取消关注失败，已跳过 @${username}`);
+        }
+
+        if (this.unfollowQueue.length === 0 || myGeneration !== this._unfollowGeneration) break;
+        await Utils.randomDelay(CONFIG.UNFOLLOW_INTERVAL_MIN_MS, CONFIG.UNFOLLOW_INTERVAL_MAX_MS);
+      }
+
+      this.isUnfollowing = false;
+      if (myGeneration === this._unfollowGeneration) {
+        this.panel.hideUnfollowProgress();
+        Logger.success('批量取消关注已完成');
+      }
+    }
+
+    /**
+     * 执行对单个用户名的取消关注操作。核心可靠路径是"在当前这个真实
+     * 页面里点击"：
+     *   1) 先看该用户的卡片是否已经在当前 DOM 中（最快）；
+     *   2) 若不在（这是最常见的情况——扫描完成后页面通常停留在底部，
+     *      早先扫描到的用户卡片早已被虚拟列表回收），则主动滚动页面
+     *      重新定位到该用户的卡片（_scrollToFindCell）；
+     *   3) 只有当用户已经离开了这个列表页面（导航去了别处，导致这个
+     *      页面的 DOM 里已经不可能再找到目标用户）时，才退回到隐藏
+     *      iframe 访问对方主页执行取消关注的兜底方案。
+     * 全程通过模拟真实点击事件、并处理可能出现的二次确认弹窗来完成。
+     * @param {string} username 用户名。
+     * @returns {Promise<boolean>} 是否确认取消关注成功。
+     */
+    async _performUnfollow(username, expectedGeneration) {
+      const isStillOnMatchingPage =
+        Parser.getOwnerUsernameFromCurrentUrl()?.toLowerCase() === this.ownerUsername.toLowerCase() &&
+        Parser.getListPageTypeFromCurrentUrl() === this.pageType;
+
+      if (isStillOnMatchingPage) {
+        let cell = this._findCellForUsername(username);
+        if (cell) {
+          Logger.debug(`@${username} 的卡片已在当前页面中，直接点击`);
+        } else {
+          Logger.debug(`@${username} 的卡片不在当前 DOM 中，尝试滚动定位...`);
+          this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（滚动定位中...）`);
+          cell = await this._scrollToFindCell(username, expectedGeneration);
+        }
+
+        if (expectedGeneration !== this._unfollowGeneration) return false; // 中途被停止。
+
+        if (cell) {
+          const button = Parser.findUnfollowButton(cell);
+          if (button) {
+            this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（点击中...）`);
+            const success = await Parser.clickUnfollowButtonAndVerify(button);
+            if (success) return true;
+            Logger.warn(`@${username} 页面内点击未能确认成功，尝试隐藏 iframe 兜底`);
+          } else {
+            Logger.warn(`@${username} 找到了卡片，但卡片内没有"取消关注"按钮（可能已经未关注对方）`);
+          }
+        } else {
+          Logger.warn(`@${username} 滚动查找超出上限仍未找到对应卡片，尝试隐藏 iframe 兜底`);
+        }
+      } else {
+        Logger.debug(`已离开 @${this.ownerUsername} 的${LIST_PAGE_TYPE_LABELS[this.pageType] || this.pageType}页面，直接使用隐藏 iframe 兜底`);
+      }
+
+      if (expectedGeneration !== this._unfollowGeneration) return false; // 中途被停止。
+
+      this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（兜底方案处理中...）`);
+      try {
+        const result = await this.prober.requestUnfollow(username);
+        if (!result || !result.success) {
+          Logger.warn(`@${username} 隐藏 iframe 兜底也未成功，原因: ${(result && result.reason) || 'unknown'}`);
+        }
+        return Boolean(result && result.success);
+      } catch (error) {
+        Logger.error(`@${username} 兜底取消关注异常`, error);
+        return false;
+      }
+    }
+
+    /**
+     * 在当前关注列表页面中主动滚动，重新定位到指定用户名对应的卡片。
+     * 做法：先回到页面顶部，再像扫描时一样小步向下滚动，每一步都检查
+     * 该用户的卡片是否已经出现在 DOM 中；若滚动到底部且连续两轮都没有
+     * 新内容加载仍未找到，则判定该用户可能已不在列表中，放弃查找。
+     * 每一轮都会检查取消关注代次是否仍然匹配，一旦用户点击"停止"就能
+     * 及时退出，而不必等到滚动搜索的整个上限跑完。
+     * @param {string} username 目标用户名。
+     * @param {number} expectedGeneration 发起本次取消关注时的代次快照。
+     * @returns {Promise<Element|null>} 找到的卡片元素，找不到（或被中途停止）则为 null。
+     */
+    async _scrollToFindCell(username, expectedGeneration) {
+      window.scrollTo(0, 0);
+      await Utils.sleep(CONFIG.UNFOLLOW_SEARCH_SCROLL_WAIT_MIN_MS);
+
+      let lastScrollHeight = -1;
+      let stableRounds = 0;
+
+      for (let round = 0; round < CONFIG.UNFOLLOW_SEARCH_MAX_ROUNDS; round += 1) {
+        if (expectedGeneration !== this._unfollowGeneration) return null; // 中途被停止。
+
+        const cell = this._findCellForUsername(username);
+        if (cell) return cell;
+
+        const currentScrollHeight = document.documentElement.scrollHeight;
+        const atBottom = this._isPageScrolledToBottom();
+        if (currentScrollHeight === lastScrollHeight && atBottom) {
+          stableRounds += 1;
+          if (stableRounds >= 2) return null; // 已到底且没有新内容，用户大概率已不在列表中。
+        } else {
+          stableRounds = 0;
+        }
+        lastScrollHeight = currentScrollHeight;
+
+        if (!atBottom) {
+          const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+          const scrollStepPx = Math.max(
+            CONFIG.MIN_SCROLL_STEP_PX,
+            Math.floor(viewportHeight * CONFIG.SCROLL_STEP_RATIO)
+          );
+          window.scrollBy(0, scrollStepPx);
+        }
+        await Utils.randomDelay(
+          CONFIG.UNFOLLOW_SEARCH_SCROLL_WAIT_MIN_MS,
+          CONFIG.UNFOLLOW_SEARCH_SCROLL_WAIT_MAX_MS
+        );
+      }
+      return null;
+    }
+
     /** 暂停当前的滚动探测循环（不打开新的隐藏 iframe，也不再继续滚动）。 */
     pause() {
       this.isPaused = true;
@@ -1277,7 +1803,6 @@
       if (!this.isPaused) return;
       this.isPaused = false;
       this.panel.setStatus('scanning');
-      Logger.info('扫描已继续');
       if (this._resumeResolve) {
         const resolveFn = this._resumeResolve;
         this._resumeResolve = null;
@@ -1324,12 +1849,12 @@
 
     /**
      * 汇总当前所有用户名与其扫描状态，供面板渲染使用。
-     * @returns {Array<{username:string, status:string, reason:string}>}
+     * @returns {Array<{username:string, status:string, reason:string, profile:object|null}>}
      */
     getAllRows() {
       return this.followingList.map((username) => {
         const entry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
-        return { username, status: entry.status, reason: entry.reason || '' };
+        return { username, status: entry.status, reason: entry.reason || '', profile: entry.profile || null };
       });
     }
 
@@ -1364,10 +1889,16 @@
       this.sortAscending = true;
       this.activeTab = 'not_back'; // 默认聚焦展示"未回关"分类。
       this.rows = [];
+      /** 当前被勾选、待批量取消关注的用户名集合。 */
+      this.selectedUsernames = new Set();
       this._dragState = null;
       this._lastDragWasMove = false;
+      /** 悬浮资料卡的显示/隐藏延迟计时器。 */
+      this._hoverShowTimer = null;
+      this._hoverHideTimer = null;
       this._injectStyles();
       this._buildSkeleton();
+      this._buildHoverCard();
       this._bindStaticEvents();
       this._bindDragEvents();
       this._applyInitialPosition();
@@ -1454,6 +1985,22 @@
           font-size: 11px; color: #8b98a5; cursor: pointer; background: #0f1317;
         }
         #ufs-panel .ufs-tab.ufs-tab-active { background: #1d9bf0; color: #fff; }
+        #ufs-panel .ufs-batch-row {
+          display: flex; align-items: center; gap: 8px; padding: 0 12px 8px;
+          font-size: 12px; color: #8b98a5;
+        }
+        #ufs-panel .ufs-select-all-label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        #ufs-panel .ufs-select-all-label input { accent-color: #1d9bf0; cursor: pointer; }
+        #ufs-panel .ufs-selected-count { flex: 1; }
+        #ufs-panel .ufs-btn.ufs-btn-danger { background: #f4212e; color: #fff; }
+        #ufs-panel .ufs-btn.ufs-btn-danger:hover { background: #d81b25; }
+        #ufs-panel .ufs-btn.ufs-btn-danger:disabled { background: #4a2226; color: #a98488; opacity: 1; }
+        #ufs-panel .ufs-unfollow-progress {
+          display: flex; align-items: center; gap: 8px; padding: 6px 12px; margin: 0 12px 8px;
+          background: #2a1416; border: 1px solid #5a2a2e; border-radius: 8px;
+          font-size: 11px; color: #ff8a8a;
+        }
+        #ufs-panel .ufs-unfollow-progress-text { flex: 1; }
         #ufs-panel .ufs-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; min-height: 120px; }
         #ufs-panel .ufs-list::-webkit-scrollbar { width: 6px; }
         #ufs-panel .ufs-list::-webkit-scrollbar-thumb { background: #3a3f42; border-radius: 3px; }
@@ -1462,6 +2009,8 @@
           padding: 6px 8px; border-radius: 8px; margin-bottom: 4px; background: #1a1e22;
         }
         #ufs-panel .ufs-row-user { display: flex; align-items: center; gap: 6px; overflow: hidden; }
+        #ufs-panel .ufs-row-checkbox { accent-color: #f4212e; cursor: pointer; flex-shrink: 0; }
+        #ufs-panel .ufs-row-checkbox-spacer { display: inline-block; width: 13px; flex-shrink: 0; }
         #ufs-panel .ufs-row-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
         #ufs-panel .ufs-dot-mutual { background: #00ba7c; }
         #ufs-panel .ufs-dot-not_back { background: #f4212e; }
@@ -1480,6 +2029,44 @@
           padding: 8px 12px; border-top: 1px solid #2f3336; font-size: 11px; color: #8b98a5;
         }
         #ufs-panel .ufs-empty { text-align: center; color: #71767b; padding: 24px 8px; font-size: 12px; }
+
+        /* 行内悬浮资料卡：独立于 #ufs-panel，用 position:fixed 挂在 body 上，
+           这样才能不受面板自身 overflow-y 滚动裁切的影响，随意定位到
+           视口内的任意位置。 */
+        #ufs-hovercard {
+          position: fixed; width: ${CONFIG.HOVER_CARD_WIDTH_PX}px; z-index: 1000000;
+          background: #15181c; color: #e7e9ea; border-radius: 14px; border: 1px solid #38444d;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.6); padding: 14px; display: none;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        #ufs-hovercard .ufs-hc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        #ufs-hovercard .ufs-hc-avatar {
+          width: 48px; height: 48px; border-radius: 50%; background: #2f3336; object-fit: cover;
+          border: 2px solid #15181c;
+        }
+        #ufs-hovercard .ufs-hc-status {
+          font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight: 600;
+        }
+        #ufs-hovercard .ufs-hc-status.ufs-dot-mutual { background: rgba(0,186,124,0.15); color: #00ba7c; }
+        #ufs-hovercard .ufs-hc-status.ufs-dot-not_back { background: rgba(244,33,46,0.15); color: #f4212e; }
+        #ufs-hovercard .ufs-hc-status.ufs-dot-failed { background: rgba(113,118,123,0.2); color: #a7acb0; }
+        #ufs-hovercard .ufs-hc-status.ufs-dot-pending { background: rgba(255,173,31,0.15); color: #ffad1f; }
+        #ufs-hovercard .ufs-hc-name { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        #ufs-hovercard .ufs-hc-name .ufs-hc-verified { color: #1d9bf0; font-size: 13px; }
+        #ufs-hovercard .ufs-hc-username { font-size: 13px; color: #8b98a5; margin-bottom: 8px; }
+        #ufs-hovercard .ufs-hc-bio {
+          font-size: 12px; color: #d8dcdf; line-height: 1.5; margin-bottom: 10px;
+          max-height: 96px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
+        }
+        #ufs-hovercard .ufs-hc-actions { display: flex; gap: 6px; }
+        #ufs-hovercard .ufs-hc-actions button {
+          flex: 1; background: #2f3336; color: #e7e9ea; border: none; border-radius: 999px;
+          padding: 6px 4px; font-size: 12px; cursor: pointer; text-align: center;
+          display: flex; align-items: center; justify-content: center; white-space: nowrap;
+        }
+        #ufs-hovercard .ufs-hc-actions button:hover { background: #3a3f42; }
+        #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn { background: #f4212e; color: #fff; }
+        #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:hover { background: #d81b25; }
       `);
     }
 
@@ -1526,6 +2113,17 @@
             <div class="ufs-tab" data-tab="not_back" id="ufs-tab-not_back">未回关(0)</div>
             <div class="ufs-tab" data-tab="failed" id="ufs-tab-failed">失败(0)</div>
           </div>
+          <div class="ufs-batch-row">
+            <label class="ufs-select-all-label">
+              <input type="checkbox" id="ufs-select-all-checkbox" /> 全选未回关
+            </label>
+            <span class="ufs-selected-count" id="ufs-selected-count">已选 0</span>
+            <button class="ufs-btn ufs-btn-danger" id="ufs-unfollow-selected-btn" disabled>取消关注选中</button>
+          </div>
+          <div class="ufs-unfollow-progress" id="ufs-unfollow-progress" style="display:none;">
+            <div class="ufs-unfollow-progress-text" id="ufs-unfollow-progress-text"></div>
+            <button class="ufs-btn" id="ufs-unfollow-stop-btn">停止</button>
+          </div>
           <div class="ufs-list" id="ufs-list"></div>
           <div class="ufs-footer" id="ufs-footer">尚未扫描</div>
         </div>
@@ -1534,6 +2132,49 @@
       this.root = root;
       this._cacheElements();
       this._setActiveTabUi();
+    }
+
+    /**
+     * 构建行内悬浮资料卡的 DOM 结构。这个卡片独立挂载在
+     * document.documentElement 下（而不是 #ufs-panel 内部），这样才能
+     * 用 position:fixed 自由定位到视口内任意位置，不受面板自身列表区域
+     * overflow-y 滚动裁切的影响。默认隐藏，鼠标悬停到某一行上时才显示。
+     */
+    _buildHoverCard() {
+      const hoverCard = document.createElement('div');
+      hoverCard.id = 'ufs-hovercard';
+      hoverCard.innerHTML = `
+        <div class="ufs-hc-header">
+          <img class="ufs-hc-avatar" id="ufs-hc-avatar" alt="" />
+          <span class="ufs-hc-status" id="ufs-hc-status"></span>
+        </div>
+        <div class="ufs-hc-name" id="ufs-hc-name"></div>
+        <div class="ufs-hc-username" id="ufs-hc-username"></div>
+        <div class="ufs-hc-bio" id="ufs-hc-bio"></div>
+        <div class="ufs-hc-actions">
+          <button id="ufs-hc-open-btn">打开主页</button>
+          <button id="ufs-hc-copy-btn">复制</button>
+          <button id="ufs-hc-unfollow-btn" class="ufs-hc-unfollow-btn">取消关注</button>
+        </div>
+      `;
+      document.documentElement.appendChild(hoverCard);
+      this.hoverCardRoot = hoverCard;
+      this.hoverCardElements = {
+        avatar: hoverCard.querySelector('#ufs-hc-avatar'),
+        status: hoverCard.querySelector('#ufs-hc-status'),
+        name: hoverCard.querySelector('#ufs-hc-name'),
+        username: hoverCard.querySelector('#ufs-hc-username'),
+        bio: hoverCard.querySelector('#ufs-hc-bio'),
+        openBtn: hoverCard.querySelector('#ufs-hc-open-btn'),
+        copyBtn: hoverCard.querySelector('#ufs-hc-copy-btn'),
+        unfollowBtn: hoverCard.querySelector('#ufs-hc-unfollow-btn'),
+      };
+      // 鼠标移入卡片本身时取消隐藏计时，允许用户点击卡片内的按钮；
+      // 移出卡片时和移出行一样，走同样的延迟隐藏逻辑。
+      hoverCard.addEventListener('mouseenter', () => {
+        if (this._hoverHideTimer) clearTimeout(this._hoverHideTimer);
+      });
+      hoverCard.addEventListener('mouseleave', () => this._scheduleHideHoverCard());
     }
 
     /** 缓存常用 DOM 元素引用，避免重复查询。 */
@@ -1554,6 +2195,12 @@
         speedSlider: this.root.querySelector('#ufs-speed-slider'),
         speedValue: this.root.querySelector('#ufs-speed-value'),
         speedHint: this.root.querySelector('#ufs-speed-hint'),
+        selectAllCheckbox: this.root.querySelector('#ufs-select-all-checkbox'),
+        selectedCount: this.root.querySelector('#ufs-selected-count'),
+        unfollowSelectedBtn: this.root.querySelector('#ufs-unfollow-selected-btn'),
+        unfollowProgress: this.root.querySelector('#ufs-unfollow-progress'),
+        unfollowProgressText: this.root.querySelector('#ufs-unfollow-progress-text'),
+        unfollowStopBtn: this.root.querySelector('#ufs-unfollow-stop-btn'),
         list: this.root.querySelector('#ufs-list'),
         footer: this.root.querySelector('#ufs-footer'),
         tabs: {
@@ -1591,6 +2238,9 @@
       this.elements.copyAllBtn.addEventListener('click', () => this._onCopyAll());
       this.elements.sortBtn.addEventListener('click', () => this._onToggleSort());
       this.elements.speedSlider.addEventListener('input', (event) => this._onSpeedChange(event.target.value));
+      this.elements.selectAllCheckbox.addEventListener('change', (event) => this._onSelectAllChange(event.target.checked));
+      this.elements.unfollowSelectedBtn.addEventListener('click', () => this._onUnfollowSelectedClick());
+      this.elements.unfollowStopBtn.addEventListener('click', () => this._onStopUnfollowClick());
 
       const debouncedSearch = Utils.debounce((value) => {
         this.searchKeyword = value.trim().toLowerCase();
@@ -1768,6 +2418,7 @@
     /** 关闭并移除面板；同时暂停底层扫描队列。 */
     close() {
       this.root.remove();
+      if (this.hoverCardRoot) this.hoverCardRoot.remove();
       window.removeEventListener('resize', this._onWindowResize);
       if (this.scanner) this.scanner.pause();
     }
@@ -1858,7 +2509,6 @@
     _onSpeedChange(rawIndex) {
       ScrollSpeedManager.setIndex(Number(rawIndex));
       this._refreshSpeedDisplay();
-      Logger.info(`扫描速度已调整为「${ScrollSpeedManager.getCurrent().label}」`);
     }
 
     /** 根据当前速度档位刷新面板上的文案展示（档位名 + 实际等待区间）。 */
@@ -1867,6 +2517,84 @@
       this.elements.speedValue.textContent = current.label;
       this.elements.speedHint.textContent =
         `滚动间隔 ${(current.min / 1000).toFixed(1)}s ~ ${(current.max / 1000).toFixed(1)}s`;
+    }
+
+    /**
+     * 处理"全选未回关"复选框的勾选/取消勾选：批量将当前"未回关"分类下
+     * 的全部用户名加入或移出选中集合，然后重新渲染列表以同步各行的
+     * 复选框状态。
+     * @param {boolean} checked 是否勾选。
+     */
+    _onSelectAllChange(checked) {
+      const notBackUsernames = this.rows
+        .filter((row) => row.status === SCAN_STATUS.NOT_BACK)
+        .map((row) => row.username);
+      if (checked) {
+        notBackUsernames.forEach((username) => this.selectedUsernames.add(username));
+      } else {
+        notBackUsernames.forEach((username) => this.selectedUsernames.delete(username));
+      }
+      this.renderList(this.rows);
+    }
+
+    /**
+     * 处理"取消关注选中"按钮点击：二次确认后，把选中的用户名交给
+     * Scanner 加入批量取消关注队列，随后清空当前选择。
+     */
+    _onUnfollowSelectedClick() {
+      if (!this.scanner) return;
+      const usernames = Array.from(this.selectedUsernames);
+      if (usernames.length === 0) return;
+      const confirmed = window.confirm(
+        `确定要取消关注选中的 ${usernames.length} 个账号吗？\n` +
+        '将按每人约 1~2 秒的随机间隔逐个执行，可随时点击"停止"中断。\n' +
+        '此操作会实际取消关注对方，无法撤销，请谨慎确认。'
+      );
+      if (!confirmed) return;
+      this.selectedUsernames.clear();
+      this.scanner.enqueueUnfollow(usernames);
+      this.renderList(this.rows);
+    }
+
+    /** 处理"停止"按钮点击：中断尚未处理的取消关注队列。 */
+    _onStopUnfollowClick() {
+      if (!this.scanner) return;
+      this.scanner.stopUnfollowQueue();
+    }
+
+    /**
+     * 刷新批量操作工具栏：选中数量文案、"取消关注选中"按钮的可用状态、
+     * 以及"全选未回关"复选框自身的勾选状态（是否已经全选/部分选中）。
+     */
+    _refreshBatchBar() {
+      const count = this.selectedUsernames.size;
+      this.elements.selectedCount.textContent = `已选 ${count}`;
+      this.elements.unfollowSelectedBtn.disabled = count === 0;
+
+      const notBackRows = this.rows.filter((row) => row.status === SCAN_STATUS.NOT_BACK);
+      const allSelected =
+        notBackRows.length > 0 && notBackRows.every((row) => this.selectedUsernames.has(row.username));
+      this.elements.selectAllCheckbox.checked = allSelected;
+      this.elements.selectAllCheckbox.disabled = notBackRows.length === 0;
+    }
+
+    /**
+     * 展示批量取消关注的进行中状态：剩余人数与当前正在处理的用户名。
+     * 出于同样"避免虚假分数进度"的考虑（参见扫描进度的设计），这里只
+     * 展示"剩余 N 个"而不是"X / Y"，因为队列可能在处理过程中被继续追加。
+     * @param {number} remainingCount 队列中剩余（含正在处理的这一个）的人数。
+     * @param {string|null} currentUsername 当前正在处理的用户名，可能为 null。
+     */
+    setUnfollowProgress(remainingCount, currentUsername) {
+      this.elements.unfollowProgress.style.display = 'flex';
+      const currentText = currentUsername ? `当前：@${currentUsername}` : '';
+      this.elements.unfollowProgressText.textContent =
+        `正在取消关注...剩余 ${remainingCount} 个 ${currentText}`.trim();
+    }
+
+    /** 隐藏批量取消关注的进度条（处理完成或被用户停止后调用）。 */
+    hideUnfollowProgress() {
+      this.elements.unfollowProgress.style.display = 'none';
     }
 
     /**
@@ -1933,6 +2661,15 @@
     renderList(rows) {
       this.rows = rows;
 
+      // 清理"过期"的选中项：例如已经成功取消关注而从列表中消失、或者
+      // 重新扫描后状态不再是"未回关"的用户名，避免选中集合越滚越大。
+      const notBackUsernameSet = new Set(
+        rows.filter((row) => row.status === SCAN_STATUS.NOT_BACK).map((row) => row.username)
+      );
+      Array.from(this.selectedUsernames).forEach((username) => {
+        if (!notBackUsernameSet.has(username)) this.selectedUsernames.delete(username);
+      });
+
       const tabCounters = { all: rows.length, mutual: 0, not_back: 0, failed: 0 };
       rows.forEach((row) => {
         if (row.status === SCAN_STATUS.MUTUAL) tabCounters.mutual += 1;
@@ -1944,6 +2681,8 @@
       this.elements.tabs.not_back.textContent = `未回关(${tabCounters.not_back})`;
       this.elements.tabs.failed.textContent = `失败(${tabCounters.failed})`;
       this.elements.footer.textContent = `共 ${tabCounters.all} 人 · 未回关 ${tabCounters.not_back} 人`;
+
+      this._refreshBatchBar();
 
       const filteredRows = this._getFilteredSortedRows();
       this.elements.list.innerHTML = '';
@@ -1961,7 +2700,9 @@
     }
 
     /**
-     * 构建单行用户名展示元素，包含状态圆点、用户名、复制/打开/重新扫描按钮。
+     * 构建单行用户名展示元素：仅"未回关"分类的行会带一个复选框（用于
+     * 批量选择取消关注），其它分类展示等宽的占位符以保持对齐；随后是
+     * 状态圆点、用户名、复制/打开/重新扫描按钮。
      * @param {{username:string, status:string, reason:string}} row 行数据。
      * @param {object} statusLabels 状态 -> 中文标签的映射表。
      * @returns {Element} 行 DOM 元素。
@@ -1972,6 +2713,27 @@
 
       const userWrap = document.createElement('div');
       userWrap.className = 'ufs-row-user';
+
+      if (row.status === SCAN_STATUS.NOT_BACK) {
+        const checkboxEl = document.createElement('input');
+        checkboxEl.type = 'checkbox';
+        checkboxEl.className = 'ufs-row-checkbox';
+        checkboxEl.title = '勾选以加入批量取消关注';
+        checkboxEl.checked = this.selectedUsernames.has(row.username);
+        checkboxEl.addEventListener('change', (event) => {
+          if (event.target.checked) {
+            this.selectedUsernames.add(row.username);
+          } else {
+            this.selectedUsernames.delete(row.username);
+          }
+          this._refreshBatchBar();
+        });
+        userWrap.appendChild(checkboxEl);
+      } else {
+        const spacerEl = document.createElement('span');
+        spacerEl.className = 'ufs-row-checkbox-spacer';
+        userWrap.appendChild(spacerEl);
+      }
 
       const dotEl = document.createElement('span');
       dotEl.className = `ufs-row-dot ufs-dot-${row.status}`;
@@ -2020,9 +2782,136 @@
       actionsWrap.appendChild(openBtn);
       actionsWrap.appendChild(rescanBtn);
 
+      if (row.status === SCAN_STATUS.NOT_BACK) {
+        const unfollowBtn = document.createElement('button');
+        unfollowBtn.textContent = '🚫';
+        unfollowBtn.title = '取消关注该用户';
+        unfollowBtn.addEventListener('click', () => {
+          if (!this.scanner) return;
+          const confirmed = window.confirm(`确定要取消关注 @${row.username} 吗？此操作无法撤销。`);
+          if (!confirmed) return;
+          this.scanner.enqueueUnfollow([row.username]);
+        });
+        actionsWrap.appendChild(unfollowBtn);
+      }
+
       rowEl.appendChild(userWrap);
       rowEl.appendChild(actionsWrap);
+
+      rowEl.addEventListener('mouseenter', () => this._scheduleShowHoverCard(row, rowEl));
+      rowEl.addEventListener('mouseleave', () => this._scheduleHideHoverCard());
+
       return rowEl;
+    }
+
+    /**
+     * 安排在 HOVER_CARD_SHOW_DELAY_MS 之后显示悬浮资料卡（若鼠标在此期间
+     * 移开则会被 _scheduleHideHoverCard 取消，不会真正显示），避免鼠标
+     * 快速划过多行时卡片不停闪烁。
+     * @param {{username:string, status:string, reason:string, profile:object|null}} row 行数据。
+     * @param {Element} anchorElement 触发悬停的行元素，用于定位卡片位置。
+     */
+    _scheduleShowHoverCard(row, anchorElement) {
+      if (this._hoverHideTimer) clearTimeout(this._hoverHideTimer);
+      if (this._hoverShowTimer) clearTimeout(this._hoverShowTimer);
+      this._hoverShowTimer = setTimeout(() => {
+        this._showHoverCard(row, anchorElement);
+      }, CONFIG.HOVER_CARD_SHOW_DELAY_MS);
+    }
+
+    /**
+     * 安排在 HOVER_CARD_HIDE_DELAY_MS 之后隐藏悬浮资料卡。留一小段宽限期
+     * 是为了让用户可以把鼠标从行移动到卡片本身，点击卡片内的按钮
+     * （打开主页 / 复制 / 取消关注），而不会因为鼠标短暂离开而提前关闭。
+     */
+    _scheduleHideHoverCard() {
+      if (this._hoverShowTimer) clearTimeout(this._hoverShowTimer);
+      if (this._hoverHideTimer) clearTimeout(this._hoverHideTimer);
+      this._hoverHideTimer = setTimeout(() => this._hideHoverCard(), CONFIG.HOVER_CARD_HIDE_DELAY_MS);
+    }
+
+    /**
+     * 实际渲染并展示悬浮资料卡：填充头像/昵称/认证标记/回关状态/简介，
+     * 绑定"打开主页/复制/取消关注"三个快捷操作按钮，并将卡片定位到
+     * 触发行的旁边（优先显示在面板左侧，空间不足时自动切换到右侧，
+     * 垂直方向也会做视口边界钳制，避免卡片超出屏幕）。
+     * @param {{username:string, status:string, reason:string, profile:object|null}} row 行数据。
+     * @param {Element} anchorElement 触发悬停的行元素。
+     */
+    _showHoverCard(row, anchorElement) {
+      const profile = row.profile || {};
+      const elements = this.hoverCardElements;
+      const statusLabels = { mutual: '已互关', not_back: '未回关', failed: '失败', pending: '待扫描' };
+
+      if (profile.avatarUrl) {
+        elements.avatar.src = profile.avatarUrl;
+        elements.avatar.style.visibility = 'visible';
+      } else {
+        elements.avatar.removeAttribute('src');
+        elements.avatar.style.visibility = 'hidden';
+      }
+
+      elements.status.textContent = statusLabels[row.status] || row.status;
+      elements.status.className = `ufs-hc-status ufs-dot-${row.status}`;
+
+      elements.name.innerHTML = '';
+      const nameTextNode = document.createTextNode(profile.displayName || row.username);
+      elements.name.appendChild(nameTextNode);
+      if (profile.isVerified) {
+        const verifiedMark = document.createElement('span');
+        verifiedMark.className = 'ufs-hc-verified';
+        verifiedMark.textContent = '✓';
+        verifiedMark.title = '已认证账号';
+        elements.name.appendChild(verifiedMark);
+      }
+
+      elements.username.textContent = `@${row.username}`;
+      elements.bio.textContent = profile.bio || '（未采集到简介信息，可尝试"重新扫描该用户"）';
+
+      elements.openBtn.onclick = () => window.open(`${location.origin}/${row.username}`, '_blank', 'noopener');
+      elements.copyBtn.onclick = () => {
+        try {
+          GM_setClipboard(`@${row.username}`);
+          Logger.success(`已复制 @${row.username}`);
+        } catch (error) {
+          Logger.error('复制失败', error);
+        }
+      };
+      elements.unfollowBtn.style.display = row.status === SCAN_STATUS.NOT_BACK ? 'block' : 'none';
+      elements.unfollowBtn.onclick = () => {
+        if (!this.scanner) return;
+        const confirmed = window.confirm(`确定要取消关注 @${row.username} 吗？此操作无法撤销。`);
+        if (!confirmed) return;
+        this.scanner.enqueueUnfollow([row.username]);
+        this._hideHoverCard();
+      };
+
+      const rect = anchorElement.getBoundingClientRect();
+      const cardWidth = CONFIG.HOVER_CARD_WIDTH_PX;
+      let left = rect.left - cardWidth - 12; // 默认显示在触发行的左侧。
+      if (left < 8) left = rect.right + 12; // 左侧放不下则改到右侧。
+      left = Utils.clampNumber(left, 8, window.innerWidth - cardWidth - 8);
+
+      this.hoverCardRoot.style.left = `${left}px`;
+      this.hoverCardRoot.style.top = `${rect.top}px`;
+      this.hoverCardRoot.style.display = 'block';
+
+      // 卡片实际高度要渲染出来才知道，下一帧再根据真实高度做垂直方向的
+      // 视口边界钳制，避免卡片下半部分超出屏幕看不到。
+      requestAnimationFrame(() => {
+        const cardRect = this.hoverCardRoot.getBoundingClientRect();
+        let top = rect.top;
+        if (top + cardRect.height > window.innerHeight - 8) {
+          top = window.innerHeight - cardRect.height - 8;
+        }
+        if (top < 8) top = 8;
+        this.hoverCardRoot.style.top = `${top}px`;
+      });
+    }
+
+    /** 隐藏悬浮资料卡。 */
+    _hideHoverCard() {
+      if (this.hoverCardRoot) this.hoverCardRoot.style.display = 'none';
     }
   }
 
@@ -2035,7 +2924,6 @@
 
   (async function main() {
     try {
-      Logger.info(`脚本已加载 v${SCRIPT_VERSION}`);
 
       // 若当前处于"隐藏 iframe 探测响应"场景，处理完毕后直接结束，
       // 不再执行下面的面板/扫描初始化逻辑，避免在探测 iframe 内产生
@@ -2075,7 +2963,6 @@
         pausedByNavigation = false;
 
         const pageTypeLabel = LIST_PAGE_TYPE_LABELS[pageType] || pageType;
-        Logger.info(`检测到列表页面（${pageTypeLabel}），所有者: @${ownerUsername}`);
 
         if (currentPanel) {
           try {
@@ -2096,6 +2983,13 @@
 
         currentPanel = panel;
         currentScanner = scanner;
+
+        // 若上次还有未处理完的批量取消关注任务（例如页面被刷新/关闭中断），
+        // 自动恢复继续处理，并立即在面板上展示剩余进度。
+        if (scanner.unfollowQueue.length > 0) {
+          panel.setUnfollowProgress(scanner.unfollowQueue.length, null);
+          scanner._processUnfollowQueue().catch((error) => Logger.error('恢复取消关注流程异常', error));
+        }
       }
 
       /**
@@ -2139,7 +3033,6 @@
           if (pausedByNavigation && currentScanner && currentScanner.isPaused) {
             currentScanner.resume();
             pausedByNavigation = false;
-            Logger.info('已重新进入列表页面，扫描已自动恢复');
           }
           return;
         }
