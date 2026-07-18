@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X 用户检测助手 (X Unfollowers Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
-// @version      3.0.0
+// @version      3.0.1
 // @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
@@ -69,7 +69,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '3.0.0';
+  const SCRIPT_VERSION = '3.0.1';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -232,27 +232,27 @@
 
     /** 输出普通信息日志（蓝色）。 */
     info(message, ...args) {
-      console.log(`%c[UFS] ${message}`, this._style('#1d9bf0'), ...args);
+      // console.log(`%c[UFS] ${message}`, this._style('#1d9bf0'), ...args);
     },
 
     /** 输出成功日志（绿色）。 */
     success(message, ...args) {
-      console.log(`%c[UFS] ${message}`, this._style('#00ba7c'), ...args);
+      // console.log(`%c[UFS] ${message}`, this._style('#00ba7c'), ...args);
     },
 
     /** 输出警告日志（橙色）。 */
     warn(message, ...args) {
-      console.warn(`%c[UFS] ${message}`, this._style('#ffad1f'), ...args);
+      // console.warn(`%c[UFS] ${message}`, this._style('#ffad1f'), ...args);
     },
 
     /** 输出错误日志（红色）。 */
     error(message, ...args) {
-      console.error(`%c[UFS] ${message}`, this._style('#f4212e'), ...args);
+      // console.error(`%c[UFS] ${message}`, this._style('#f4212e'), ...args);
     },
 
     /** 输出调试日志（灰色），用于低优先级的过程信息。 */
     debug(message, ...args) {
-      console.debug(`%c[UFS] ${message}`, this._style('#8b98a5'), ...args);
+      // console.debug(`%c[UFS] ${message}`, this._style('#8b98a5'), ...args);
     },
   };
 
@@ -2308,6 +2308,20 @@
     }
 
     /**
+     * 在探测窗已由用户手势打开的前提下，继续处理内存/缓存中的发帖日期队列。
+     * 用于刷新后断点续传，或「目标列表为空但队列仍有剩余」时只恢复处理。
+     * @returns {boolean} 是否成功启动（队列非空且当前未在跑时返回 true）。
+     */
+    resumePostDateCollection() {
+      if (!this.postDateQueue || this.postDateQueue.length === 0) return false;
+      this.panel.setPostDateProgress(this.postDateQueue.length, null);
+      if (!this.isCollectingPostDates) {
+        this._processPostDateQueue().catch((error) => Logger.error('批量获取发帖日期流程异常', error));
+      }
+      return true;
+    }
+
+    /**
      * 后台处理"待获取发帖日期"队列：用可复用的同源探测弹窗逐个打开对方主页，
      * 读取最新一条推文的 <time datetime>。每处理完一人就写入 scanResults 并
      * 持久化剩余队列（断点续传）。X 禁止 iframe 嵌主页，故不能用隐藏 iframe。
@@ -2319,58 +2333,63 @@
       const myGeneration = ++this._postDateGeneration;
       let consecutivePopupBlocks = 0;
 
-      while (this.postDateQueue.length > 0 && myGeneration === this._postDateGeneration) {
-        const username = this.postDateQueue[0];
-        this.panel.setPostDateProgress(this.postDateQueue.length, username);
+      try {
+        while (this.postDateQueue.length > 0 && myGeneration === this._postDateGeneration) {
+          const username = this.postDateQueue[0];
+          this.panel.setPostDateProgress(this.postDateQueue.length, username);
 
-        await Utils.randomDelay(CONFIG.POST_DATE_INTERVAL_MIN_MS, CONFIG.POST_DATE_INTERVAL_MAX_MS);
-        if (myGeneration !== this._postDateGeneration) break;
+          await Utils.randomDelay(CONFIG.POST_DATE_INTERVAL_MIN_MS, CONFIG.POST_DATE_INTERVAL_MAX_MS);
+          if (myGeneration !== this._postDateGeneration) break;
 
-        let result;
-        try {
-          result = await this.prober.requestLastPostDate(username);
-        } catch (error) {
-          result = { success: false, reason: 'exception' };
+          let result;
+          try {
+            result = await this.prober.requestLastPostDate(username);
+          } catch (error) {
+            result = { success: false, reason: 'exception' };
+          }
+          if (myGeneration !== this._postDateGeneration) break;
+
+          // 弹窗被拦时不要把人踢出队列：停下来让用户允许弹窗后再点一次。
+          if (result && result.reason === 'popup_blocked') {
+            consecutivePopupBlocks += 1;
+            Logger.error(
+              '探测弹窗被拦截，已暂停获取发帖日期。请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
+            );
+            break;
+          }
+          consecutivePopupBlocks = 0;
+
+          this.postDateQueue.shift();
+          this.storage.savePendingPostDateQueue(this.postDateQueue);
+
+          if (result && result.success) {
+            const existingEntry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
+            // 只缓存 datetime 属性原文；展示/不活跃判断一律从该属性解析日历日。
+            const normalized = result.lastPostDate
+              ? Utils.normalizePostDatetimeAttr(result.lastPostDate)
+              : null;
+            this.scanResults[username] = {
+              ...existingEntry,
+              lastPostDate: normalized,
+            };
+            this.storage.saveScanResult(username, this.scanResults[username]);
+            this.panel.renderList(this.getAllRows());
+            const datePart = Utils.formatShortDate(normalized);
+            Logger.success(
+              `已获取 @${username} 最新发帖日期: ${datePart || (normalized ? normalized : '无发帖记录')}`
+            );
+          } else {
+            Logger.warn(`获取 @${username} 发帖日期失败，原因: ${(result && result.reason) || 'unknown'}`);
+          }
+
+          if (this.postDateQueue.length === 0 || myGeneration !== this._postDateGeneration) break;
         }
-        if (myGeneration !== this._postDateGeneration) break;
-
-        // 弹窗被拦时不要把人踢出队列：停下来让用户允许弹窗后再点一次。
-        if (result && result.reason === 'popup_blocked') {
-          consecutivePopupBlocks += 1;
-          Logger.error(
-            '探测弹窗被拦截，已暂停获取发帖日期。请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
-          );
-          break;
-        }
-        consecutivePopupBlocks = 0;
-
-        this.postDateQueue.shift();
-        this.storage.savePendingPostDateQueue(this.postDateQueue);
-
-        if (result && result.success) {
-          const existingEntry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
-          // 只缓存 datetime 属性原文；展示/不活跃判断一律从该属性解析日历日。
-          const normalized = result.lastPostDate
-            ? Utils.normalizePostDatetimeAttr(result.lastPostDate)
-            : null;
-          this.scanResults[username] = {
-            ...existingEntry,
-            lastPostDate: normalized,
-          };
-          this.storage.saveScanResult(username, this.scanResults[username]);
-          this.panel.renderList(this.getAllRows());
-          const datePart = Utils.formatShortDate(normalized);
-          Logger.success(
-            `已获取 @${username} 最新发帖日期: ${datePart || (normalized ? normalized : '无发帖记录')}`
-          );
-        } else {
-          Logger.warn(`获取 @${username} 发帖日期失败，原因: ${(result && result.reason) || 'unknown'}`);
-        }
-
-        if (this.postDateQueue.length === 0 || myGeneration !== this._postDateGeneration) break;
+      } finally {
+        // 无论正常结束、弹窗拦截还是中途异常，都必须清掉运行态，否则后续
+        // enqueue / 勾选扫描会因 isCollectingPostDates 一直为 true 而卡住。
+        this.isCollectingPostDates = false;
       }
 
-      this.isCollectingPostDates = false;
       if (myGeneration === this._postDateGeneration) {
         this.panel.hidePostDateProgress();
         this.prober.closeProbeWindow();
@@ -3099,7 +3118,8 @@
      * 筛出待获取发帖日期的行：
      *   - 若列表复选框有勾选：只保留勾选的用户（不再扫当前标签下其它人）；
      *   - 若无勾选：按当前分类标签筛；
-     *   - 且 lastPostDate 尚未采集。
+     *   - 且 lastPostDate 尚未采集（undefined；null 表示已采过但无发帖）。
+     * 用户名匹配大小写不敏感（X 用户名本身不区分大小写，避免 Set 精确匹配漏人）。
      * @returns {{targets: Array, selectedCount: number, mode: 'selected'|'tab'}}
      */
     _getPostDateTargetsForActiveTab() {
@@ -3110,11 +3130,17 @@
       if (selectedCount > 0) {
         // 勾选优先：只扫选定用户，不受当前标签限制。
         mode = 'selected';
-        candidates = candidates.filter((row) => this.selectedUsernames.has(row.username));
+        const selectedLower = new Set(
+          Array.from(this.selectedUsernames).map((name) => String(name).toLowerCase())
+        );
+        candidates = candidates.filter(
+          (row) => row && row.username && selectedLower.has(String(row.username).toLowerCase())
+        );
       } else if (this.activeTab !== 'all') {
         candidates = candidates.filter((row) => row.status === this.activeTab);
       }
 
+      // 仅「尚未采集」才入队；已采到 null（无发帖）或具体日期的不再扫。
       const targets = candidates.filter((row) => row.lastPostDate === undefined);
       return { targets, selectedCount, mode };
     }
@@ -3557,6 +3583,19 @@
       }
 
       // 必须先拿到发帖日期才能判断是否超阈值：确认后采集，完成再自动勾选。
+      // 与「获取发帖日期」相同：在 checkbox change 手势上先占窗，confirm 后再确保一次。
+      const earlyProbeWin = this.scanner.prober._ensureProbeWindow();
+      if (!earlyProbeWin) {
+        this._awaitingInactiveSelect = false;
+        this.elements.selectInactiveCheckbox.checked = false;
+        window.alert(
+          '无法打开探测窗口。\n\n' +
+          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
+          '请在地址栏允许本站弹窗后，再勾选一次「全选超阈值」。'
+        );
+        return;
+      }
+
       const alreadyKnownInactive = this._getInactiveSelectableUsernames().length;
       const avgIntervalMs =
         (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
@@ -3573,18 +3612,17 @@
       if (!confirmed) {
         this._awaitingInactiveSelect = false;
         this.elements.selectInactiveCheckbox.checked = false;
+        this.scanner.prober.closeProbeWindow();
         return;
       }
 
-      // 手势链路上打开探测窗（与「获取发帖日期」按钮相同约束）。
       const probeWin = this.scanner.prober._ensureProbeWindow();
       if (!probeWin) {
         this._awaitingInactiveSelect = false;
         this.elements.selectInactiveCheckbox.checked = false;
         window.alert(
-          '无法打开探测窗口。\n\n' +
-          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
-          '请在地址栏允许本站弹窗后，再勾选一次「全选超阈值」。'
+          '探测窗口已关闭或被拦截。\n\n' +
+          '请允许 x.com 弹出窗口后，再勾选一次「全选超阈值」。'
         );
         return;
       }
@@ -3731,15 +3769,26 @@
     /**
      * 处理「获取发帖日期」按钮：
      *   - 若勾选了列表复选框：只扫描勾选的用户；
-     *   - 否则：扫描当前分类标签下尚未采集的账号。
-     * 确认框会显示勾选人数 / 实际将扫描人数。
+     *   - 否则：扫描当前分类标签下尚未采集的账号；
+     *   - 若本地仍有未完成的发帖日期队列（刷新/弹窗拦截后残留），也可点此续跑。
+     *
+     * 探测弹窗策略（修复「勾选后点获取不行」）：
+     *   1) 在按钮 click 手势链上先 open（浏览器此时最容易放行）；
+     *   2) 再弹 confirm 让用户确认范围；
+     *   3) 确认后再次 _ensureProbeWindow：若 confirm 期间空白窗被关掉则立刻重开。
+     * 旧逻辑只在 confirm 前 open 一次，中间空白窗被关后异步队列里再 open 已无手势，
+     * 得到 popup_blocked，队列直接停住；而「全选超阈值」是 confirm 后立刻 open，故看起来只有那边能扫。
      */
     _onCollectPostDateClick() {
       if (!this.scanner) return;
       const tabLabel = this._getTabLabel();
       const { targets, selectedCount, mode } = this._getPostDateTargetsForActiveTab();
+      const pendingQueueCount = (this.scanner.postDateQueue && this.scanner.postDateQueue.length) || 0;
+      const usernames = targets.map((row) => row.username);
+      const newTargetCount = usernames.length;
 
-      if (targets.length === 0) {
+      // 既没有新目标，也没有待续跑队列 → 提示后退出。
+      if (newTargetCount === 0 && pendingQueueCount === 0) {
         if (mode === 'selected') {
           window.alert(
             `已勾选 ${selectedCount} 人，但其中没有需要获取发帖日期的账号\n` +
@@ -3756,9 +3805,9 @@
         return;
       }
 
-      // 必须在 confirm 之前、用户点击手势链路上打开弹窗。
-      const probeWin = this.scanner.prober._ensureProbeWindow();
-      if (!probeWin) {
+      // ① 用户点击手势上先占住探测窗（最关键，否则后续 confirm 后再 open 易被拦）。
+      const earlyProbeWin = this.scanner.prober._ensureProbeWindow();
+      if (!earlyProbeWin) {
         window.alert(
           '无法打开探测窗口。\n\n' +
           'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
@@ -3767,41 +3816,62 @@
         return;
       }
 
-      const usernames = targets.map((row) => row.username);
-      const scanCount = usernames.length;
+      const scanCount = newTargetCount > 0 ? newTargetCount : pendingQueueCount;
       const avgIntervalMs =
         (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
-      const estimatedMs = scanCount * avgIntervalMs;
-      const estimatedText = Utils.formatDuration(estimatedMs);
+      const estimatedText = Utils.formatDuration(scanCount * avgIntervalMs);
 
       let scopeText;
-      if (mode === 'selected') {
+      if (newTargetCount === 0 && pendingQueueCount > 0) {
+        scopeText =
+          `检测到未完成的发帖日期队列，剩余 ${pendingQueueCount} 人。\n` +
+          `本次将继续扫描这 ${pendingQueueCount} 人（断点续传）`;
+      } else if (mode === 'selected') {
         scopeText =
           `已勾选：${selectedCount} 人\n` +
-          `本次将扫描：${scanCount} 人（仅勾选中尚未采集发帖日期的；其它用户不扫）`;
+          `本次将扫描：${newTargetCount} 人（仅勾选中尚未采集发帖日期的；其它用户不扫）` +
+          (pendingQueueCount > 0 ? `\n另有队列残留 ${pendingQueueCount} 人会一并续跑` : '');
       } else {
         scopeText =
           `扫描范围：「${tabLabel}」分类\n` +
-          `本次将扫描：${scanCount} 人（未勾选任何人，按当前分类整表）`;
+          `本次将扫描：${newTargetCount} 人（未勾选任何人，按当前分类整表）` +
+          (pendingQueueCount > 0 ? `\n另有队列残留 ${pendingQueueCount} 人会一并续跑` : '');
       }
 
       const confirmed = window.confirm(
         `${scopeText}\n\n` +
-        `说明：X 禁止 iframe，脚本会复用刚才打开的探测小窗口逐个加载主页（请勿手动关闭）。\n` +
+        `说明：X 禁止 iframe，脚本会复用探测小窗口逐个加载主页（请勿手动关闭该窗口）。\n` +
         `预计约 ${estimatedText}，可随时点「停止」；已采集数据会实时保存。\n\n是否继续？`
       );
       if (!confirmed) {
         this.scanner.prober.closeProbeWindow();
         return;
       }
-      if (mode === 'selected') {
-        Logger.info(
-          `开始获取勾选账号的发帖日期：勾选 ${selectedCount} 人，实际扫描 ${scanCount} 人`
+
+      // ② confirm 期间空白窗可能被关掉：再确保一次，避免队列里第一次探测就 popup_blocked。
+      const probeWin = this.scanner.prober._ensureProbeWindow();
+      if (!probeWin) {
+        window.alert(
+          '探测窗口已关闭或被拦截。\n\n' +
+          '请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
         );
-      } else {
-        Logger.info(`开始获取「${tabLabel}」分类下 ${scanCount} 个账号的最新发帖日期`);
+        return;
       }
-      this.scanner.enqueuePostDateCollection(usernames);
+
+      if (newTargetCount > 0) {
+        if (mode === 'selected') {
+          Logger.info(
+            `开始获取勾选账号的发帖日期：勾选 ${selectedCount} 人，实际扫描 ${newTargetCount} 人`
+          );
+        } else {
+          Logger.info(`开始获取「${tabLabel}」分类下 ${newTargetCount} 个账号的最新发帖日期`);
+        }
+        this.scanner.enqueuePostDateCollection(usernames);
+      } else {
+        // 仅续跑残留队列（探测窗已在上面打开）。
+        Logger.info(`继续未完成的发帖日期队列，剩余 ${pendingQueueCount} 人`);
+        this.scanner.resumePostDateCollection();
+      }
     }
 
     /**
