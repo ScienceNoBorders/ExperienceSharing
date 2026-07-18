@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         X 用户检测助手 (X Unfollowers Checker)
-// @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
+// @name         X 用户检测助手 (X Unfollowers Checker Local)
+// @namespace    https://github.com/ufs-tools/x-unfollow-checker
 // @version      3.0.0
 // @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
