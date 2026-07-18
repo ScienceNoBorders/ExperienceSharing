@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X 用户检测助手 (X Users Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
-// @version      3.0.1
+// @version      3.0.4
 // @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
@@ -69,7 +69,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '3.0.1';
+  const SCRIPT_VERSION = '3.0.4';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -3582,20 +3582,7 @@
         return;
       }
 
-      // 必须先拿到发帖日期才能判断是否超阈值：确认后采集，完成再自动勾选。
-      // 与「获取发帖日期」相同：在 checkbox change 手势上先占窗，confirm 后再确保一次。
-      const earlyProbeWin = this.scanner.prober._ensureProbeWindow();
-      if (!earlyProbeWin) {
-        this._awaitingInactiveSelect = false;
-        this.elements.selectInactiveCheckbox.checked = false;
-        window.alert(
-          '无法打开探测窗口。\n\n' +
-          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
-          '请在地址栏允许本站弹窗后，再勾选一次「全选超阈值」。'
-        );
-        return;
-      }
-
+      // 必须先拿到发帖日期才能判断是否超阈值：先 confirm，用户同意后再开探测窗并采集。
       const alreadyKnownInactive = this._getInactiveSelectableUsernames().length;
       const avgIntervalMs =
         (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
@@ -3612,17 +3599,18 @@
       if (!confirmed) {
         this._awaitingInactiveSelect = false;
         this.elements.selectInactiveCheckbox.checked = false;
-        this.scanner.prober.closeProbeWindow();
         return;
       }
 
+      // 确认后再开窗，立刻开始扫描（不要先停在 about:blank）。
       const probeWin = this.scanner.prober._ensureProbeWindow();
       if (!probeWin) {
         this._awaitingInactiveSelect = false;
         this.elements.selectInactiveCheckbox.checked = false;
         window.alert(
-          '探测窗口已关闭或被拦截。\n\n' +
-          '请允许 x.com 弹出窗口后，再勾选一次「全选超阈值」。'
+          '无法打开探测窗口。\n\n' +
+          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
+          '请在地址栏允许本站弹窗后，再勾选一次「全选超阈值」。'
         );
         return;
       }
@@ -3772,12 +3760,10 @@
      *   - 否则：扫描当前分类标签下尚未采集的账号；
      *   - 若本地仍有未完成的发帖日期队列（刷新/弹窗拦截后残留），也可点此续跑。
      *
-     * 探测弹窗策略（修复「勾选后点获取不行」）：
-     *   1) 在按钮 click 手势链上先 open（浏览器此时最容易放行）；
-     *   2) 再弹 confirm 让用户确认范围；
-     *   3) 确认后再次 _ensureProbeWindow：若 confirm 期间空白窗被关掉则立刻重开。
-     * 旧逻辑只在 confirm 前 open 一次，中间空白窗被关后异步队列里再 open 已无手势，
-     * 得到 popup_blocked，队列直接停住；而「全选超阈值」是 confirm 后立刻 open，故看起来只有那边能扫。
+     * 顺序与「全选超阈值」一致（正确流程）：
+     *   1) 先 window.confirm 确认扫描范围；
+     *   2) 用户点「确定」后立刻打开探测窗；
+     *   3) 再入队开始扫描（不要先 open about:blank 再 confirm，空白页无法正确读发帖时间）。
      */
     _onCollectPostDateClick() {
       if (!this.scanner) return;
@@ -3805,17 +3791,6 @@
         return;
       }
 
-      // ① 用户点击手势上先占住探测窗（最关键，否则后续 confirm 后再 open 易被拦）。
-      const earlyProbeWin = this.scanner.prober._ensureProbeWindow();
-      if (!earlyProbeWin) {
-        window.alert(
-          '无法打开探测窗口。\n\n' +
-          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
-          '请在地址栏允许本站弹窗后，再点一次获取发帖日期按钮。'
-        );
-        return;
-      }
-
       const scanCount = newTargetCount > 0 ? newTargetCount : pendingQueueCount;
       const avgIntervalMs =
         (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
@@ -3838,22 +3813,21 @@
           (pendingQueueCount > 0 ? `\n另有队列残留 ${pendingQueueCount} 人会一并续跑` : '');
       }
 
+      // ① 先确认（与「全选超阈值」相同，不要先开空白页）。
       const confirmed = window.confirm(
         `${scopeText}\n\n` +
-        `说明：X 禁止 iframe，脚本会复用探测小窗口逐个加载主页（请勿手动关闭该窗口）。\n` +
+        `说明：X 禁止 iframe，确认后会打开探测小窗口逐个加载主页（请勿手动关闭）。\n` +
         `预计约 ${estimatedText}，可随时点「停止」；已采集数据会实时保存。\n\n是否继续？`
       );
-      if (!confirmed) {
-        this.scanner.prober.closeProbeWindow();
-        return;
-      }
+      if (!confirmed) return;
 
-      // ② confirm 期间空白窗可能被关掉：再确保一次，避免队列里第一次探测就 popup_blocked。
+      // ② 确认后再开探测窗，马上入队扫描。
       const probeWin = this.scanner.prober._ensureProbeWindow();
       if (!probeWin) {
         window.alert(
-          '探测窗口已关闭或被拦截。\n\n' +
-          '请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
+          '无法打开探测窗口。\n\n' +
+          'X 已禁止用 iframe 嵌套用户主页，脚本需要打开一个小窗口来读取发帖时间。\n' +
+          '请在地址栏允许本站弹窗后，再点一次获取发帖日期按钮。'
         );
         return;
       }
@@ -3868,7 +3842,6 @@
         }
         this.scanner.enqueuePostDateCollection(usernames);
       } else {
-        // 仅续跑残留队列（探测窗已在上面打开）。
         Logger.info(`继续未完成的发帖日期队列，剩余 ${pendingQueueCount} 人`);
         this.scanner.resumePostDateCollection();
       }
