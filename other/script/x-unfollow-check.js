@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         X 用户检测助手 (X Unfollowers Checker Local)
-// @namespace    https://github.com/ufs-tools/x-unfollow-checker
-// @version      3.0.0
-// @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
+// @name         X 用户检测助手 (X Users Checker Local Test)
+// @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
+// @version      3.1.0
+// @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。支持「白名单」功能（面板"复制日报"按钮旁）：填入的用户名不参与互关状态与发帖日期扫描，也不计入统计数据，底部统计与日报会单独展示白名单人数。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
@@ -69,7 +69,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '3.0.0';
+  const SCRIPT_VERSION = '3.1.0';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -232,27 +232,27 @@
 
     /** 输出普通信息日志（蓝色）。 */
     info(message, ...args) {
-      console.log(`%c[UFS] ${message}`, this._style('#1d9bf0'), ...args);
+      // console.log(`%c[UFS] ${message}`, this._style('#1d9bf0'), ...args);
     },
 
     /** 输出成功日志（绿色）。 */
     success(message, ...args) {
-      console.log(`%c[UFS] ${message}`, this._style('#00ba7c'), ...args);
+      // console.log(`%c[UFS] ${message}`, this._style('#00ba7c'), ...args);
     },
 
     /** 输出警告日志（橙色）。 */
     warn(message, ...args) {
-      console.warn(`%c[UFS] ${message}`, this._style('#ffad1f'), ...args);
+      // console.warn(`%c[UFS] ${message}`, this._style('#ffad1f'), ...args);
     },
 
     /** 输出错误日志（红色）。 */
     error(message, ...args) {
-      console.error(`%c[UFS] ${message}`, this._style('#f4212e'), ...args);
+      // console.error(`%c[UFS] ${message}`, this._style('#f4212e'), ...args);
     },
 
     /** 输出调试日志（灰色），用于低优先级的过程信息。 */
     debug(message, ...args) {
-      console.debug(`%c[UFS] ${message}`, this._style('#8b98a5'), ...args);
+      // console.debug(`%c[UFS] ${message}`, this._style('#8b98a5'), ...args);
     },
   };
 
@@ -723,6 +723,88 @@
       if (lastPostDate === null) return true; // 采集过但完全没有发帖记录。
       const days = Utils.daysSince(lastPostDate);
       return days !== null && days > this.days;
+    },
+  };
+
+  /** 用于持久化"白名单"设置的 GM_setValue 键名。跨账号/跨列表页面全局生效。 */
+  const WHITELIST_STORAGE_KEY = 'ufs_whitelist_usernames_v1';
+
+  /**
+   * 管理"白名单"用户名集合。命中白名单的用户不参与互关状态扫描，也不参与
+   * 批量发帖日期扫描，同时会从统计数据（总数/已互关/未回关/失败等）中
+   * 排除，避免其干扰各项计数；面板会单独展示白名单人数以作说明。
+   * 用户名统一做归一化处理（去除开头的 @、转小写）后再比较/存储，因此
+   * "@ElonMusk" 与 "elonmusk" 会被视为同一人。
+   */
+  const WhitelistManager = {
+    /** @type {Set<string>} 归一化后（无 @、小写）的白名单用户名集合。 */
+    usernames: new Set(),
+
+    /** 从 GM_getValue 中恢复上次保存的白名单（读取失败则视为空白名单）。 */
+    load() {
+      let saved = [];
+      try {
+        const raw = GM_getValue(WHITELIST_STORAGE_KEY, '[]');
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed)) saved = parsed;
+      } catch (error) {
+        Logger.warn('读取白名单设置失败，使用空白名单', error);
+      }
+      this.usernames = new Set(saved.map((name) => this.normalize(name)).filter(Boolean));
+    },
+
+    /** 将当前白名单持久化保存。 */
+    save() {
+      try {
+        GM_setValue(WHITELIST_STORAGE_KEY, JSON.stringify(Array.from(this.usernames)));
+      } catch (error) {
+        Logger.warn('保存白名单设置失败', error);
+      }
+    },
+
+    /**
+     * 归一化用户名：去除首尾空白与开头的 @ 前缀，统一转为小写，便于比较。
+     * @param {string} raw 原始输入（可能带 @、大小写混杂、首尾空白）。
+     * @returns {string} 归一化后的用户名，空输入返回空字符串。
+     */
+    normalize(raw) {
+      if (!raw) return '';
+      return String(raw).trim().replace(/^@+/, '').toLowerCase();
+    },
+
+    /**
+     * 用一段以回车/换行分隔的文本整体覆盖白名单（面板文本框保存时调用）。
+     * 自动跳过空行，并对用户名去重。
+     * @param {string} text 多行文本，每行一个用户名。
+     */
+    setFromText(text) {
+      const list = String(text || '')
+        .split(/[\r\n]+/)
+        .map((line) => this.normalize(line))
+        .filter(Boolean);
+      this.usernames = new Set(list);
+      this.save();
+    },
+
+    /** 将当前白名单转换为多行文本（每行一个 @用户名），供文本框回显。 */
+    toText() {
+      return Array.from(this.usernames)
+        .map((name) => `@${name}`)
+        .join('\n');
+    },
+
+    /**
+     * 判断给定用户名是否命中白名单。
+     * @param {string} username 用户名（可带或不带 @）。
+     * @returns {boolean}
+     */
+    has(username) {
+      return this.usernames.has(this.normalize(username));
+    },
+
+    /** 当前白名单人数，供面板统计展示使用。 */
+    get size() {
+      return this.usernames.size;
     },
   };
 
@@ -1958,6 +2040,7 @@
         for (const cell of cells) {
           const username = Parser.extractUsernameFromCell(cell);
           if (!username) continue;
+          if (WhitelistManager.has(username)) continue; // 白名单用户：跳过互关状态扫描。
           collectedUsernames.add(username);
 
           const existingEntry = this.scanResults[username];
@@ -2081,6 +2164,10 @@
      * @returns {Promise<void>}
      */
     async rescanUser(username) {
+      if (WhitelistManager.has(username)) {
+        Logger.warn(`@${username} 在白名单中，跳过重新扫描`);
+        return;
+      }
       Logger.info(`重新扫描 @${username}`);
 
       const cell = this._findCellForUsername(username);
@@ -2308,6 +2395,20 @@
     }
 
     /**
+     * 在探测窗已由用户手势打开的前提下，继续处理内存/缓存中的发帖日期队列。
+     * 用于刷新后断点续传，或「目标列表为空但队列仍有剩余」时只恢复处理。
+     * @returns {boolean} 是否成功启动（队列非空且当前未在跑时返回 true）。
+     */
+    resumePostDateCollection() {
+      if (!this.postDateQueue || this.postDateQueue.length === 0) return false;
+      this.panel.setPostDateProgress(this.postDateQueue.length, null);
+      if (!this.isCollectingPostDates) {
+        this._processPostDateQueue().catch((error) => Logger.error('批量获取发帖日期流程异常', error));
+      }
+      return true;
+    }
+
+    /**
      * 后台处理"待获取发帖日期"队列：用可复用的同源探测弹窗逐个打开对方主页，
      * 读取最新一条推文的 <time datetime>。每处理完一人就写入 scanResults 并
      * 持久化剩余队列（断点续传）。X 禁止 iframe 嵌主页，故不能用隐藏 iframe。
@@ -2319,58 +2420,63 @@
       const myGeneration = ++this._postDateGeneration;
       let consecutivePopupBlocks = 0;
 
-      while (this.postDateQueue.length > 0 && myGeneration === this._postDateGeneration) {
-        const username = this.postDateQueue[0];
-        this.panel.setPostDateProgress(this.postDateQueue.length, username);
+      try {
+        while (this.postDateQueue.length > 0 && myGeneration === this._postDateGeneration) {
+          const username = this.postDateQueue[0];
+          this.panel.setPostDateProgress(this.postDateQueue.length, username);
 
-        await Utils.randomDelay(CONFIG.POST_DATE_INTERVAL_MIN_MS, CONFIG.POST_DATE_INTERVAL_MAX_MS);
-        if (myGeneration !== this._postDateGeneration) break;
+          await Utils.randomDelay(CONFIG.POST_DATE_INTERVAL_MIN_MS, CONFIG.POST_DATE_INTERVAL_MAX_MS);
+          if (myGeneration !== this._postDateGeneration) break;
 
-        let result;
-        try {
-          result = await this.prober.requestLastPostDate(username);
-        } catch (error) {
-          result = { success: false, reason: 'exception' };
+          let result;
+          try {
+            result = await this.prober.requestLastPostDate(username);
+          } catch (error) {
+            result = { success: false, reason: 'exception' };
+          }
+          if (myGeneration !== this._postDateGeneration) break;
+
+          // 弹窗被拦时不要把人踢出队列：停下来让用户允许弹窗后再点一次。
+          if (result && result.reason === 'popup_blocked') {
+            consecutivePopupBlocks += 1;
+            Logger.error(
+              '探测弹窗被拦截，已暂停获取发帖日期。请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
+            );
+            break;
+          }
+          consecutivePopupBlocks = 0;
+
+          this.postDateQueue.shift();
+          this.storage.savePendingPostDateQueue(this.postDateQueue);
+
+          if (result && result.success) {
+            const existingEntry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
+            // 只缓存 datetime 属性原文；展示/不活跃判断一律从该属性解析日历日。
+            const normalized = result.lastPostDate
+              ? Utils.normalizePostDatetimeAttr(result.lastPostDate)
+              : null;
+            this.scanResults[username] = {
+              ...existingEntry,
+              lastPostDate: normalized,
+            };
+            this.storage.saveScanResult(username, this.scanResults[username]);
+            this.panel.renderList(this.getAllRows());
+            const datePart = Utils.formatShortDate(normalized);
+            Logger.success(
+              `已获取 @${username} 最新发帖日期: ${datePart || (normalized ? normalized : '无发帖记录')}`
+            );
+          } else {
+            Logger.warn(`获取 @${username} 发帖日期失败，原因: ${(result && result.reason) || 'unknown'}`);
+          }
+
+          if (this.postDateQueue.length === 0 || myGeneration !== this._postDateGeneration) break;
         }
-        if (myGeneration !== this._postDateGeneration) break;
-
-        // 弹窗被拦时不要把人踢出队列：停下来让用户允许弹窗后再点一次。
-        if (result && result.reason === 'popup_blocked') {
-          consecutivePopupBlocks += 1;
-          Logger.error(
-            '探测弹窗被拦截，已暂停获取发帖日期。请允许 x.com 弹出窗口后，再点一次获取发帖日期按钮。'
-          );
-          break;
-        }
-        consecutivePopupBlocks = 0;
-
-        this.postDateQueue.shift();
-        this.storage.savePendingPostDateQueue(this.postDateQueue);
-
-        if (result && result.success) {
-          const existingEntry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
-          // 只缓存 datetime 属性原文；展示/不活跃判断一律从该属性解析日历日。
-          const normalized = result.lastPostDate
-            ? Utils.normalizePostDatetimeAttr(result.lastPostDate)
-            : null;
-          this.scanResults[username] = {
-            ...existingEntry,
-            lastPostDate: normalized,
-          };
-          this.storage.saveScanResult(username, this.scanResults[username]);
-          this.panel.renderList(this.getAllRows());
-          const datePart = Utils.formatShortDate(normalized);
-          Logger.success(
-            `已获取 @${username} 最新发帖日期: ${datePart || (normalized ? normalized : '无发帖记录')}`
-          );
-        } else {
-          Logger.warn(`获取 @${username} 发帖日期失败，原因: ${(result && result.reason) || 'unknown'}`);
-        }
-
-        if (this.postDateQueue.length === 0 || myGeneration !== this._postDateGeneration) break;
+      } finally {
+        // 无论正常结束、弹窗拦截还是中途异常，都必须清掉运行态，否则后续
+        // enqueue / 勾选扫描会因 isCollectingPostDates 一直为 true 而卡住。
+        this.isCollectingPostDates = false;
       }
 
-      this.isCollectingPostDates = false;
       if (myGeneration === this._postDateGeneration) {
         this.panel.hidePostDateProgress();
         this.prober.closeProbeWindow();
@@ -2562,16 +2668,20 @@
      * @returns {Array<{username:string, status:string, reason:string, profile:object|null, lastPostDate:string|null|undefined}>}
      */
     getAllRows() {
-      return this.followingList.map((username) => {
-        const entry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
-        return {
-          username,
-          status: entry.status,
-          reason: entry.reason || '',
-          profile: entry.profile || null,
-          lastPostDate: entry.lastPostDate, // undefined = 尚未采集；null = 采集过但无发帖记录。
-        };
-      });
+      return this.followingList
+        // 白名单用户（含加入白名单之前就已缓存的历史数据）一律从展示/统计
+        // 范围中排除，避免其干扰各分类计数与"每日一统"报告。
+        .filter((username) => !WhitelistManager.has(username))
+        .map((username) => {
+          const entry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
+          return {
+            username,
+            status: entry.status,
+            reason: entry.reason || '',
+            profile: entry.profile || null,
+            lastPostDate: entry.lastPostDate, // undefined = 尚未采集；null = 采集过但无发帖记录。
+          };
+        });
     }
 
     /**
@@ -2620,11 +2730,13 @@
       this._injectStyles();
       this._buildSkeleton();
       this._buildHoverCard();
+      this._buildWhitelistModal();
       this._bindStaticEvents();
       this._bindDragEvents();
       this._applyInitialPosition();
       this._initSpeedControl();
       this.elements.inactiveThresholdInput.value = String(InactivityThresholdManager.days);
+      this._updateWhitelistBtnLabel();
       this._onWindowResize = Utils.debounce(() => this._reclampToViewport(), 200);
       window.addEventListener('resize', this._onWindowResize);
     }
@@ -2663,7 +2775,7 @@
           background: transparent; border: none; color: #8b98a5; cursor: pointer;
           font-size: 14px; padding: 2px 6px; border-radius: 6px;
         }
-        #ufs-panel .ufs-icon-btn:hover { background: #2f3336; color: #e7e9ea; }
+        #ufs-panel .ufs-icon-btn:hover { background: #2f3336; color: #000; }
         #ufs-panel .ufs-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         #ufs-panel .ufs-progress-wrap { padding: 8px 12px 0; }
         #ufs-panel .ufs-progress-text { font-size: 12px; color: #8b98a5; margin-bottom: 6px; }
@@ -2829,6 +2941,37 @@
         #ufs-hovercard .ufs-hc-actions button:hover { background: #3a3f42; }
         #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn { background: #f4212e; color: #fff; }
         #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:hover { background: #d81b25; }
+
+        /* 白名单管理弹窗：全屏半透明遮罩 + 居中卡片，风格与主面板保持一致。 */
+        #ufs-whitelist-overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000001;
+          display: none; align-items: center; justify-content: center;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal {
+          width: 320px; max-width: calc(100vw - 32px); max-height: calc(100vh - 80px);
+          background: #15181c; color: #15181c; border-radius: 16px; border: 1px solid #2f3336;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.6); display: flex; flex-direction: column;
+          overflow: hidden;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-header {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 12px 14px; background: #1d2226; font-weight: 700; font-size: 14px;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-hint {
+          padding: 10px 14px 0; font-size: 11px; color: #8b98a5; line-height: 1.5;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-textarea {
+          margin: 10px 14px; flex: 1; min-height: 160px; resize: vertical;
+          background: #0f1317; border: 1px solid #2f3336; border-radius: 8px;
+          color: #e7e9ea; padding: 8px; font-size: 12px; line-height: 1.6; font-family: inherit;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-textarea:focus { outline: 1px solid #1d9bf0; }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-footer {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 8px 14px 14px; font-size: 11px; color: #8b98a5;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-actions { display: flex; gap: 8px; }
       `);
     }
 
@@ -2855,6 +2998,7 @@
             <button class="ufs-btn" id="ufs-export-csv-btn">导出CSV</button>
             <button class="ufs-btn" id="ufs-export-txt-btn">导出TXT</button>
             <button class="ufs-btn" id="ufs-copy-all-btn">复制日报</button>
+            <button class="ufs-btn" id="ufs-whitelist-btn" title="白名单内的用户不参与互关状态与发帖日期扫描">⭐ 白名单</button>
           </div>
           <div class="ufs-speed-row">
             <div class="ufs-speed-label-row">
@@ -2959,6 +3103,98 @@
       hoverCard.addEventListener('mouseleave', () => this._scheduleHideHoverCard());
     }
 
+    /**
+     * 构建"白名单管理"弹窗的 DOM 结构。与悬浮资料卡一样独立挂载在
+     * document.documentElement 下，用一层半透明遮罩覆盖全屏，点击遮罩
+     * 空白处或右上角关闭按钮均可放弃本次编辑；只有点击"保存"才会真正
+     * 写入 WhitelistManager 并持久化。文本框内每行代表一个白名单用户名，
+     * 支持"@用户名"或"用户名"两种写法，用回车键换行分隔多个用户。
+     */
+    _buildWhitelistModal() {
+      const overlay = document.createElement('div');
+      overlay.id = 'ufs-whitelist-overlay';
+      overlay.innerHTML = `
+        <div class="ufs-whitelist-modal">
+          <div class="ufs-whitelist-modal-header">
+            <span>⭐ 白名单管理</span>
+            <button class="ufs-icon-btn" id="ufs-whitelist-close-btn" title="关闭">✕</button>
+          </div>
+          <div class="ufs-whitelist-modal-hint">
+            白名单内的用户不会被扫描互关状态，也不会被纳入发帖日期扫描，且不计入下方的统计数据。每行填写一个用户名（支持 @xinzhizhu9795 或 xinzhizhu9795 两种写法），按回车换行即可继续添加下一个。
+          </div>
+          <textarea class="ufs-whitelist-textarea" id="ufs-whitelist-textarea" placeholder="@xinzhizhu9795&#10;@elonmusk&#10;..."></textarea>
+          <div class="ufs-whitelist-modal-footer">
+            <span class="ufs-whitelist-modal-count" id="ufs-whitelist-modal-count">共 0 人</span>
+            <div class="ufs-whitelist-modal-actions">
+              <button class="ufs-btn" id="ufs-whitelist-cancel-btn">取消</button>
+              <button class="ufs-btn ufs-btn-primary" id="ufs-whitelist-save-btn">保存</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.documentElement.appendChild(overlay);
+      this.whitelistModalElements = {
+        overlay,
+        textarea: overlay.querySelector('#ufs-whitelist-textarea'),
+        countLabel: overlay.querySelector('#ufs-whitelist-modal-count'),
+        closeBtn: overlay.querySelector('#ufs-whitelist-close-btn'),
+        cancelBtn: overlay.querySelector('#ufs-whitelist-cancel-btn'),
+        saveBtn: overlay.querySelector('#ufs-whitelist-save-btn'),
+      };
+
+      // 点击遮罩空白处（而非弹窗本身）视为取消编辑并关闭。
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) this._closeWhitelistModal();
+      });
+      this.whitelistModalElements.closeBtn.addEventListener('click', () => this._closeWhitelistModal());
+      this.whitelistModalElements.cancelBtn.addEventListener('click', () => this._closeWhitelistModal());
+      this.whitelistModalElements.saveBtn.addEventListener('click', () => this._onSaveWhitelist());
+      this.whitelistModalElements.textarea.addEventListener('input', () => this._updateWhitelistModalCount());
+    }
+
+    /** 打开白名单弹窗：用当前已保存的白名单回填文本框，并同步一次人数统计。 */
+    _openWhitelistModal() {
+      this.whitelistModalElements.textarea.value = WhitelistManager.toText();
+      this._updateWhitelistModalCount();
+      this.whitelistModalElements.overlay.style.display = 'flex';
+      this.whitelistModalElements.textarea.focus();
+    }
+
+    /** 关闭白名单弹窗（不做任何保存，文本框内容会在下次打开时被重新回填覆盖）。 */
+    _closeWhitelistModal() {
+      this.whitelistModalElements.overlay.style.display = 'none';
+    }
+
+    /** 根据文本框当前内容，实时更新弹窗内的"共 N 人"计数（自动去重、忽略空行）。 */
+    _updateWhitelistModalCount() {
+      const names = this.whitelistModalElements.textarea.value
+        .split(/[\r\n]+/)
+        .map((line) => WhitelistManager.normalize(line))
+        .filter(Boolean);
+      const uniqueCount = new Set(names).size;
+      this.whitelistModalElements.countLabel.textContent = `共 ${uniqueCount} 人`;
+    }
+
+    /**
+     * 保存白名单：整体覆盖写入 WhitelistManager 并持久化，关闭弹窗，
+     * 刷新按钮上的人数标签，并（若已绑定 Scanner）立即重新渲染列表，
+     * 使白名单变更对统计数据/分类计数/列表展示即时生效。
+     */
+    _onSaveWhitelist() {
+      WhitelistManager.setFromText(this.whitelistModalElements.textarea.value);
+      this._closeWhitelistModal();
+      this._updateWhitelistBtnLabel();
+      if (this.scanner) this.renderList(this.scanner.getAllRows());
+      Logger.success(`白名单已保存，共 ${WhitelistManager.size} 人`);
+    }
+
+    /** 同步面板按钮上展示的白名单人数标签。 */
+    _updateWhitelistBtnLabel() {
+      if (this.elements && this.elements.whitelistBtn) {
+        this.elements.whitelistBtn.textContent = `⭐ 白名单(${WhitelistManager.size})`;
+      }
+    }
+
     /** 缓存常用 DOM 元素引用，避免重复查询。 */
     _cacheElements() {
       this.elements = {
@@ -2972,6 +3208,7 @@
         exportCsvBtn: this.root.querySelector('#ufs-export-csv-btn'),
         exportTxtBtn: this.root.querySelector('#ufs-export-txt-btn'),
         copyAllBtn: this.root.querySelector('#ufs-copy-all-btn'),
+        whitelistBtn: this.root.querySelector('#ufs-whitelist-btn'),
         searchInput: this.root.querySelector('#ufs-search-input'),
         sortBtn: this.root.querySelector('#ufs-sort-btn'),
         speedSlider: this.root.querySelector('#ufs-speed-slider'),
@@ -3025,6 +3262,7 @@
       this.elements.exportCsvBtn.addEventListener('click', () => this._onExportCsv());
       this.elements.exportTxtBtn.addEventListener('click', () => this._onExportTxt());
       this.elements.copyAllBtn.addEventListener('click', () => this._onCopyAll());
+      this.elements.whitelistBtn.addEventListener('click', () => this._openWhitelistModal());
       this.elements.sortBtn.addEventListener('click', () => this._onToggleSort());
       this.elements.speedSlider.addEventListener('input', (event) => this._onSpeedChange(event.target.value));
       this.elements.selectAllCheckbox.addEventListener('change', (event) => this._onSelectAllChange(event.target.checked));
@@ -3099,7 +3337,8 @@
      * 筛出待获取发帖日期的行：
      *   - 若列表复选框有勾选：只保留勾选的用户（不再扫当前标签下其它人）；
      *   - 若无勾选：按当前分类标签筛；
-     *   - 且 lastPostDate 尚未采集。
+     *   - 且 lastPostDate 尚未采集（undefined；null 表示已采过但无发帖）。
+     * 用户名匹配大小写不敏感（X 用户名本身不区分大小写，避免 Set 精确匹配漏人）。
      * @returns {{targets: Array, selectedCount: number, mode: 'selected'|'tab'}}
      */
     _getPostDateTargetsForActiveTab() {
@@ -3110,11 +3349,17 @@
       if (selectedCount > 0) {
         // 勾选优先：只扫选定用户，不受当前标签限制。
         mode = 'selected';
-        candidates = candidates.filter((row) => this.selectedUsernames.has(row.username));
+        const selectedLower = new Set(
+          Array.from(this.selectedUsernames).map((name) => String(name).toLowerCase())
+        );
+        candidates = candidates.filter(
+          (row) => row && row.username && selectedLower.has(String(row.username).toLowerCase())
+        );
       } else if (this.activeTab !== 'all') {
         candidates = candidates.filter((row) => row.status === this.activeTab);
       }
 
+      // 仅「尚未采集」才入队；已采到 null（无发帖）或具体日期的不再扫。
       const targets = candidates.filter((row) => row.lastPostDate === undefined);
       return { targets, selectedCount, mode };
     }
@@ -3375,6 +3620,8 @@
         `⚪ 非认证账号：${unverifiedTotal} 人`,
         '',
         `📌 未回关名单中：认证 ${notBackVerified} 人 / 非认证 ${notBackUnverified} 人`,
+        '',
+        `⭐ 白名单：${WhitelistManager.size} 人（不参与以上统计）`,
       ];
 
       return lines.join('\n');
@@ -3556,7 +3803,7 @@
         return;
       }
 
-      // 必须先拿到发帖日期才能判断是否超阈值：确认后采集，完成再自动勾选。
+      // 必须先拿到发帖日期才能判断是否超阈值：先 confirm，用户同意后再开探测窗并采集。
       const alreadyKnownInactive = this._getInactiveSelectableUsernames().length;
       const avgIntervalMs =
         (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
@@ -3576,7 +3823,7 @@
         return;
       }
 
-      // 手势链路上打开探测窗（与「获取发帖日期」按钮相同约束）。
+      // 确认后再开窗，立刻开始扫描（不要先停在 about:blank）。
       const probeWin = this.scanner.prober._ensureProbeWindow();
       if (!probeWin) {
         this._awaitingInactiveSelect = false;
@@ -3731,15 +3978,24 @@
     /**
      * 处理「获取发帖日期」按钮：
      *   - 若勾选了列表复选框：只扫描勾选的用户；
-     *   - 否则：扫描当前分类标签下尚未采集的账号。
-     * 确认框会显示勾选人数 / 实际将扫描人数。
+     *   - 否则：扫描当前分类标签下尚未采集的账号；
+     *   - 若本地仍有未完成的发帖日期队列（刷新/弹窗拦截后残留），也可点此续跑。
+     *
+     * 顺序与「全选超阈值」一致（正确流程）：
+     *   1) 先 window.confirm 确认扫描范围；
+     *   2) 用户点「确定」后立刻打开探测窗；
+     *   3) 再入队开始扫描（不要先 open about:blank 再 confirm，空白页无法正确读发帖时间）。
      */
     _onCollectPostDateClick() {
       if (!this.scanner) return;
       const tabLabel = this._getTabLabel();
       const { targets, selectedCount, mode } = this._getPostDateTargetsForActiveTab();
+      const pendingQueueCount = (this.scanner.postDateQueue && this.scanner.postDateQueue.length) || 0;
+      const usernames = targets.map((row) => row.username);
+      const newTargetCount = usernames.length;
 
-      if (targets.length === 0) {
+      // 既没有新目标，也没有待续跑队列 → 提示后退出。
+      if (newTargetCount === 0 && pendingQueueCount === 0) {
         if (mode === 'selected') {
           window.alert(
             `已勾选 ${selectedCount} 人，但其中没有需要获取发帖日期的账号\n` +
@@ -3756,7 +4012,37 @@
         return;
       }
 
-      // 必须在 confirm 之前、用户点击手势链路上打开弹窗。
+      const scanCount = newTargetCount > 0 ? newTargetCount : pendingQueueCount;
+      const avgIntervalMs =
+        (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
+      const estimatedText = Utils.formatDuration(scanCount * avgIntervalMs);
+
+      let scopeText;
+      if (newTargetCount === 0 && pendingQueueCount > 0) {
+        scopeText =
+          `检测到未完成的发帖日期队列，剩余 ${pendingQueueCount} 人。\n` +
+          `本次将继续扫描这 ${pendingQueueCount} 人（断点续传）`;
+      } else if (mode === 'selected') {
+        scopeText =
+          `已勾选：${selectedCount} 人\n` +
+          `本次将扫描：${newTargetCount} 人（仅勾选中尚未采集发帖日期的；其它用户不扫）` +
+          (pendingQueueCount > 0 ? `\n另有队列残留 ${pendingQueueCount} 人会一并续跑` : '');
+      } else {
+        scopeText =
+          `扫描范围：「${tabLabel}」分类\n` +
+          `本次将扫描：${newTargetCount} 人（未勾选任何人，按当前分类整表）` +
+          (pendingQueueCount > 0 ? `\n另有队列残留 ${pendingQueueCount} 人会一并续跑` : '');
+      }
+
+      // ① 先确认（与「全选超阈值」相同，不要先开空白页）。
+      const confirmed = window.confirm(
+        `${scopeText}\n\n` +
+        `说明：X 禁止 iframe，确认后会打开探测小窗口逐个加载主页（请勿手动关闭）。\n` +
+        `预计约 ${estimatedText}，可随时点「停止」；已采集数据会实时保存。\n\n是否继续？`
+      );
+      if (!confirmed) return;
+
+      // ② 确认后再开探测窗，马上入队扫描。
       const probeWin = this.scanner.prober._ensureProbeWindow();
       if (!probeWin) {
         window.alert(
@@ -3767,41 +4053,19 @@
         return;
       }
 
-      const usernames = targets.map((row) => row.username);
-      const scanCount = usernames.length;
-      const avgIntervalMs =
-        (CONFIG.POST_DATE_INTERVAL_MIN_MS + CONFIG.POST_DATE_INTERVAL_MAX_MS) / 2;
-      const estimatedMs = scanCount * avgIntervalMs;
-      const estimatedText = Utils.formatDuration(estimatedMs);
-
-      let scopeText;
-      if (mode === 'selected') {
-        scopeText =
-          `已勾选：${selectedCount} 人\n` +
-          `本次将扫描：${scanCount} 人（仅勾选中尚未采集发帖日期的；其它用户不扫）`;
+      if (newTargetCount > 0) {
+        if (mode === 'selected') {
+          Logger.info(
+            `开始获取勾选账号的发帖日期：勾选 ${selectedCount} 人，实际扫描 ${newTargetCount} 人`
+          );
+        } else {
+          Logger.info(`开始获取「${tabLabel}」分类下 ${newTargetCount} 个账号的最新发帖日期`);
+        }
+        this.scanner.enqueuePostDateCollection(usernames);
       } else {
-        scopeText =
-          `扫描范围：「${tabLabel}」分类\n` +
-          `本次将扫描：${scanCount} 人（未勾选任何人，按当前分类整表）`;
+        Logger.info(`继续未完成的发帖日期队列，剩余 ${pendingQueueCount} 人`);
+        this.scanner.resumePostDateCollection();
       }
-
-      const confirmed = window.confirm(
-        `${scopeText}\n\n` +
-        `说明：X 禁止 iframe，脚本会复用刚才打开的探测小窗口逐个加载主页（请勿手动关闭）。\n` +
-        `预计约 ${estimatedText}，可随时点「停止」；已采集数据会实时保存。\n\n是否继续？`
-      );
-      if (!confirmed) {
-        this.scanner.prober.closeProbeWindow();
-        return;
-      }
-      if (mode === 'selected') {
-        Logger.info(
-          `开始获取勾选账号的发帖日期：勾选 ${selectedCount} 人，实际扫描 ${scanCount} 人`
-        );
-      } else {
-        Logger.info(`开始获取「${tabLabel}」分类下 ${scanCount} 个账号的最新发帖日期`);
-      }
-      this.scanner.enqueuePostDateCollection(usernames);
     }
 
     /**
@@ -3931,9 +4195,11 @@
       this.elements.tabs.mutual.textContent = `已互关(${tabCounters.mutual})`;
       this.elements.tabs.not_back.textContent = `未回关(${tabCounters.not_back})`;
       this.elements.tabs.failed.textContent = `失败(${tabCounters.failed})`;
-      this.elements.footer.textContent = `共 ${tabCounters.all} 人 · 未回关 ${tabCounters.not_back} 人`;
+      this.elements.footer.textContent =
+        `共 ${tabCounters.all} 人 · 未回关 ${tabCounters.not_back} 人 · 白名单 ${WhitelistManager.size} 人`;
       // 列表数据刷新时也同步按钮文案（防止初始化后标签与按钮不一致）。
       this._updateCollectPostDateBtnLabel();
+      this._updateWhitelistBtnLabel();
 
       this._refreshBatchBar();
 
@@ -4240,6 +4506,8 @@
       ScrollSpeedManager.load();
       // 恢复用户上次设置的"不活跃阈值"天数（若从未设置过则使用默认 365 天）。
       InactivityThresholdManager.load();
+      // 恢复用户上次保存的白名单（跨账号/跨列表页面全局生效）。
+      WhitelistManager.load();
 
       /** 当前已初始化面板对应的所有者用户名，用于避免重复初始化。 */
       let currentOwnerUsername = null;

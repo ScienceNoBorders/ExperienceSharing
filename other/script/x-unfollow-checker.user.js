@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         X 用户检测助手 (X Users Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
-// @version      3.0.4
-// @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
+// @version      3.1.0
+// @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。支持「白名单」功能（面板"复制日报"按钮旁）：填入的用户名不参与互关状态与发帖日期扫描，也不计入统计数据，底部统计与日报会单独展示白名单人数。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
 // @match        https://twitter.com/*
@@ -69,7 +69,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '3.0.4';
+  const SCRIPT_VERSION = '3.1.0';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -723,6 +723,88 @@
       if (lastPostDate === null) return true; // 采集过但完全没有发帖记录。
       const days = Utils.daysSince(lastPostDate);
       return days !== null && days > this.days;
+    },
+  };
+
+  /** 用于持久化"白名单"设置的 GM_setValue 键名。跨账号/跨列表页面全局生效。 */
+  const WHITELIST_STORAGE_KEY = 'ufs_whitelist_usernames_v1';
+
+  /**
+   * 管理"白名单"用户名集合。命中白名单的用户不参与互关状态扫描，也不参与
+   * 批量发帖日期扫描，同时会从统计数据（总数/已互关/未回关/失败等）中
+   * 排除，避免其干扰各项计数；面板会单独展示白名单人数以作说明。
+   * 用户名统一做归一化处理（去除开头的 @、转小写）后再比较/存储，因此
+   * "@ElonMusk" 与 "elonmusk" 会被视为同一人。
+   */
+  const WhitelistManager = {
+    /** @type {Set<string>} 归一化后（无 @、小写）的白名单用户名集合。 */
+    usernames: new Set(),
+
+    /** 从 GM_getValue 中恢复上次保存的白名单（读取失败则视为空白名单）。 */
+    load() {
+      let saved = [];
+      try {
+        const raw = GM_getValue(WHITELIST_STORAGE_KEY, '[]');
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed)) saved = parsed;
+      } catch (error) {
+        Logger.warn('读取白名单设置失败，使用空白名单', error);
+      }
+      this.usernames = new Set(saved.map((name) => this.normalize(name)).filter(Boolean));
+    },
+
+    /** 将当前白名单持久化保存。 */
+    save() {
+      try {
+        GM_setValue(WHITELIST_STORAGE_KEY, JSON.stringify(Array.from(this.usernames)));
+      } catch (error) {
+        Logger.warn('保存白名单设置失败', error);
+      }
+    },
+
+    /**
+     * 归一化用户名：去除首尾空白与开头的 @ 前缀，统一转为小写，便于比较。
+     * @param {string} raw 原始输入（可能带 @、大小写混杂、首尾空白）。
+     * @returns {string} 归一化后的用户名，空输入返回空字符串。
+     */
+    normalize(raw) {
+      if (!raw) return '';
+      return String(raw).trim().replace(/^@+/, '').toLowerCase();
+    },
+
+    /**
+     * 用一段以回车/换行分隔的文本整体覆盖白名单（面板文本框保存时调用）。
+     * 自动跳过空行，并对用户名去重。
+     * @param {string} text 多行文本，每行一个用户名。
+     */
+    setFromText(text) {
+      const list = String(text || '')
+        .split(/[\r\n]+/)
+        .map((line) => this.normalize(line))
+        .filter(Boolean);
+      this.usernames = new Set(list);
+      this.save();
+    },
+
+    /** 将当前白名单转换为多行文本（每行一个 @用户名），供文本框回显。 */
+    toText() {
+      return Array.from(this.usernames)
+        .map((name) => `@${name}`)
+        .join('\n');
+    },
+
+    /**
+     * 判断给定用户名是否命中白名单。
+     * @param {string} username 用户名（可带或不带 @）。
+     * @returns {boolean}
+     */
+    has(username) {
+      return this.usernames.has(this.normalize(username));
+    },
+
+    /** 当前白名单人数，供面板统计展示使用。 */
+    get size() {
+      return this.usernames.size;
     },
   };
 
@@ -1958,6 +2040,7 @@
         for (const cell of cells) {
           const username = Parser.extractUsernameFromCell(cell);
           if (!username) continue;
+          if (WhitelistManager.has(username)) continue; // 白名单用户：跳过互关状态扫描。
           collectedUsernames.add(username);
 
           const existingEntry = this.scanResults[username];
@@ -2081,6 +2164,10 @@
      * @returns {Promise<void>}
      */
     async rescanUser(username) {
+      if (WhitelistManager.has(username)) {
+        Logger.warn(`@${username} 在白名单中，跳过重新扫描`);
+        return;
+      }
       Logger.info(`重新扫描 @${username}`);
 
       const cell = this._findCellForUsername(username);
@@ -2581,16 +2668,20 @@
      * @returns {Array<{username:string, status:string, reason:string, profile:object|null, lastPostDate:string|null|undefined}>}
      */
     getAllRows() {
-      return this.followingList.map((username) => {
-        const entry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
-        return {
-          username,
-          status: entry.status,
-          reason: entry.reason || '',
-          profile: entry.profile || null,
-          lastPostDate: entry.lastPostDate, // undefined = 尚未采集；null = 采集过但无发帖记录。
-        };
-      });
+      return this.followingList
+        // 白名单用户（含加入白名单之前就已缓存的历史数据）一律从展示/统计
+        // 范围中排除，避免其干扰各分类计数与"每日一统"报告。
+        .filter((username) => !WhitelistManager.has(username))
+        .map((username) => {
+          const entry = this.scanResults[username] || { status: SCAN_STATUS.PENDING, reason: '' };
+          return {
+            username,
+            status: entry.status,
+            reason: entry.reason || '',
+            profile: entry.profile || null,
+            lastPostDate: entry.lastPostDate, // undefined = 尚未采集；null = 采集过但无发帖记录。
+          };
+        });
     }
 
     /**
@@ -2639,11 +2730,13 @@
       this._injectStyles();
       this._buildSkeleton();
       this._buildHoverCard();
+      this._buildWhitelistModal();
       this._bindStaticEvents();
       this._bindDragEvents();
       this._applyInitialPosition();
       this._initSpeedControl();
       this.elements.inactiveThresholdInput.value = String(InactivityThresholdManager.days);
+      this._updateWhitelistBtnLabel();
       this._onWindowResize = Utils.debounce(() => this._reclampToViewport(), 200);
       window.addEventListener('resize', this._onWindowResize);
     }
@@ -2682,7 +2775,7 @@
           background: transparent; border: none; color: #8b98a5; cursor: pointer;
           font-size: 14px; padding: 2px 6px; border-radius: 6px;
         }
-        #ufs-panel .ufs-icon-btn:hover { background: #2f3336; color: #e7e9ea; }
+        #ufs-panel .ufs-icon-btn:hover { background: #2f3336; color: #000; }
         #ufs-panel .ufs-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
         #ufs-panel .ufs-progress-wrap { padding: 8px 12px 0; }
         #ufs-panel .ufs-progress-text { font-size: 12px; color: #8b98a5; margin-bottom: 6px; }
@@ -2848,6 +2941,37 @@
         #ufs-hovercard .ufs-hc-actions button:hover { background: #3a3f42; }
         #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn { background: #f4212e; color: #fff; }
         #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:hover { background: #d81b25; }
+
+        /* 白名单管理弹窗：全屏半透明遮罩 + 居中卡片，风格与主面板保持一致。 */
+        #ufs-whitelist-overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000001;
+          display: none; align-items: center; justify-content: center;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal {
+          width: 320px; max-width: calc(100vw - 32px); max-height: calc(100vh - 80px);
+          background: #15181c; color: #15181c; border-radius: 16px; border: 1px solid #2f3336;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.6); display: flex; flex-direction: column;
+          overflow: hidden;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-header {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 12px 14px; background: #1d2226; font-weight: 700; font-size: 14px;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-hint {
+          padding: 10px 14px 0; font-size: 11px; color: #8b98a5; line-height: 1.5;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-textarea {
+          margin: 10px 14px; flex: 1; min-height: 160px; resize: vertical;
+          background: #0f1317; border: 1px solid #2f3336; border-radius: 8px;
+          color: #e7e9ea; padding: 8px; font-size: 12px; line-height: 1.6; font-family: inherit;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-textarea:focus { outline: 1px solid #1d9bf0; }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-footer {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 8px 14px 14px; font-size: 11px; color: #8b98a5;
+        }
+        #ufs-whitelist-overlay .ufs-whitelist-modal-actions { display: flex; gap: 8px; }
       `);
     }
 
@@ -2874,6 +2998,7 @@
             <button class="ufs-btn" id="ufs-export-csv-btn">导出CSV</button>
             <button class="ufs-btn" id="ufs-export-txt-btn">导出TXT</button>
             <button class="ufs-btn" id="ufs-copy-all-btn">复制日报</button>
+            <button class="ufs-btn" id="ufs-whitelist-btn" title="白名单内的用户不参与互关状态与发帖日期扫描">⭐ 白名单</button>
           </div>
           <div class="ufs-speed-row">
             <div class="ufs-speed-label-row">
@@ -2978,6 +3103,98 @@
       hoverCard.addEventListener('mouseleave', () => this._scheduleHideHoverCard());
     }
 
+    /**
+     * 构建"白名单管理"弹窗的 DOM 结构。与悬浮资料卡一样独立挂载在
+     * document.documentElement 下，用一层半透明遮罩覆盖全屏，点击遮罩
+     * 空白处或右上角关闭按钮均可放弃本次编辑；只有点击"保存"才会真正
+     * 写入 WhitelistManager 并持久化。文本框内每行代表一个白名单用户名，
+     * 支持"@用户名"或"用户名"两种写法，用回车键换行分隔多个用户。
+     */
+    _buildWhitelistModal() {
+      const overlay = document.createElement('div');
+      overlay.id = 'ufs-whitelist-overlay';
+      overlay.innerHTML = `
+        <div class="ufs-whitelist-modal">
+          <div class="ufs-whitelist-modal-header">
+            <span>⭐ 白名单管理</span>
+            <button class="ufs-icon-btn" id="ufs-whitelist-close-btn" title="关闭">✕</button>
+          </div>
+          <div class="ufs-whitelist-modal-hint">
+            白名单内的用户不会被扫描互关状态，也不会被纳入发帖日期扫描，且不计入下方的统计数据。每行填写一个用户名（支持 @xinzhizhu9795 或 xinzhizhu9795 两种写法），按回车换行即可继续添加下一个。
+          </div>
+          <textarea class="ufs-whitelist-textarea" id="ufs-whitelist-textarea" placeholder="@xinzhizhu9795&#10;@elonmusk&#10;..."></textarea>
+          <div class="ufs-whitelist-modal-footer">
+            <span class="ufs-whitelist-modal-count" id="ufs-whitelist-modal-count">共 0 人</span>
+            <div class="ufs-whitelist-modal-actions">
+              <button class="ufs-btn" id="ufs-whitelist-cancel-btn">取消</button>
+              <button class="ufs-btn ufs-btn-primary" id="ufs-whitelist-save-btn">保存</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.documentElement.appendChild(overlay);
+      this.whitelistModalElements = {
+        overlay,
+        textarea: overlay.querySelector('#ufs-whitelist-textarea'),
+        countLabel: overlay.querySelector('#ufs-whitelist-modal-count'),
+        closeBtn: overlay.querySelector('#ufs-whitelist-close-btn'),
+        cancelBtn: overlay.querySelector('#ufs-whitelist-cancel-btn'),
+        saveBtn: overlay.querySelector('#ufs-whitelist-save-btn'),
+      };
+
+      // 点击遮罩空白处（而非弹窗本身）视为取消编辑并关闭。
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) this._closeWhitelistModal();
+      });
+      this.whitelistModalElements.closeBtn.addEventListener('click', () => this._closeWhitelistModal());
+      this.whitelistModalElements.cancelBtn.addEventListener('click', () => this._closeWhitelistModal());
+      this.whitelistModalElements.saveBtn.addEventListener('click', () => this._onSaveWhitelist());
+      this.whitelistModalElements.textarea.addEventListener('input', () => this._updateWhitelistModalCount());
+    }
+
+    /** 打开白名单弹窗：用当前已保存的白名单回填文本框，并同步一次人数统计。 */
+    _openWhitelistModal() {
+      this.whitelistModalElements.textarea.value = WhitelistManager.toText();
+      this._updateWhitelistModalCount();
+      this.whitelistModalElements.overlay.style.display = 'flex';
+      this.whitelistModalElements.textarea.focus();
+    }
+
+    /** 关闭白名单弹窗（不做任何保存，文本框内容会在下次打开时被重新回填覆盖）。 */
+    _closeWhitelistModal() {
+      this.whitelistModalElements.overlay.style.display = 'none';
+    }
+
+    /** 根据文本框当前内容，实时更新弹窗内的"共 N 人"计数（自动去重、忽略空行）。 */
+    _updateWhitelistModalCount() {
+      const names = this.whitelistModalElements.textarea.value
+        .split(/[\r\n]+/)
+        .map((line) => WhitelistManager.normalize(line))
+        .filter(Boolean);
+      const uniqueCount = new Set(names).size;
+      this.whitelistModalElements.countLabel.textContent = `共 ${uniqueCount} 人`;
+    }
+
+    /**
+     * 保存白名单：整体覆盖写入 WhitelistManager 并持久化，关闭弹窗，
+     * 刷新按钮上的人数标签，并（若已绑定 Scanner）立即重新渲染列表，
+     * 使白名单变更对统计数据/分类计数/列表展示即时生效。
+     */
+    _onSaveWhitelist() {
+      WhitelistManager.setFromText(this.whitelistModalElements.textarea.value);
+      this._closeWhitelistModal();
+      this._updateWhitelistBtnLabel();
+      if (this.scanner) this.renderList(this.scanner.getAllRows());
+      Logger.success(`白名单已保存，共 ${WhitelistManager.size} 人`);
+    }
+
+    /** 同步面板按钮上展示的白名单人数标签。 */
+    _updateWhitelistBtnLabel() {
+      if (this.elements && this.elements.whitelistBtn) {
+        this.elements.whitelistBtn.textContent = `⭐ 白名单(${WhitelistManager.size})`;
+      }
+    }
+
     /** 缓存常用 DOM 元素引用，避免重复查询。 */
     _cacheElements() {
       this.elements = {
@@ -2991,6 +3208,7 @@
         exportCsvBtn: this.root.querySelector('#ufs-export-csv-btn'),
         exportTxtBtn: this.root.querySelector('#ufs-export-txt-btn'),
         copyAllBtn: this.root.querySelector('#ufs-copy-all-btn'),
+        whitelistBtn: this.root.querySelector('#ufs-whitelist-btn'),
         searchInput: this.root.querySelector('#ufs-search-input'),
         sortBtn: this.root.querySelector('#ufs-sort-btn'),
         speedSlider: this.root.querySelector('#ufs-speed-slider'),
@@ -3044,6 +3262,7 @@
       this.elements.exportCsvBtn.addEventListener('click', () => this._onExportCsv());
       this.elements.exportTxtBtn.addEventListener('click', () => this._onExportTxt());
       this.elements.copyAllBtn.addEventListener('click', () => this._onCopyAll());
+      this.elements.whitelistBtn.addEventListener('click', () => this._openWhitelistModal());
       this.elements.sortBtn.addEventListener('click', () => this._onToggleSort());
       this.elements.speedSlider.addEventListener('input', (event) => this._onSpeedChange(event.target.value));
       this.elements.selectAllCheckbox.addEventListener('change', (event) => this._onSelectAllChange(event.target.checked));
@@ -3401,6 +3620,8 @@
         `⚪ 非认证账号：${unverifiedTotal} 人`,
         '',
         `📌 未回关名单中：认证 ${notBackVerified} 人 / 非认证 ${notBackUnverified} 人`,
+        '',
+        `⭐ 白名单：${WhitelistManager.size} 人（不参与以上统计）`,
       ];
 
       return lines.join('\n');
@@ -3974,9 +4195,11 @@
       this.elements.tabs.mutual.textContent = `已互关(${tabCounters.mutual})`;
       this.elements.tabs.not_back.textContent = `未回关(${tabCounters.not_back})`;
       this.elements.tabs.failed.textContent = `失败(${tabCounters.failed})`;
-      this.elements.footer.textContent = `共 ${tabCounters.all} 人 · 未回关 ${tabCounters.not_back} 人`;
+      this.elements.footer.textContent =
+        `共 ${tabCounters.all} 人 · 未回关 ${tabCounters.not_back} 人 · 白名单 ${WhitelistManager.size} 人`;
       // 列表数据刷新时也同步按钮文案（防止初始化后标签与按钮不一致）。
       this._updateCollectPostDateBtnLabel();
+      this._updateWhitelistBtnLabel();
 
       this._refreshBatchBar();
 
@@ -4283,6 +4506,8 @@
       ScrollSpeedManager.load();
       // 恢复用户上次设置的"不活跃阈值"天数（若从未设置过则使用默认 365 天）。
       InactivityThresholdManager.load();
+      // 恢复用户上次保存的白名单（跨账号/跨列表页面全局生效）。
+      WhitelistManager.load();
 
       /** 当前已初始化面板对应的所有者用户名，用于避免重复初始化。 */
       let currentOwnerUsername = null;
