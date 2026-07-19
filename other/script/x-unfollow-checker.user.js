@@ -2949,7 +2949,7 @@
         }
         #ufs-whitelist-overlay .ufs-whitelist-modal {
           width: 320px; max-width: calc(100vw - 32px); max-height: calc(100vh - 80px);
-          background: #15181c; color: #15181c; border-radius: 16px; border: 1px solid #2f3336;
+          background: #15181c; color: #8b98a5; border-radius: 16px; border: 1px solid #2f3336;
           box-shadow: 0 12px 32px rgba(0,0,0,0.6); display: flex; flex-direction: column;
           overflow: hidden;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
