@@ -52,27 +52,25 @@ do
     START=$(date +%s%3N)
 
 
-    if timeout 3 openssl s_client \
-        -connect "${d}:443" \
-        -servername "${d}" \
-        </dev/null >/dev/null 2>&1
+    OUTPUT=$(timeout 5 openssl s_client \
+    -connect "${d}:443" \
+    -servername "${d}" \
+    </dev/null 2>&1)
 
-    then
+
+    if echo "$OUTPUT" | grep -q "CONNECTED"; then
 
         END=$(date +%s%3N)
 
         COST=$((END-START))
 
-
         echo "$COST $d" >> "$RESULT"
 
-
-        echo "  OK ${COST} ms"
-
+        echo "OK ${COST} ms"
 
     else
 
-        echo "  FAIL"
+        echo "FAIL $d"
 
     fi
 
