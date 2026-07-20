@@ -4,14 +4,14 @@
 # VLESS 域名优选测速脚本
 # 功能:
 # 1. 内置域名池
-# 2. 每次随机抽5-10个
+# 2. 每次随机抽20-30个
 # 3. TLS握手测速
 # 4. 输出最快域名
 # ==========================================
 
 
 # 随机测试数量
-COUNT=$((RANDOM % 6 + 5))
+COUNT=$((RANDOM % 11 + 20))
 
 
 # ==========================
@@ -23,23 +23,72 @@ DOMAINS_POOL=(
 )
 
 
-echo "随机测试 $COUNT 个域名"
+echo "随机测试数量: $COUNT"
 
 
+RESULT=$(mktemp)
+
+
+echo
+echo "=============================="
+echo "开始测速"
+echo "=============================="
+
+
+# 随机抽取 COUNT 个
 for d in $(printf "%s\n" "${DOMAIN_POOL[@]}" | sort -R | head -n "$COUNT")
 do
 
     t1=$(date +%s%3N)
 
+
     timeout 1 openssl s_client \
         -connect $d:443 \
         -servername $d \
-        </dev/null &>/dev/null \
-    && \
-    t2=$(date +%s%3N) \
-    && \
-    echo "$d: $((t2 - t1)) ms" \
-    || \
-    echo "$d: timeout"
+        </dev/null &>/dev/null
+
+
+    if [ $? -eq 0 ]; then
+
+        t2=$(date +%s%3N)
+
+        ms=$((t2 - t1))
+
+        echo "$ms $d" >> "$RESULT"
+
+        echo "OK   $d : ${ms} ms"
+
+    else
+
+        echo "FAIL $d"
+
+    fi
 
 done
+
+
+echo
+echo "=============================="
+echo "延迟最低 TOP 3"
+echo "=============================="
+
+
+TOP3=$(sort -n "$RESULT" | head -3)
+
+
+echo "$TOP3"
+
+
+echo
+echo "=============================="
+echo "最快域名"
+echo "=============================="
+
+
+BEST=$(echo "$TOP3" | head -1 | awk '{print $2}')
+
+
+echo "$BEST"
+
+
+rm -f "$RESULT"
