@@ -23,92 +23,23 @@ DOMAINS_POOL=(
 )
 
 
-echo "================================"
-echo "随机抽取 ${COUNT} 个域名"
-echo "================================"
+echo "随机测试 $COUNT 个域名"
 
 
-# 随机抽取域名
-mapfile -t DOMAINS < <(
-    printf "%s\n" "${DOMAINS_POOL[@]}" |
-    shuf -n "$COUNT"
-)
-
-
-RESULT=$(mktemp)
-
-
-echo
-echo "开始测速..."
-echo
-
-
-for d in "${DOMAINS[@]}"
+for d in $(printf "%s\n" "${DOMAIN_POOL[@]}" | sort -R | head -n "$COUNT")
 do
 
-    echo "Testing $d"
+    t1=$(date +%s%3N)
 
-
-    START=$(date +%s%3N)
-
-
-    OUTPUT=$(timeout 5 openssl s_client \
-    -connect "${d}:443" \
-    -servername "${d}" \
-    </dev/null 2>&1)
-
-
-    if echo "$OUTPUT" | grep -q "CONNECTED"; then
-
-        END=$(date +%s%3N)
-
-        COST=$((END-START))
-
-        echo "$COST $d" >> "$RESULT"
-
-        echo "OK ${COST} ms"
-
-    else
-
-        echo "FAIL $d"
-
-    fi
+    timeout 1 openssl s_client \
+        -connect $d:443 \
+        -servername $d \
+        </dev/null &>/dev/null \
+    && \
+    t2=$(date +%s%3N) \
+    && \
+    echo "$d: $((t2 - t1)) ms" \
+    || \
+    echo "$d: timeout"
 
 done
-
-
-echo
-echo "================================"
-echo "测速排序"
-echo "================================"
-
-
-if [ ! -s "$RESULT" ]; then
-    echo "没有可用域名"
-    exit 1
-fi
-
-
-sort -n "$RESULT"
-
-
-echo
-echo "================================"
-echo "最快域名"
-echo "================================"
-
-
-BEST=$(sort -n "$RESULT" | head -1)
-
-echo "$BEST"
-
-
-BEST_DOMAIN=$(echo "$BEST" | awk '{print $2}')
-
-
-echo
-echo "推荐 VLESS address:"
-echo "$BEST_DOMAIN"
-
-
-rm -f "$RESULT"
