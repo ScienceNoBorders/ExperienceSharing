@@ -3,7 +3,7 @@
 在X平台上，蓝V认证早已成为身份与影响力的象征。拥有蓝V的账号往往能获得更多曝光、信任与合作机会，但随之而来的问题是：关注列表越来越长，如何高效判断哪些人是真正活跃账户，哪些账户多长时间未发表帖子和文章？现在有一款**完全免费、纯前端实现**的 Tampermonkey 脚本，能帮你一键解决这个问题——**X 用户检测助手**。
 
 **脚本名称**：X 用户检测助手 (X Users Checker)  
-**版本**：2.9.8
+**版本**：3.1.1
 
 ## 核心原理
 
@@ -74,9 +74,10 @@
 
 ## 使用视频展示
 
-**点击下方链接观看完整操作演示视频**：
+**点击下方图片观看完整操作演示视频**：
 
-<iframe width="560" height="315" src="https://www.youtube.com/watch?v=D0IEGKCV2gk" frameborder="0" allowfullscreen></iframe>
+[![操作演示视频](image-3.png)](https://www.youtube.com/watch?v=DOIEGKCV2gk)
+
 
 ## 重要声明与注意事项
 
