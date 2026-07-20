@@ -76,7 +76,7 @@
 
 **点击下方图片观看完整操作演示视频**：
 
-[![操作演示视频](image-3.png)](https://www.youtube.com/watch?v=DOIEGKCV2gk)
+[![操作演示视频](image-3.png)](https://youtu.be/D0IEGKCV2gk)
 
 
 ## 重要声明与注意事项
