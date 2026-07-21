@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搬瓦工 VPS 全套餐控制台 · BandwagonHost Plans</title>
+<link href="./googleapiscss2.css" rel="stylesheet">
+<style>
+  :root{
+    --void:#0A0D13;
+    --panel:#10141C;
+    --panel-raised:#151B26;
+    --line:#212836;
+    --line-soft:#181f2b;
+    --text:#DDE3F0;
+    --muted:#748199;
+    --muted2:#6B7690;
+    --signal:#4DD8C4;
+    --signal-dim:#245751;
+    --warn:#F2B84B;
+    --warn-dim:#6b5527;
+    --alert:#FF6B6B;
+    --alert-dim:#5c2f30;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    --sans:'Noto Sans SC','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(77,216,196,0.07), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(242,184,75,0.05), transparent 35%);
+  }
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:var(--mono);}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  /* status bar */
+  .statusbar{
+    border-bottom:1px solid var(--line);
+    background:rgba(16,20,28,0.8);
+    backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:50;
+  }
+  .statusbar .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;font-family:var(--mono);font-size:12.5px;color:var(--muted2);}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--signal);margin-right:8px;box-shadow:0 0 8px var(--signal);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .statusbar nav{display:flex;gap:18px;}
+  .statusbar nav a{color:var(--muted2);white-space:nowrap;}
+  .statusbar nav a:hover{color:var(--signal);}
+  .statusbar-scroll{overflow-x:auto;}
+  .statusbar-scroll::-webkit-scrollbar{display:none;}
+
+  /* hero */
+  .hero{padding:76px 0 56px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;color:var(--signal);display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .eyebrow::before{content:'';width:22px;height:1px;background:var(--signal);}
+  h1{font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-.01em;line-height:1.15;max-width:820px;}
+  h1 .accent{color:var(--signal);}
+  .lede{margin-top:20px;max-width:640px;color:var(--muted2);font-size:16px;}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 22px;border-radius:3px;font-size:14.5px;font-weight:700;
+    font-family:var(--sans);border:1px solid transparent;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--signal);color:#04231F;}
+  .btn-primary:hover{box-shadow:0 0 0 3px rgba(77,216,196,.18);}
+  .btn-ghost{border-color:var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--signal);color:var(--signal);}
+  .btn small{font-family:var(--mono);opacity:.7;font-weight:500;}
+
+  .aff-tag{font-family:var(--mono);font-size:12px;color:var(--muted2);margin-top:14px;}
+  .aff-tag code{color:var(--warn);background:var(--panel-raised);padding:2px 6px;border-radius:2px;border:1px solid var(--line);}
+
+  /* featured */
+  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:32px;flex-wrap:wrap;}
+  .section-title{font-size:22px;font-weight:900;display:flex;align-items:center;gap:12px;}
+  .index{font-family:var(--mono);color:var(--muted2);font-size:14px;}
+  .section-sub{color:var(--muted2);font-size:13.5px;max-width:480px;}
+
+  /* signal bars - signature element */
+  .signal{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;color:var(--muted2);}
+  .signal .bars{display:flex;gap:3px;align-items:flex-end;height:16px;}
+  .signal .bars i{display:block;width:4px;background:var(--line);border-radius:1px;}
+  .signal .bars i:nth-child(1){height:5px;}
+  .signal .bars i:nth-child(2){height:8px;}
+  .signal .bars i:nth-child(3){height:11px;}
+  .signal .bars i:nth-child(4){height:14px;}
+  .signal .bars i:nth-child(5){height:16px;}
+  .signal.t1 .bars i{background:var(--signal);box-shadow:0 0 6px var(--signal);}
+  .signal.t2 .bars i:nth-child(-n+4){background:var(--signal);opacity:.85;}
+  .signal.t3 .bars i:nth-child(-n+3){background:var(--signal);opacity:.7;}
+  .signal.t4 .bars i:nth-child(-n+2){background:var(--warn);opacity:.8;}
+  .signal.t5 .bars i:nth-child(-n+1){background:var(--muted2);}
+
+  .speed-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+  .speed-row{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;}
+  .speed-rank{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--line);width:26px;}
+  .speed-name{font-size:13.5px;font-weight:500;}
+  .speed-name span{display:block;font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px;}
+
+  /* featured cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    padding:26px;position:relative;overflow:hidden;
+  }
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line);}
+  .card.tier-entry::before{background:var(--muted2);}
+  .card.tier-rec::before{background:var(--signal);box-shadow:0 0 10px var(--signal);}
+  .card.tier-pro::before{background:var(--warn);}
+  .card.tier-top::before{background:var(--alert);}
+  .card-badge{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted2);text-transform:uppercase;}
+  .card.tier-rec .card-badge{color:var(--signal);}
+  .card.tier-top .card-badge{color:var(--alert);}
+  .card h3{font-size:19px;margin:8px 0 2px;}
+  .card .price{font-family:var(--mono);font-size:30px;font-weight:700;margin:14px 0 4px;}
+  .card .price span{font-size:13px;color:var(--muted2);font-weight:400;}
+  .card .price-year{font-family:var(--mono);font-size:12.5px;color:var(--muted2);margin-bottom:16px;}
+  .card ul{list-style:none;font-size:13.5px;color:var(--text);}
+  .card ul li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line-soft);font-family:var(--mono);font-size:12.8px;}
+  .card ul li b{font-family:var(--sans);font-weight:400;color:var(--muted2);}
+  .card .rooms{margin-top:14px;font-size:12px;color:var(--muted2);line-height:1.7;}
+  .card .buy{display:block;text-align:center;margin-top:18px;padding:11px;border-radius:3px;background:var(--panel-raised);border:1px solid var(--line);font-weight:700;font-size:13.5px;}
+  .card.tier-rec .buy{background:var(--signal);color:#04231F;border-color:var(--signal);}
+  .card .buy:hover{filter:brightness(1.1);}
+
+  /* series tables */
+  .series-desc{color:var(--muted2);font-size:13.5px;margin-bottom:22px;max-width:640px;}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel);}
+  table{width:100%;border-collapse:collapse;min-width:760px;}
+  thead th{
+    text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+    color:var(--muted2);text-transform:uppercase;padding:14px 16px;
+    border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  tbody td{padding:14px 16px;border-bottom:1px solid var(--line-soft);font-size:13.5px;vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--panel-raised);}
+  tbody tr.rec{background:rgba(77,216,196,0.05);}
+  tbody tr.rec td:first-child{position:relative;}
+  tbody tr.rec td:first-child::before{content:'★';color:var(--signal);margin-right:6px;font-size:11px;}
+  td.num{font-family:var(--mono);white-space:nowrap;}
+  td.rooms{font-size:12px;color:var(--muted2);max-width:260px;line-height:1.7;}
+  td.rooms b{color:var(--text);font-weight:500;}
+  .tag{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:2px 6px;border-radius:2px;background:var(--panel-raised);border:1px solid var(--line);color:var(--muted2);margin-bottom:4px;}
+  td.price{font-family:var(--mono);white-space:nowrap;font-weight:600;display:flex}
+  td.price small{display:block;font-weight:400;color:var(--muted2);font-size:11px;margin-top:2px;}
+  .buy-mini{
+    display:inline-block;padding:8px 16px;border-radius:3px;border:1px solid var(--signal);
+    color:var(--signal);font-size:12.5px;font-weight:700;white-space:nowrap;
+  }
+  .buy-mini:hover{background:var(--signal);color:#04231F;}
+
+  /* responsive card-table for mobile */
+  @media (max-width:720px){
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{display:none;}
+    table{min-width:0;}
+    tbody tr{border-bottom:1px solid var(--line);padding:14px 16px;}
+    tbody tr:hover{background:none;}
+    tbody td{border:none;padding:6px 0;display:flex;justify-content:space-between;gap:12px;}
+    tbody td::before{content:attr(data-label);font-family:var(--mono);font-size:10.5px;color:var(--muted2);text-transform:uppercase;flex-shrink:0;padding-top:2px;}
+    td.rooms{display:block;}
+    td.rooms::before{display:block;margin-bottom:6px;}
+    .buy-mini{display:block;text-align:center;margin-top:8px;}
+  }
+
+  footer{padding:48px 0 70px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:36px;}
+  .footer-grid h4{font-size:13px;margin-bottom:14px;color:var(--muted2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;}
+  .footer-grid ul{list-style:none;font-size:13.5px;}
+  .footer-grid li{margin-bottom:9px;}
+  .footer-grid li a:hover{color:var(--signal);}
+  .disclaimer{
+    font-size:12.5px;color:var(--muted2);border:1px solid var(--line);background:var(--panel);
+    padding:18px 20px;border-radius:4px;line-height:1.8;
+  }
+  .disclaimer b{color:var(--text);}
+  .copyright{margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--muted2);}
+  @media (max-width:720px){.footer-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="statusbar">
+  <div class="wrap statusbar-scroll">
+    <div><span class="dot"></span>25+ 全球机房 · 实时库存监测中</div>
+    <nav>
+      <a href="#quick">精选</a>
+      <a href="#speed">线路排行</a>
+      <a href="#kvm">KVM</a>
+      <a href="#gia-e">CN2 GIA‑E</a>
+      <a href="#sla">SLA</a>
+      <a href="#sg">新加坡</a>
+      <a href="#osaka">大阪</a>
+      <a href="#tokyo">东京</a>
+      <a href="#hk">香港</a>
+      <a href="#dubai">迪拜</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">BANDWAGONHOST · 套餐控制台 · 2026-07</div>
+    <h1>搬瓦工 VPS<br><span class="accent">全套餐一览</span>，一页看完</h1>
+    <p class="lede">从年付 $49.99 的入门 KVM，到三网 CN2 GIA 直连的电子商务套餐，再到中国香港 / 日本东京大阪 / 新加坡 / 迪拜多地机房 —— 本页汇总搬瓦工官网目前在售的全部常规方案，配置、价格、可选机房一次看清，点击即可直达购买页。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://bwh81.net/aff.php?aff=76211" target="_blank" rel="noopener">进入搬瓦工官网 →</a>
+      <a class="btn btn-ghost" href="https://bwh81.net/aff.php?aff=76211&gid=1" target="_blank" rel="noopener">查看官网全部方案</a>
+    </div>
+  </div>
+</header>
+
+<section id="quick">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">01</span> 三款最多人选的套餐</div>
+        <div class="section-sub">选择困难就直接看这里：入门够用、性价比最高、以及不差钱的高端之选。</div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card tier-entry">
+        <div class="card-badge">入门首选</div>
+        <h3>CN2 <span class="mono" style="color:var(--muted2);font-size:13px;">KVM</span></h3>
+        <div class="price">$49.99<span>/年</span></div>
+        <div class="price-year">速度够用，适合学习与轻量建站</div>
+        <ul>
+          <li><b>CPU</b> 2 核</li>
+          <li><b>内存</b> 1GB</li>
+          <li><b>硬盘</b> 20GB SSD</li>
+          <li><b>流量</b> 1TB / 月</li>
+          <li><b>带宽</b> 1Gbps</li>
+        </ul>
+        <div class="rooms">机房：DC3 CN2 / DC8 ZNET 等美国洛杉矶机房</div>
+        <a class="buy" href="https://bwh81.net/aff.php?aff=76211&pid=44" target="_blank" rel="noopener">立即购买</a>
+      </div>
+      <div class="card tier-rec">
+        <div class="card-badge">★ 最多人选</div>
+        <h3>CN2 GIA‑E</h3>
+        <div class="price">$49.99<span>/季度</span></div>
+        <div class="price-year">≈ $169.99 / 年 · 三网 CN2 GIA 直连，12 个机房任选</div>
+        <ul>
+          <li><b>CPU</b> 2 核</li>
+          <li><b>内存</b> 1GB</li>
+          <li><b>硬盘</b> 20GB SSD</li>
+          <li><b>流量</b> 1TB / 月</li>
+          <li><b>带宽</b> 2.5Gbps</li>
+        </ul>
+        <div class="rooms">机房：DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 / 加拿大 CN2 GIA 等，后台可自由迁移</div>
+        <a class="buy" href="https://bwh81.net/aff.php?aff=76211&pid=87" target="_blank" rel="noopener">立即购买</a>
+      </div>
+      <div class="card tier-top">
+        <div class="card-badge">高端旗舰</div>
+        <h3>香港 CN2 GIA</h3>
+        <div class="price">$89.99<span>/月</span></div>
+        <div class="price-year">≈ $899.99 / 年 · 延迟最低，预算充足首选</div>
+        <ul>
+          <li><b>CPU</b> 2 核</li>
+          <li><b>内存</b> 2GB</li>
+          <li><b>硬盘</b> 40GB SSD</li>
+          <li><b>流量</b> 0.5TB / 月</li>
+          <li><b>带宽</b> 1Gbps</li>
+        </ul>
+        <div class="rooms">机房：中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA 任选</div>
+        <a class="buy" href="https://bwh81.net/aff.php?aff=76211&pid=95" target="_blank" rel="noopener">立即购买</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="speed">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">02</span> 机房线路速度排行</div>
+        <div class="section-sub">电信线路扩容后的最新测速排序，条形越亮代表回程质量越好，选套餐时可作为机房参考。</div>
+      </div>
+    </div>
+    <div class="speed-legend">
+      <div class="speed-row"><span class="speed-rank">1</span><div class="speed-name">中国香港 CN2 GIA ≈ 日本东京 CN2 GIA<span>三网直连 · 延迟最低</span></div></div>
+      <div class="speed-row"><span class="speed-rank">2</span><div class="speed-name">日本大阪软银 JPOS_1<span>速度快 · 丢包率低</span></div></div>
+      <div class="speed-row"><span class="speed-rank">3</span><div class="speed-name">美国洛杉矶 DC6 / DC9 CN2 GIA<span>CN2 GIA‑E 系列主力机房</span></div></div>
+      <div class="speed-row"><span class="speed-rank">4</span><div class="speed-name">联通荷兰 EUNL_9<span>欧洲线路优选</span></div></div>
+      <div class="speed-row"><span class="speed-rank">5</span><div class="speed-name">美国洛杉矶 DC3 CN2<span>入门 CN2 线路</span></div></div>
+      <div class="speed-row"><span class="speed-rank">6</span><div class="speed-name">DC8 ZNET / DC4 MCOM / DC2 QNET / 弗里蒙特<span>普通线路，价格更低</span></div></div>
+      <div class="speed-row"><span class="speed-rank">7</span><div class="speed-name">美国新泽西 ≈ 纽约 ≈ 荷兰阿姆斯特丹<span>基础线路</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="kvm">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">03</span> KVM 常规方案</div>
+        <div class="section-sub">最便宜的入门系列，普通线路，适合学习 Linux、搭建个人网站。</div>
+      </div>
+      <div class="signal t5"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>基础线路</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  >
+          <td class="num" data-label="内存">1GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1Gbps</td>
+          <td class="rooms" data-label="机房">DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3</td>
+          <td class="price" data-label="价格">$49.99<small>/年</small></td>
+          <td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=44" target="_blank" rel="noopener">购买</a></td>
+        </tr>
+        <tr><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">3 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$52.99<small>/半年</small>&nbsp;·&nbsp;$99.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=45" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">3TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$19.99<small>/月</small>&nbsp;·&nbsp;$199.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=46" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">5 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$39.99<small>/月</small>&nbsp;·&nbsp;$399.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=47" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">5TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$79.99<small>/月</small>&nbsp;·&nbsp;$799.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=48" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">24GB</td><td class="num" data-label="CPU">7 核</td><td class="num" data-label="硬盘">480GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$119.99<small>/月</small>&nbsp;·&nbsp;$1199.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=49" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="gia-e">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">04</span> CN2 GIA‑E 电子商务方案</div>
+        <div class="section-sub">目前性价比最高的系列，三网 CN2 GIA 直连，可选机房最多，随时后台自由迁移。</div>
+      </div>
+      <div class="signal t3"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>三网直连</div>
+    </div>
+    <div class="series-desc">可选机房：<b>DC6 CN2 GIA‑E</b> / <b>DC9 CN2 GIA</b> / 日本软银 JPOS_1 / 荷兰 EUNL_9 / 加拿大 CN2 GIA / DC3 CN2 / DC8 ZNET / DC2 AO / DC4 MCOM / 弗里蒙特 / 新泽西 / 纽约 USNY_2 / 荷兰 EUNL_2 / 加拿大 CABC_1（购买后可在 KiwiVM 后台自由切换）。</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">1GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">2.5Gbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">$49.99<small>/季度</small>&nbsp;·&nbsp;$169.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=87" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">3 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">2.5Gbps</td><td data-label="标签"></td><td class="price" data-label="价格">$89.99<small>/季度</small>&nbsp;·&nbsp;$299.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=88" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">3TB</td><td class="num" data-label="带宽">2.5Gbps</td><td data-label="标签"><span class="tag">AI 部署</span></td><td class="price" data-label="价格">$56.99<small>/月</small>&nbsp;·&nbsp;$549.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=89" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">5TB</td><td class="num" data-label="带宽">5Gbps</td><td data-label="标签"></td><td class="price" data-label="价格">$86.99<small>/月</small>&nbsp;·&nbsp;$879.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=90" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">8TB</td><td class="num" data-label="带宽">5Gbps</td><td data-label="标签"></td><td class="price" data-label="价格">$159.99<small>/月</small>&nbsp;·&nbsp;$1599.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=91" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">10TB</td><td class="num" data-label="带宽">10Gbps</td><td data-label="标签"></td><td class="price" data-label="价格">$289.99<small>/月</small>&nbsp;·&nbsp;$2759.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=92" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">12TB</td><td class="num" data-label="带宽">10Gbps</td><td data-label="标签"></td><td class="price" data-label="价格">$549.99<small>/月</small>&nbsp;·&nbsp;$5399.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=93" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="sla">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">05</span> SLA 保障方案</div>
+        <div class="section-sub">美国 DC5 机房，独享 CPU 核心、NVMe RAID‑10、ECC 内存，99.99% 在线率保证，每两周可免费换 IP 一次，适合对稳定性要求高的外贸建站场景。</div>
+      </div>
+      <div class="signal t2"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>SLA 99.99%</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">1GB</td><td class="num" data-label="CPU">独享 2 核</td><td class="num" data-label="硬盘">20GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">2.5Gbps</td><td class="rooms" data-label="机房">美国 DC5 SLA，NVMe RAID‑10，ECC 内存</td><td class="price" data-label="价格">$65.89<small>/季度</small>&nbsp;·&nbsp;$239.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=164" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">独享 3 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">2.5Gbps</td><td class="rooms" data-label="机房">同上 · 外贸建站推荐</td><td class="price" data-label="价格">$116.99<small>/季度</small>&nbsp;·&nbsp;$399.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=165" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="sg">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">06</span> 新加坡 CN2 GIA 方案</div>
+        <div class="section-sub">全新 SG_8 机房，三网回程接入 CN2 GIA，适合东南亚业务与外贸场景。</div>
+      </div>
+      <div class="signal t3"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>东南亚优选</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">0.5TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">新加坡 CN2 GIA</td><td class="price" data-label="价格">$49.99<small>/月</small>&nbsp;·&nbsp;$499.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=173" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$86.99<small>/月</small>&nbsp;·&nbsp;$869.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=174" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">2.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$165.99<small>/月</small>&nbsp;·&nbsp;$1665.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=175" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">2.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$329.99<small>/月</small>&nbsp;·&nbsp;$3199<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=176" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$549.99<small>/月</small>&nbsp;·&nbsp;$5549.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=177" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">8TB</td><td class="num" data-label="带宽">5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$1059.99<small>/月</small>&nbsp;·&nbsp;$10559.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=178" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="osaka">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">07</span> 日本大阪 CN2 GIA 方案</div>
+        <div class="section-sub">速度快、延迟低、丢包率低，三网表现均衡，是日本线路里性价比最高的选择。</div>
+      </div>
+      <div class="signal t2"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>日本软银</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">0.5TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">日本大阪 CN2 GIA</td><td class="price" data-label="价格">$49.99<small>/月</small>&nbsp;·&nbsp;$499.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=134" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$86.99<small>/月</small>&nbsp;·&nbsp;$869.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=135" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$165.99<small>/月</small>&nbsp;·&nbsp;$1665.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=136" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$329.99<small>/月</small>&nbsp;·&nbsp;$3279.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=137" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$549.99<small>/月</small>&nbsp;·&nbsp;$5549.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=138" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">8TB</td><td class="num" data-label="带宽">1.5Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$1059.99<small>/月</small>&nbsp;·&nbsp;$10559.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=139" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="tokyo">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">08</span> 日本东京 CN2 GIA 方案</div>
+        <div class="section-sub">与香港并列速度最快的机房，延迟低，适合对日业务与游戏加速类场景。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>速度第一梯队</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">0.5TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">日本东京 CN2 GIA</td><td class="price" data-label="价格">$89.99<small>/月</small>&nbsp;·&nbsp;$899.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=108" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$155.99<small>/月</small>&nbsp;·&nbsp;$1559.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=109" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$299.99<small>/月</small>&nbsp;·&nbsp;$2999.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=110" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$589.99<small>/月</small>&nbsp;·&nbsp;$5899.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=111" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$989.99<small>/月</small>&nbsp;·&nbsp;$9989.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=123" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">8TB</td><td class="num" data-label="带宽">1.2Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$1889.99<small>/月</small>&nbsp;·&nbsp;$18989.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=125" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="hk">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">09</span> 中国香港 CN2 GIA 方案</div>
+        <div class="section-sub">搬瓦工最高端系列，购买后可在香港 / 东京 / 大阪 / 新加坡 CN2 GIA 之间自由切换，延迟最低，价格也最高。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>速度第一梯队</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">0.5TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA</td><td class="price" data-label="价格">$89.99<small>/月</small>&nbsp;·&nbsp;$899.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=95" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$155.99<small>/月</small>&nbsp;·&nbsp;$1559.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=96" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$299.99<small>/月</small>&nbsp;·&nbsp;$2999.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=97" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$589.99<small>/月</small>&nbsp;·&nbsp;$5899.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=98" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$989.99<small>/月</small>&nbsp;·&nbsp;$9989.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=122" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">8TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$1889.99<small>/月</small>&nbsp;·&nbsp;$18989.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=124" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="dubai">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">10</span> 迪拜电子商务方案</div>
+        <div class="section-sub">阿联酋迪拜机房起家，同时可迁移至 DC6 CN2 GIA‑E、DC9 CN2 GIA、日本软银等机房，适合中东地区业务。</div>
+      </div>
+      <div class="signal t4"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>中东专线</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量/月</th><th>带宽</th><th>机房</th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr  ><td class="num" data-label="内存">1GB</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20GB</td><td class="num" data-label="流量">0.5TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等</td><td class="price" data-label="价格">$19.99<small>/月</small>&nbsp;·&nbsp;$169.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=114" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2GB</td><td class="num" data-label="CPU">3 核</td><td class="num" data-label="硬盘">40GB</td><td class="num" data-label="流量">1TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$32.99<small>/月</small>&nbsp;·&nbsp;$299.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=115" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4GB</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80GB</td><td class="num" data-label="流量">2TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$56.99<small>/月</small>&nbsp;·&nbsp;$549.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=116" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8GB</td><td class="num" data-label="CPU">6 核</td><td class="num" data-label="硬盘">160GB</td><td class="num" data-label="流量">3TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$86.99<small>/月</small>&nbsp;·&nbsp;$879.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=117" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">16GB</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">320GB</td><td class="num" data-label="流量">4TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$159.99<small>/月</small>&nbsp;·&nbsp;$1599.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=118" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">32GB</td><td class="num" data-label="CPU">10 核</td><td class="num" data-label="硬盘">640GB</td><td class="num" data-label="流量">5TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$289.99<small>/月</small>&nbsp;·&nbsp;$2759.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=119" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">64GB</td><td class="num" data-label="CPU">12 核</td><td class="num" data-label="硬盘">1280GB</td><td class="num" data-label="流量">6TB</td><td class="num" data-label="带宽">1Gbps</td><td class="rooms" data-label="机房">同上</td><td class="price" data-label="价格">$549.99<small>/月</small>&nbsp;·&nbsp;$5399.99<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://bwh81.net/aff.php?aff=76211&pid=120" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>关于本页</h4>
+        <p style="color:var(--muted2);font-size:13.5px;max-width:440px;">数据整理自搬瓦工官网及第三方评测站点，最后更新于 2026 年 7 月，仅供参考。具体配置、价格及库存请以搬瓦工官网实际页面为准。</p>
+      </div>
+      <div>
+        <h4>常用链接</h4>
+        <ul>
+          <li><a href="https://bwh81.net/aff.php?aff=76211" target="_blank" rel="noopener">搬瓦工官网</a></li>
+          <li><a href="https://bwh81.net/aff.php?aff=76211&gid=1" target="_blank" rel="noopener">全部方案（官网）</a></li>
+          <li><a href="https://x.com/xinzhizhu9795" target="_blank" rel="noopener">技术支持</a></li>
+          <li><a href="https://github.com/ScienceNoBorders/ExperienceSharing/issues" target="_blank" rel="noopener">问题反馈</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>快速跳转</h4>
+        <ul>
+          <li><a href="#kvm">KVM 常规方案</a></li>
+          <li><a href="#gia-e">CN2 GIA‑E</a></li>
+          <li><a href="#hk">中国香港 CN2 GIA</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <b>声明：</b>本页面为个人整理的搬瓦工（BandwagonHost）套餐信息汇总页，<b>并非搬瓦工官方网站</b>，页面内购买链接为个人推广链接，通过该链接购买不会产生额外费用。请合法合规使用 VPS 服务，不得用于任何违法用途。价格与配置可能随官网调整而变化，请以下单页面实际显示为准。
+    </div>
+    <div class="copyright">© 2026 · 搬瓦工套餐信息整理 · 非官方页面</div>
+  </div>
+</footer>
+
+</body>
+</html>

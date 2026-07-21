@@ -246,6 +246,12 @@ When getting an answer becomes easy, a good question becomes all the more precio
 ## Issues
 - File bugs, problems requests in [GitHub Issues](https://github.com/ScienceNoBorders/ExperienceSharing/issues).
 
-## Stargazers over time
+## ⭐ Star History
 
-[![Stargazers over time](https://starchart.cc/ScienceNoBorders/ExperienceSharing.svg)](https://starchart.cc/ScienceNoBorders/ExperienceSharing)
+<a href="https://www.star-history.com/?repos=ScienceNoBorders%2FExperienceSharing&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=ScienceNoBorders/ExperienceSharing&type=date&theme=dark&legend=top-left&sealed_token=TlZorAmj9XYrN5m7SZbK9A3Jp5p99NFUNC4XKh0otk2i-_sigEfVaxoGNBQSLiCgS7IE2hWjo8ZNCiGFL_XdRW80GseGjkLBl_7YS-TLQKnjJhg7XaK5oBSYf28uJ0B2aA6Z18fTU1lL7lF4w0-qRba52duD0f8-rvBjBTmBxcMARMXklK1_EobRk9d-" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=ScienceNoBorders/ExperienceSharing&type=date&legend=top-left&sealed_token=TlZorAmj9XYrN5m7SZbK9A3Jp5p99NFUNC4XKh0otk2i-_sigEfVaxoGNBQSLiCgS7IE2hWjo8ZNCiGFL_XdRW80GseGjkLBl_7YS-TLQKnjJhg7XaK5oBSYf28uJ0B2aA6Z18fTU1lL7lF4w0-qRba52duD0f8-rvBjBTmBxcMARMXklK1_EobRk9d-" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=ScienceNoBorders/ExperienceSharing&type=date&legend=top-left&sealed_token=TlZorAmj9XYrN5m7SZbK9A3Jp5p99NFUNC4XKh0otk2i-_sigEfVaxoGNBQSLiCgS7IE2hWjo8ZNCiGFL_XdRW80GseGjkLBl_7YS-TLQKnjJhg7XaK5oBSYf28uJ0B2aA6Z18fTU1lL7lF4w0-qRba52duD0f8-rvBjBTmBxcMARMXklK1_EobRk9d-" />
+ </picture>
+</a>
