@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X 用户检测助手 (X Users Checker)
 // @namespace    https://github.com/ScienceNoBorders/ExperienceSharing/blob/master/other/script/x-unfollow-checker.user.js
-// @version      3.1.1
+// @version      3.1.3
 // @description  支持在"正在关注"与"已验证的关注者"两种列表页面使用。点击面板上的"开始扫描"后才会自动滚动列表，滚动过程中实时检测每个用户是否回关你；切换到其它页面会自动暂停，回到原页面自动恢复；滚动到底部即完成。鼠标悬停在任意一行上会弹出类似 X 原生的资料悬浮卡（头像/昵称/简介/回关状态/认证标识/最新发帖日期（自动筛选掉置顶帖子，只查看用户最新的非置顶帖子）），支持在卡片内直接打开主页、复制、取消关注。未回关名单支持勾选后一键批量取消关注，也支持一键筛选"未回关+非认证"账号直接批量取消；支持一键批量获取全部关注列表账号的最新发帖日期（独立限速的后台队列，可断点续传），超过自定义天数阈值未发帖的账号会打上标记，方便优先清理长期不活跃的账号；支持「全选超阈值」——若尚未获取发帖日期会先采集再自动勾选达到不活跃阈值报警的账号（含未回关与已互关），并支持对已互关中的超阈值账号勾选取消关注。支持「白名单」功能（面板"复制日报"按钮旁）：填入的用户名不参与互关状态与发帖日期扫描，也不计入统计数据，底部统计与日报会单独展示白名单人数。全程基于网页 DOM 解析实现，不调用官方 API，不需要开发者 Token 或 Bearer Token。
 // @author       新之助(@xinzhizhu9795)
 // @match        https://x.com/*
@@ -69,7 +69,7 @@
    * ======================================================================== */
 
   /** 脚本版本号，用于面板标题展示与日志输出。 */
-  const SCRIPT_VERSION = '3.1.1';
+  const SCRIPT_VERSION = '3.1.3';
 
   /**
    * 三种扫描结果状态 + 一种初始占位状态。
@@ -1623,11 +1623,25 @@
     }
 
     /**
+     * 探测弹窗是否仍可用（已由用户手势打开且未被关闭）。
+     * @returns {boolean}
+     */
+    hasOpenProbeWindow() {
+      try {
+        return Boolean(this._probeWindow && !this._probeWindow.closed);
+      } catch (error) {
+        this._probeWindow = null;
+        return false;
+      }
+    }
+
+    /**
      * 获取或创建探测弹窗。必须在用户手势触发的调用链上首次打开，
-     * 否则会被浏览器拦截。
+     * 否则会被浏览器拦截；异步任务里再 open('about:blank') 也常会卡在空白页。
+     * @param {string|null} [initialUrl=null] 首次打开时的 URL；传用户主页可避免先停在 about:blank。
      * @returns {Window|null} 弹窗引用；被拦截时返回 null。
      */
-    _ensureProbeWindow() {
+    _ensureProbeWindow(initialUrl = null) {
       try {
         if (this._probeWindow && !this._probeWindow.closed) {
           return this._probeWindow;
@@ -1636,10 +1650,11 @@
         this._probeWindow = null;
       }
 
+      const openUrl = initialUrl || 'about:blank';
       let win = null;
       try {
         win = window.open(
-          'about:blank',
+          openUrl,
           CONFIG.PROBE_WINDOW_NAME,
           CONFIG.PROBE_WINDOW_FEATURES
         );
@@ -1651,7 +1666,7 @@
         if (!this._popupBlockedWarned) {
           this._popupBlockedWarned = true;
           Logger.error(
-            '探测弹窗被浏览器拦截。请允许 x.com 弹窗后，再点一次「获取全部发帖日期」。'
+            '探测弹窗被浏览器拦截。请允许 x.com 弹窗后，再点一次相关按钮（如「获取发帖日期」）。'
           );
         }
         this._probeWindow = null;
@@ -1669,6 +1684,19 @@
         // 跨域/权限限制时忽略几何调整。
       }
       return win;
+    }
+
+    /**
+     * 在用户点击手势内预打开探测窗（直接进入指定用户主页，避免 about:blank）。
+     * 供「取消关注 / 发帖日期」等需要异步队列复用窗口的流程在 confirm 之后立刻调用。
+     * @param {string} [username] 可选，有则打开该用户主页，否则 about:blank。
+     * @returns {Window|null}
+     */
+    prepareProbeWindow(username = null) {
+      const initialUrl = username
+        ? `${location.origin}/${encodeURIComponent(username)}`
+        : null;
+      return this._ensureProbeWindow(initialUrl);
     }
 
     /**
@@ -1970,6 +1998,13 @@
       this.isUnfollowing = false;
       /** 取消关注代次：递增后，正在运行的旧一轮处理循环会自然停止。 */
       this._unfollowGeneration = 0;
+      /**
+       * 是否已在用户点击手势内预打开探测弹窗。
+       * 为 true 时列表路径失败才允许走弹窗兜底；否则异步 open 易出空白窗。
+       */
+      this._unfollowProbePrepared = false;
+      /** 本轮取消关注是否已弹出过「请重新扫描」类提示（避免批量时连弹多次）。 */
+      this._unfollowRescanAlertShown = false;
 
       // ---- 批量获取"最新发帖日期"相关状态（独立于扫描/取消关注） ----
       /** 待获取发帖日期的队列（用户名数组），会持久化到 Storage。 */
@@ -2242,17 +2277,58 @@
     }
 
     /**
+     * 当前是否仍在本脚本对应的列表页面（关注列表等）。
+     * 取消关注主路径依赖列表卡片 DOM；离开页面后只能靠探测弹窗兜底。
+     * @returns {boolean}
+     */
+    isOnMatchingListPage() {
+      return (
+        Parser.getOwnerUsernameFromCurrentUrl()?.toLowerCase() === this.ownerUsername.toLowerCase() &&
+        Parser.getListPageTypeFromCurrentUrl() === this.pageType
+      );
+    }
+
+    /**
      * 将一批用户名加入"待取消关注"队列并持久化，若当前尚未在处理则
      * 立即开始处理。重复加入已在队列中的用户名会被自动去重。
      * 若扫描正在进行中，会先自动暂停扫描（避免两者同时操作/滚动页面
      * 造成冲突），用户可以在取消关注完成后手动点击"继续"恢复扫描。
+     *
+     * options.preparedByUserGesture：调用方已在点击/confirm 手势内预打开探测窗
+     * （prepareProbeWindow）。异步滚动后再 window.open('about:blank') 会被浏览器
+     * 卡住空白页，因此兜底弹窗必须在手势内提前打开。
+     *
      * @param {Array<string>} usernames 待取消关注的用户名数组。
+     * @param {{preparedByUserGesture?: boolean}} [options]
      */
-    enqueueUnfollow(usernames) {
+    enqueueUnfollow(usernames, options = {}) {
       if (!usernames || usernames.length === 0) return;
+
+      // 未扫描过：列表 DOM 可能未加载，禁止入队（与面板按钮禁用一致）。
+      if (!this.hasStarted) {
+        window.alert(
+          '请先点击「开始扫描」完整加载关注列表后，再执行取消关注。\n\n' +
+          '缓存里只有用户名单与状态，刷新后列表 DOM 尚未滚动加载，直接取消关注不可靠。'
+        );
+        return;
+      }
+
+      // 既不在列表页、又没有可用的探测窗时，继续入队只会在后台 open 空白窗。
+      if (!this.isOnMatchingListPage() && !this.prober.hasOpenProbeWindow()) {
+        window.alert(
+          '无法直接取消关注：当前不在对应的关注列表页面，且未预打开探测窗口。\n\n' +
+          '请先回到「正在关注」列表页面，再点取消关注。\n' +
+          '若列表是从缓存加载、尚未完整出现在页面上，请先点「开始扫描」滚动加载后再操作。'
+        );
+        return;
+      }
+
       if (this.isScanning && !this.isPaused) {
         this.pause();
         Logger.warn('检测到扫描仍在进行，已自动暂停以避免与取消关注操作冲突');
+      }
+      if (options.preparedByUserGesture) {
+        this._unfollowProbePrepared = true;
       }
       const merged = Utils.uniqueArray([...this.unfollowQueue, ...usernames]);
       this.unfollowQueue = merged;
@@ -2272,8 +2348,32 @@
       this.isUnfollowing = false;
       this.unfollowQueue = [];
       this.storage.savePendingUnfollowQueue([]);
+      this._unfollowProbePrepared = false;
+      this.prober.closeProbeWindow();
       this.panel.hideUnfollowProgress();
       Logger.warn('已停止剩余的取消关注任务');
+    }
+
+    /**
+     * 取消关注失败时的用户提示：缓存只有名单，不代表列表 DOM 已加载。
+     * 同一轮批量处理只弹一次，避免连点「确定」N 次。
+     * @param {string} username
+     * @param {string} reason
+     */
+    _alertUnfollowNeedsListOrRescan(username, reason) {
+      if (this._unfollowRescanAlertShown) return;
+      this._unfollowRescanAlertShown = true;
+      const reasonHint = reason ? `\n（技术原因：${reason}）` : '';
+      window.alert(
+        `取消关注 @${username} 未成功。${reasonHint}\n\n` +
+        '说明：脚本缓存的只是用户名/回关状态等结果，刷新后关注列表 DOM 需要重新滚动加载。\n' +
+        '若直接点取消关注，找不到卡片时会打开探测弹窗；在异步流程里再弹窗容易只显示空白页。\n\n' +
+        '请按下面步骤重试：\n' +
+        '1. 回到本人的「正在关注」列表页面；\n' +
+        '2. 点击面板「开始扫描」，让列表完整滚动加载；\n' +
+        '3. 再对目标用户执行取消关注。\n\n' +
+        '（本轮批量若还有失败项将不再重复弹窗，可在控制台查看日志。）'
+      );
     }
 
     /**
@@ -2287,6 +2387,7 @@
       if (this.isUnfollowing) return;
       this.isUnfollowing = true;
       const myGeneration = ++this._unfollowGeneration;
+      this._unfollowRescanAlertShown = false;
 
       while (this.unfollowQueue.length > 0 && myGeneration === this._unfollowGeneration) {
         const username = this.unfollowQueue[0];
@@ -2317,6 +2418,8 @@
 
       this.isUnfollowing = false;
       if (myGeneration === this._unfollowGeneration) {
+        this._unfollowProbePrepared = false;
+        this.prober.closeProbeWindow();
         this.panel.hideUnfollowProgress();
         Logger.success('批量取消关注已完成');
       }
@@ -2500,17 +2603,16 @@
      *   2) 若不在（这是最常见的情况——扫描完成后页面通常停留在底部，
      *      早先扫描到的用户卡片早已被虚拟列表回收），则主动滚动页面
      *      重新定位到该用户的卡片（_scrollToFindCell）；
-     *   3) 只有当用户已经离开了这个列表页面（导航去了别处，导致这个
-     *      页面的 DOM 里已经不可能再找到目标用户）时，才退回到隐藏
-     *      iframe 访问对方主页执行取消关注的兜底方案。
+     *   3) 列表路径失败时，仅在「点击手势内已预打开探测窗」时使用弹窗
+     *      兜底。禁止在异步滚动之后再 window.open('about:blank')——
+     *      浏览器常会留下空白窗口且无法导航。
      * 全程通过模拟真实点击事件、并处理可能出现的二次确认弹窗来完成。
      * @param {string} username 用户名。
      * @returns {Promise<boolean>} 是否确认取消关注成功。
      */
     async _performUnfollow(username, expectedGeneration) {
-      const isStillOnMatchingPage =
-        Parser.getOwnerUsernameFromCurrentUrl()?.toLowerCase() === this.ownerUsername.toLowerCase() &&
-        Parser.getListPageTypeFromCurrentUrl() === this.pageType;
+      const isStillOnMatchingPage = this.isOnMatchingListPage();
+      let listPathFailedReason = null;
 
       if (isStillOnMatchingPage) {
         let cell = this._findCellForUsername(username);
@@ -2530,28 +2632,60 @@
             this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（点击中...）`);
             const success = await Parser.clickUnfollowButtonAndVerify(button);
             if (success) return true;
-            Logger.warn(`@${username} 页面内点击未能确认成功，尝试隐藏 iframe 兜底`);
+            listPathFailedReason = 'list_click_verify_failed';
+            Logger.warn(`@${username} 页面内点击未能确认成功`);
           } else {
+            // 卡片在但没有取消关注按钮：多数情况是已经不在关注，或按钮结构变化。
+            listPathFailedReason = 'list_no_unfollow_button';
             Logger.warn(`@${username} 找到了卡片，但卡片内没有"取消关注"按钮（可能已经未关注对方）`);
           }
         } else {
-          Logger.warn(`@${username} 滚动查找超出上限仍未找到对应卡片，尝试隐藏 iframe 兜底`);
+          listPathFailedReason = 'list_cell_not_found';
+          Logger.warn(`@${username} 滚动查找超出上限仍未找到对应卡片`);
         }
       } else {
-        Logger.debug(`已离开 @${this.ownerUsername} 的${LIST_PAGE_TYPE_LABELS[this.pageType] || this.pageType}页面，直接使用隐藏 iframe 兜底`);
+        listPathFailedReason = 'not_on_list_page';
+        Logger.debug(`已离开 @${this.ownerUsername} 的${LIST_PAGE_TYPE_LABELS[this.pageType] || this.pageType}页面`);
       }
 
       if (expectedGeneration !== this._unfollowGeneration) return false; // 中途被停止。
 
-      this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（兜底方案处理中...）`);
+      // 仅当手势内已预开探测窗时才走弹窗兜底，避免异步阶段 open 出空白页。
+      const canUseProbeFallback =
+        this._unfollowProbePrepared || this.prober.hasOpenProbeWindow();
+
+      if (!canUseProbeFallback) {
+        Logger.warn(
+          `@${username} 跳过弹窗兜底（未在用户手势内预开探测窗），原因: ${listPathFailedReason || 'unknown'}`
+        );
+        this._alertUnfollowNeedsListOrRescan(username, listPathFailedReason || 'no_probe_window');
+        return false;
+      }
+
+      this.panel.setUnfollowProgress(this.unfollowQueue.length, `${username}（弹窗兜底处理中...）`);
       try {
+        // 若窗口已在手势内打开，_ensureProbeWindow 会复用，不会再 open about:blank。
         const result = await this.prober.requestUnfollow(username);
-        if (!result || !result.success) {
-          Logger.warn(`@${username} 隐藏 iframe 兜底也未成功，原因: ${(result && result.reason) || 'unknown'}`);
+        if (result && result.success) return true;
+
+        const reason = (result && result.reason) || listPathFailedReason || 'unknown';
+        Logger.warn(`@${username} 弹窗兜底未成功，原因: ${reason}`);
+        // 空白页 / 被拦 / 导航失败：关掉残窗并提示重新扫描，避免一直挂着空白窗口。
+        const blankLikeReasons = new Set([
+          'popup_about_blank', 'popup_blocked', 'popup_closed',
+          'popup_navigate_failed', 'popup_inaccessible', 'popup_empty', 'hard_timeout',
+        ]);
+        if (blankLikeReasons.has(reason) || reason === 'list_cell_not_found' || reason === 'not_on_list_page') {
+          this.prober.closeProbeWindow();
+          this._unfollowProbePrepared = false;
+          this._alertUnfollowNeedsListOrRescan(username, reason);
         }
-        return Boolean(result && result.success);
+        return false;
       } catch (error) {
         Logger.error(`@${username} 兜底取消关注异常`, error);
+        this.prober.closeProbeWindow();
+        this._unfollowProbePrepared = false;
+        this._alertUnfollowNeedsListOrRescan(username, 'exception');
         return false;
       }
     }
@@ -2843,7 +2977,10 @@
           width: 100%; background: transparent; color: #f4212e; border: 1px solid #f4212e;
           border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer;
         }
-        #ufs-panel .ufs-btn.ufs-btn-danger-outline:hover { background: rgba(244,33,46,0.1); }
+        #ufs-panel .ufs-btn.ufs-btn-danger-outline:hover:not(:disabled) { background: rgba(244,33,46,0.1); }
+        #ufs-panel .ufs-btn.ufs-btn-danger-outline:disabled {
+          color: #a98488; border-color: #5a2a2e; cursor: not-allowed; opacity: 0.55;
+        }
         #ufs-panel .ufs-unfollow-progress {
           display: flex; align-items: center; gap: 8px; padding: 6px 12px; margin: 0 12px 8px;
           background: #2a1416; border: 1px solid #5a2a2e; border-radius: 8px;
@@ -2894,7 +3031,10 @@
           background: transparent; border: none; color: #8b98a5; cursor: pointer;
           font-size: 12px; padding: 2px 4px; border-radius: 4px;
         }
-        #ufs-panel .ufs-row-actions button:hover { color: #e7e9ea; background: #2f3336; }
+        #ufs-panel .ufs-row-actions button:hover:not(:disabled) { color: #e7e9ea; background: #2f3336; }
+        #ufs-panel .ufs-row-actions button:disabled {
+          opacity: 0.35; cursor: not-allowed; color: #71767b;
+        }
         #ufs-panel .ufs-footer {
           padding: 8px 12px; border-top: 1px solid #2f3336; font-size: 11px; color: #8b98a5;
         }
@@ -2938,9 +3078,13 @@
           padding: 6px 4px; font-size: 12px; cursor: pointer; text-align: center;
           display: flex; align-items: center; justify-content: center; white-space: nowrap;
         }
-        #ufs-hovercard .ufs-hc-actions button:hover { background: #3a3f42; }
+        #ufs-hovercard .ufs-hc-actions button:hover:not(:disabled) { background: #3a3f42; }
+        #ufs-hovercard .ufs-hc-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
         #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn { background: #f4212e; color: #fff; }
-        #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:hover { background: #d81b25; }
+        #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:hover:not(:disabled) { background: #d81b25; }
+        #ufs-hovercard .ufs-hc-actions button.ufs-hc-unfollow-btn:disabled {
+          background: #4a2226; color: #a98488;
+        }
 
         /* 白名单管理弹窗：全屏半透明遮罩 + 居中卡片，风格与主面板保持一致。 */
         #ufs-whitelist-overlay {
@@ -3533,7 +3677,9 @@
       if (!this.scanner) return;
       if (!this.scanner.hasStarted) {
         this.elements.toggleBtn.textContent = '暂停';
+        // start() 开头会同步置 hasStarted=true，随后立刻刷新 UI 解锁取消关注按钮。
         this.scanner.start().catch((error) => Logger.error('扫描流程异常', error));
+        this.renderList(this.rows);
         return;
       }
       if (this.elements.toggleBtn.textContent === '暂停') {
@@ -3550,6 +3696,9 @@
       if (!this.scanner) return;
       this.elements.toggleBtn.disabled = false;
       this.elements.toggleBtn.textContent = '暂停';
+      // rescanAll 开头同步置 hasStarted=true；先刷新以解锁取消关注按钮。
+      this.scanner.hasStarted = true;
+      this.renderList(this.rows);
       await this.scanner.rescanAll();
     }
 
@@ -3697,6 +3846,8 @@
      * 判断该行是否允许勾选以批量取消关注：
      *   - 全部「未回关」；
      *   - 「已互关」且已超过发帖不活跃阈值（含无发帖记录）。
+     * 注意：勾选本身在未扫描时仍可用（便于勾选后获取发帖日期）；
+     * 真正执行取消关注另受 `_isUnfollowActionEnabled()` 约束。
      * @param {{status:string, lastPostDate?:string|null}} row
      * @returns {boolean}
      */
@@ -3710,6 +3861,34 @@
         return true;
       }
       return false;
+    }
+
+    /**
+     * 是否允许执行「取消关注」类操作。
+     * 必须已点过「开始扫描」或「重新扫描」（hasStarted），否则列表 DOM 可能未加载完整，
+     * 取消关注会失败或弹出空白探测窗。
+     * @returns {boolean}
+     */
+    _isUnfollowActionEnabled() {
+      return Boolean(this.scanner && this.scanner.hasStarted);
+    }
+
+    /** 未扫描时取消关注按钮的统一禁用提示文案。 */
+    _getUnfollowDisabledTitle() {
+      return '请先点击「开始扫描」（或「重新扫描」）后再取消关注';
+    }
+
+    /**
+     * 未扫描时拦截取消关注操作（按钮禁用的兜底）。
+     * @returns {boolean} true = 已拦截，调用方应直接 return。
+     */
+    _guardUnfollowRequiresScan() {
+      if (this._isUnfollowActionEnabled()) return false;
+      window.alert(
+        '请先点击「开始扫描」完整加载关注列表后，再执行取消关注。\n\n' +
+        '缓存里只有用户名单与状态，刷新后列表 DOM 尚未滚动加载，直接取消关注不可靠。'
+      );
+      return true;
     }
 
     /**
@@ -3865,11 +4044,40 @@
     }
 
     /**
+     * 取消关注前的手势内准备：
+     *   - 在对应列表页：只走「滚动定位 + 点击卡片按钮」，不预开探测窗
+     *     （避免每次取消关注都多一个小窗口；列表找不到卡片时会提示先扫描）。
+     *   - 不在列表页：必须在手势内预开探测窗（直接进用户主页，禁止 about:blank），
+     *     否则异步阶段再 open 容易留下空白窗口。
+     * @param {string} firstUsername 队列中第一个用户名。
+     * @returns {{ok:boolean, preparedByUserGesture:boolean}}
+     */
+    _prepareUnfollowProbeWindow(firstUsername) {
+      if (!this.scanner) return { ok: false, preparedByUserGesture: false };
+
+      if (this.scanner.isOnMatchingListPage()) {
+        return { ok: true, preparedByUserGesture: false };
+      }
+
+      const probeWin = this.scanner.prober.prepareProbeWindow(firstUsername);
+      if (!probeWin) {
+        window.alert(
+          '当前不在「正在关注」列表页面，且无法打开探测窗口。\n\n' +
+          '请先回到关注列表页，点击「开始扫描」加载列表后再取消关注；\n' +
+          '或允许本站弹窗后，在非列表页用探测窗兜底重试。'
+        );
+        return { ok: false, preparedByUserGesture: false };
+      }
+      return { ok: true, preparedByUserGesture: true };
+    }
+
+    /**
      * 处理"取消关注选中"按钮点击：二次确认后，把选中的用户名交给
      * Scanner 加入批量取消关注队列，随后清空当前选择。
      */
     _onUnfollowSelectedClick() {
       if (!this.scanner) return;
+      if (this._guardUnfollowRequiresScan()) return;
       const usernames = Array.from(this.selectedUsernames);
       if (usernames.length === 0) return;
       const mutualSelectedCount = this.rows.filter(
@@ -3886,8 +4094,10 @@
         '此操作会实际取消关注对方，无法撤销，请谨慎确认。'
       );
       if (!confirmed) return;
+      const prep = this._prepareUnfollowProbeWindow(usernames[0]);
+      if (!prep.ok) return;
       this.selectedUsernames.clear();
-      this.scanner.enqueueUnfollow(usernames);
+      this.scanner.enqueueUnfollow(usernames, { preparedByUserGesture: prep.preparedByUserGesture });
       this.renderList(this.rows);
     }
 
@@ -3899,6 +4109,7 @@
      */
     _onUnfollowUnverifiedClick() {
       if (!this.scanner) return;
+      if (this._guardUnfollowRequiresScan()) return;
       const targets = this.rows.filter(
         (row) => row.status === SCAN_STATUS.NOT_BACK && !(row.profile && row.profile.isVerified)
       );
@@ -3916,8 +4127,10 @@
         '此操作会实际取消关注对方，无法撤销，请谨慎确认。'
       );
       if (!confirmed) return;
+      const prep = this._prepareUnfollowProbeWindow(usernames[0]);
+      if (!prep.ok) return;
       usernames.forEach((username) => this.selectedUsernames.delete(username));
-      this.scanner.enqueueUnfollow(usernames);
+      this.scanner.enqueueUnfollow(usernames, { preparedByUserGesture: prep.preparedByUserGesture });
       this.renderList(this.rows);
     }
 
@@ -3934,7 +4147,20 @@
     _refreshBatchBar() {
       const count = this.selectedUsernames.size;
       this.elements.selectedCount.textContent = `已选 ${count}`;
-      this.elements.unfollowSelectedBtn.disabled = count === 0;
+
+      const unfollowEnabled = this._isUnfollowActionEnabled();
+      const disabledTitle = this._getUnfollowDisabledTitle();
+
+      // 未扫描：强制禁用所有批量取消关注入口；已扫描后仍按「是否有选中」控制。
+      this.elements.unfollowSelectedBtn.disabled = !unfollowEnabled || count === 0;
+      this.elements.unfollowSelectedBtn.title = unfollowEnabled
+        ? (count === 0 ? '请先勾选要取消关注的账号' : '取消关注选中的账号')
+        : disabledTitle;
+
+      this.elements.unfollowUnverifiedBtn.disabled = !unfollowEnabled;
+      this.elements.unfollowUnverifiedBtn.title = unfollowEnabled
+        ? '一键取消关注「未回关 + 非认证」账号'
+        : disabledTitle;
 
       const notBackRows = this.rows.filter((row) => row.status === SCAN_STATUS.NOT_BACK);
       const allSelected =
@@ -4132,7 +4358,8 @@
       if (statusName === 'idle') {
         this.elements.toggleBtn.textContent = '开始扫描';
         this.elements.toggleBtn.disabled = false;
-        this.elements.progressText.textContent = '已加载缓存数据，点击"开始扫描"以检测/更新回关状态';
+        this.elements.progressText.textContent =
+          '已加载缓存数据，点击"开始扫描"以检测/更新回关状态（未扫描前不可取消关注）';
         this.elements.progressFill.style.width = '0%';
       } else if (statusName === 'scanning') {
         this.elements.toggleBtn.textContent = '暂停';
@@ -4147,6 +4374,8 @@
         this.elements.toggleBtn.textContent = '暂停';
         this.elements.toggleBtn.disabled = true;
       }
+      // 扫描状态变化时同步取消关注按钮可用态（未扫描禁用）。
+      this._refreshBatchBar();
     }
 
     /**
@@ -4328,19 +4557,27 @@
       if (canSelectForUnfollow) {
         const unfollowBtn = document.createElement('button');
         unfollowBtn.textContent = '🚫';
-        unfollowBtn.title =
-          row.status === SCAN_STATUS.MUTUAL
+        const unfollowEnabled = this._isUnfollowActionEnabled();
+        unfollowBtn.disabled = !unfollowEnabled;
+        unfollowBtn.title = unfollowEnabled
+          ? (row.status === SCAN_STATUS.MUTUAL
             ? '取消关注该用户（已互关，但超过发帖阈值）'
-            : '取消关注该用户';
+            : '取消关注该用户')
+          : this._getUnfollowDisabledTitle();
         unfollowBtn.addEventListener('click', () => {
           if (!this.scanner) return;
+          if (this._guardUnfollowRequiresScan()) return;
           const statusHint =
             row.status === SCAN_STATUS.MUTUAL ? '（对方已回关，但超过发帖不活跃阈值）' : '';
           const confirmed = window.confirm(
             `确定要取消关注 @${row.username} 吗？${statusHint}\n此操作无法撤销。`
           );
           if (!confirmed) return;
-          this.scanner.enqueueUnfollow([row.username]);
+          const prep = this._prepareUnfollowProbeWindow(row.username);
+          if (!prep.ok) return;
+          this.scanner.enqueueUnfollow([row.username], {
+            preparedByUserGesture: prep.preparedByUserGesture,
+          });
         });
         actionsWrap.appendChild(unfollowBtn);
       }
@@ -4443,16 +4680,29 @@
           Logger.error('复制失败', error);
         }
       };
-      elements.unfollowBtn.style.display = this._isRowSelectableForUnfollow(row) ? 'block' : 'none';
+      const canUnfollowRow = this._isRowSelectableForUnfollow(row);
+      const unfollowEnabled = this._isUnfollowActionEnabled();
+      elements.unfollowBtn.style.display = canUnfollowRow ? 'block' : 'none';
+      elements.unfollowBtn.disabled = !canUnfollowRow || !unfollowEnabled;
+      elements.unfollowBtn.title = !canUnfollowRow
+        ? ''
+        : (unfollowEnabled
+          ? '取消关注该用户'
+          : this._getUnfollowDisabledTitle());
       elements.unfollowBtn.onclick = () => {
         if (!this.scanner) return;
+        if (this._guardUnfollowRequiresScan()) return;
         const statusHint =
           row.status === SCAN_STATUS.MUTUAL ? '（对方已回关，但超过发帖不活跃阈值）' : '';
         const confirmed = window.confirm(
           `确定要取消关注 @${row.username} 吗？${statusHint}\n此操作无法撤销。`
         );
         if (!confirmed) return;
-        this.scanner.enqueueUnfollow([row.username]);
+        const prep = this._prepareUnfollowProbeWindow(row.username);
+        if (!prep.ok) return;
+        this.scanner.enqueueUnfollow([row.username], {
+          preparedByUserGesture: prep.preparedByUserGesture,
+        });
         this._hideHoverCard();
       };
 
@@ -4560,12 +4810,16 @@
         currentPanel = panel;
         currentScanner = scanner;
 
-        // 若上次还有未处理完的批量取消关注任务（例如页面被刷新/关闭中断），
-        // 自动恢复继续处理，并立即在面板上展示剩余进度。
+        // 若上次还有未处理完的批量取消关注任务（例如页面被刷新/关闭中断）：
+        // 只展示剩余进度，不自动后台继续——刷新后没有用户手势，若走弹窗
+        // 兜底会 open('about:blank') 留下空白窗口；请用户再次点「取消关注选中」
+        // 或对列表操作以在手势内预开探测窗后继续。
         if (scanner.unfollowQueue.length > 0) {
-          Logger.info(`检测到未完成的取消关注队列，剩余 ${scanner.unfollowQueue.length} 人，自动恢复处理`);
-          panel.setUnfollowProgress(scanner.unfollowQueue.length, null);
-          scanner._processUnfollowQueue().catch((error) => Logger.error('恢复取消关注流程异常', error));
+          Logger.info(
+            `检测到未完成的取消关注队列，剩余 ${scanner.unfollowQueue.length} 人。` +
+            '请再次点击「取消关注选中」或行内取消关注以在用户手势内继续（避免空白探测窗）。'
+          );
+          panel.setUnfollowProgress(scanner.unfollowQueue.length, '等待你再次点击以继续…');
         }
 
         // 发帖日期队列需要探测弹窗（X 禁止 iframe），必须由用户点击触发手势才能
