@@ -242,6 +242,8 @@ When getting an answer becomes easy, a good question becomes all the more precio
 - [美股港股无境外实体卡开户与出入金方法](./other/us-hk-stock.md)
 - [X 用户检测助手（X Users Checker）插件安装与使用说明](./other/script/xUsersCheckerInstall.md)
 - [443端口被其他应用占了怎么办？试试Cloudflare Tunnel](./other/other-port-ssl.md)
+- [2026申请ITIN教程](./other/ITIN/2026ITIN.md)
+
 
 ## Issues
 - File bugs, problems requests in [GitHub Issues](https://github.com/ScienceNoBorders/ExperienceSharing/issues).
