@@ -1323,7 +1323,6 @@
       this.isUnfollowing = false;
       this._unfollowGeneration = 0;
       this._unfollowProbePrepared = false;
-      this._unfollowRescanAlertShown = false;
 
       this.postDateQueue = [];
       this.isCollectingPostDates = false;
@@ -1572,17 +1571,11 @@
       this.panel.hideUnfollowProgress();
     }
 
-    _alertUnfollowNeedsListOrRescan(username, reason) {
-      if (this._unfollowRescanAlertShown) return;
-      this._unfollowRescanAlertShown = true;
-      window.alert(`取消关注 @${username} 未成功。`);
-    }
-
     async _processUnfollowQueue() {
       if (this.isUnfollowing) return;
       this.isUnfollowing = true;
       const myGeneration = ++this._unfollowGeneration;
-      this._unfollowRescanAlertShown = false;
+      const failedUsernames = [];
 
       while (this.unfollowQueue.length > 0 && myGeneration === this._unfollowGeneration) {
         const username = this.unfollowQueue[0];
@@ -1600,6 +1593,8 @@
           this.storage.saveFollowingList(this.followingList);
           this.storage.saveScanResults(this.scanResults);
           this.panel.renderList(this.getAllRows());
+        } else {
+          failedUsernames.push(username);
         }
 
         if (this.unfollowQueue.length === 0 || myGeneration !== this._unfollowGeneration) break;
@@ -1611,6 +1606,11 @@
         this._unfollowProbePrepared = false;
         this.prober.closeProbeWindow();
         this.panel.hideUnfollowProgress();
+
+        if (failedUsernames.length > 0) {
+          const listText = failedUsernames.map((name) => `@${name}`).join('\n');
+          window.alert(`以下 ${failedUsernames.length} 个账号取消关注未成功：\n\n${listText}`);
+        }
       }
     }
 
@@ -1780,7 +1780,6 @@
         this._unfollowProbePrepared || this.prober.hasOpenProbeWindow();
 
       if (!canUseProbeFallback) {
-        this._alertUnfollowNeedsListOrRescan(username, listPathFailedReason || 'no_probe_window');
         return false;
       }
 
@@ -1797,13 +1796,11 @@
         if (blankLikeReasons.has(reason) || reason === 'list_cell_not_found' || reason === 'not_on_list_page') {
           this.prober.closeProbeWindow();
           this._unfollowProbePrepared = false;
-          this._alertUnfollowNeedsListOrRescan(username, reason);
         }
         return false;
       } catch (error) {
         this.prober.closeProbeWindow();
         this._unfollowProbePrepared = false;
-        this._alertUnfollowNeedsListOrRescan(username, 'exception');
         return false;
       }
     }
