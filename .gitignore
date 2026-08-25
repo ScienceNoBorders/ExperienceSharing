@@ -4,3 +4,4 @@
 *.github
 VPS/telegram-bot/.env
 VPS/telegram-bot/data/
+VPS/site/package-lock.json
