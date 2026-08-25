@@ -5,3 +5,4 @@
 VPS/telegram-bot/.env
 VPS/telegram-bot/data/
 VPS/site/package-lock.json
+VPS/site/package.json
