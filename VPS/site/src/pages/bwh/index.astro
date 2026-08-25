@@ -1,0 +1,62 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import PlanTable from "../../components/PlanTable.astro";
+import { plans, SERIES_LABEL } from "../../lib/catalog";
+
+const bwh = plans.filter((p) => p.vendor === "bwh");
+const order = ["kvm", "gia-e", "sla", "bwh-sg", "osaka", "tokyo", "bwh-hk", "dubai"];
+const groups = order
+  .map((s) => ({ series: s, rows: bwh.filter((p) => p.series === s) }))
+  .filter((g) => g.rows.length);
+
+const speed = [
+  { n: "01", name: "香港 / 东京 CN2 GIA", sub: "延迟最低" },
+  { n: "02", name: "大阪 软银", sub: "日本备用" },
+  { n: "03", name: "DC6 GIA-E / DC9 GIA", sub: "美国精品" },
+  { n: "04", name: "DC8 ZNET", sub: "性价比" },
+  { n: "05", name: "DC2 / DC4", sub: "常规" },
+  { n: "06", name: "FMT / 加拿大", sub: "西岸" },
+  { n: "07", name: "新泽西 / 纽约 / 阿姆斯特丹", sub: "基础线路" },
+];
+---
+<ConsoleLayout title="搬瓦工套餐 · VPS 选购神器" active="bwh">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">BANDWAGONHOST · 机房 IP = 数据中心 IP</div>
+      <h1>搬瓦工 VPS<br /><span class="accent">独立套餐页</span></h1>
+      <p class="lede">KVM 入门到 CN2 GIA-E / 港日新。本站将搬瓦工机房 IP 归为数据中心 IP，不计入「原生」。</p>
+    </div>
+  </header>
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-title"><span class="index">01</span> 机房线路经验名次</div>
+          <div class="section-sub">定性经验，非本站实测。第三方测速见 itdog / Ping.pe。</div>
+        </div>
+        <div class="signal t3"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>非实测</div>
+      </div>
+      <div class="speed-legend">
+        {speed.map((s) => (
+          <div class="speed-row">
+            <div class="speed-rank">{s.n}</div>
+            <div class="speed-name">{s.name}<span>{s.sub}</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  {groups.map((g) => (
+    <section id={g.series}>
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="section-title">{SERIES_LABEL[g.series] || g.series}</div>
+            <div class="section-sub">{g.rows.length} 个 SKU · 可换机房的 pid 不拆 SKU</div>
+          </div>
+        </div>
+        <PlanTable rows={g.rows} tableId={`t-${g.series}`} />
+      </div>
+    </section>
+  ))}
+</ConsoleLayout>

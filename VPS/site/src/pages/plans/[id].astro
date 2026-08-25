@@ -1,0 +1,49 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import { DETAIL_IDS, plans, IP_ZH, VENDOR_ZH, specLine, fx } from "../../lib/catalog";
+import PathHints from "../../components/PathHints.astro";
+import { formatPrices, payable } from "../../lib/money";
+
+export function getStaticPaths() {
+  return [...DETAIL_IDS].map((id) => ({ params: { id } }));
+}
+
+const plan = plans.find((p) => p.id === Astro.params.id);
+if (!plan) throw new Error("missing plan");
+const pay = payable(plan.prices, "annual", true, fx);
+const notes: Record<string, string> = {
+  "lisahost-66": "金样第一名：年付 500 内的美国 9929 原生。配置入门，适合轻量建站试水。",
+  "lisahost-52": "金样第二名：4837 双 ISP 住宅年付。建站不强制住宅，带宽更大。",
+  "lisahost-168": "金样第三名：9929 月付系列的特价年付 pid，与 61 近配置但购物车不同。",
+  "lisahost-59": "Lisa 美国 9929 月付爆款（现页「最多人选」）。年付预算 500 会超标。",
+  "lisahost-91": "香港三网直连旗舰，延迟低。",
+  "bwh-44": "搬瓦工入门 KVM。表行机房无 DC3，普通线路，机房 IP = 数据中心。",
+  "bwh-87": "CN2 GIA-E，可换机房，价格高于 500 年付金样。",
+  "bwh-95": "香港 CN2 GIA 入门月付，高端旗舰。",
+};
+---
+<ConsoleLayout title={`${plan.name_zh} · ${plan.id}`}>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">{VENDOR_ZH[plan.vendor]} · {plan.id}</div>
+      <h1>{plan.name_zh}</h1>
+      <p class="lede">{notes[plan.id] || "整理自官网购物车，非官方页面。"}</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={plan.affiliate_url} target="_blank" rel="noopener">去官网购买</a>
+        <a class="btn btn-ghost" href={plan.vendor === "lisahost" ? "/lisahost/" : "/bwh/"}>返回厂商页</a>
+      </div>
+    </div>
+  </header>
+  <section>
+    <div class="wrap">
+      <ul class="guide-prose">
+        <li>IP：{IP_ZH[plan.ip_bucket]}</li>
+        <li>线路 / 中转：<PathHints plan={plan} /></li>
+        <li>规格：{specLine(plan)}</li>
+        <li>价格：{formatPrices(plan.prices, fx)}</li>
+        <li>年付折算：{pay ? `¥${pay.amount_cny}` : "—"}</li>
+        <li>机房地区：{plan.regions.join(" / ")}</li>
+      </ul>
+    </div>
+  </section>
+</ConsoleLayout>

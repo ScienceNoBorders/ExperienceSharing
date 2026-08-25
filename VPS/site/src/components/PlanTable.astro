@@ -1,0 +1,63 @@
+---
+import type { Plan } from "../lib/catalog";
+import { IP_ZH, VENDOR_ZH, specLine, routeUiGroup } from "../lib/catalog";
+import { formatPrices, payable } from "../lib/money";
+import { fx } from "../lib/catalog";
+import PathHints from "./PathHints.astro";
+
+interface Props {
+  rows: Plan[];
+  tableId?: string;
+}
+const { rows, tableId = "plan-table" } = Astro.props;
+
+function annualCny(p: Plan) {
+  return payable(p.prices, "annual", true, fx)?.amount_cny ?? "";
+}
+function monthlyCny(p: Plan) {
+  return payable(p.prices, "monthly", true, fx)?.amount_cny ?? "";
+}
+---
+<div class="table-wrap">
+  <table id={tableId}>
+    <thead>
+      <tr>
+        <th>套餐</th>
+        <th>厂商</th>
+        <th class="col-ip">IP</th>
+        <th>线路 / 中转</th>
+        <th>规格</th>
+        <th>价格</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((p) => (
+        <tr
+          class={p.rec_row ? "rec" : undefined}
+          data-id={p.id}
+          data-vendor={p.vendor}
+          data-regions={p.regions.join(",")}
+          data-route={p.route}
+          data-route-group={routeUiGroup(p.route)}
+          data-ip={p.ip_bucket}
+          data-cycles={p.prices.map((x) => x.cycle).join(",")}
+          data-annual-cny={annualCny(p)}
+          data-monthly-cny={monthlyCny(p)}
+          data-daily={p.exclude_daily ? "1" : "0"}
+        >
+          <td data-label="套餐"><b>{p.name_zh}</b><br /><small style="color:var(--muted2)">{p.id} · {(p.regions || []).join("/")}</small></td>
+          <td data-label="厂商">{VENDOR_ZH[p.vendor]}</td>
+          <td class="col-ip" data-label="IP"><span class={`tag ${p.ip_bucket === "native" ? "tag-green" : p.ip_bucket === "residential" ? "tag-pink" : "tag-gray"}`}>{IP_ZH[p.ip_bucket]}</span></td>
+          <td data-label="线路/中转"><PathHints plan={p} /></td>
+          <td class="num" data-label="规格">{specLine(p)}{p.spec.traffic_bw ? ` · ${p.spec.traffic_bw}` : p.spec.traffic ? ` · ${p.spec.traffic}` : ""}</td>
+          <td class="price" data-label="价格">{formatPrices(p.prices, fx)}</td>
+          <td data-label="">
+            <a class="buy-mini" href={p.affiliate_url} target="_blank" rel="noopener">购买</a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<p class="empty-filter" id="empty-filter">没有符合条件的套餐。年付预算会把仅月付套餐按 ×12 折算并标记；可取消「严格匹配周期」、放宽 IP 或提高预算。</p>

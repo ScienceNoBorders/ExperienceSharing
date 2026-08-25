@@ -1,0 +1,50 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import PlanTable from "../../components/PlanTable.astro";
+import { planById } from "../../lib/catalog";
+
+const samples = ["lisahost-66", "lisahost-52", "lisahost-59", "bwh-44", "bwh-87", "bwh-95"]
+  .map((id) => planById(id))
+  .filter((p): p is NonNullable<typeof p> => !!p);
+---
+<ConsoleLayout title="LisaHost vs 搬瓦工 · VPS 选购神器" active="compare">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">COMPARE</div>
+      <h1>LisaHost <span class="accent">vs</span> 搬瓦工</h1>
+      <p class="lede">不是谁全面更好，是 IP 语义、线路和计费习惯不同。选购向导按同一套人民币应付来比。</p>
+    </div>
+  </header>
+  <section>
+    <div class="wrap compare-grid">
+      <div class="compare-box lisa-scope">
+        <h3>LisaHost</h3>
+        <ul>
+          <li>人民币标价，年付特价多</li>
+          <li>原生 / 双 ISP 住宅标注清楚</li>
+          <li>9929 / 4837 / 香港 CMI 面向大陆优化</li>
+          <li>适合：跨境、社媒、要纯净 IP</li>
+        </ul>
+        <a class="buy-mini" href="/lisahost/">打开丽萨页</a>
+      </div>
+      <div class="compare-box">
+        <h3>搬瓦工</h3>
+        <ul>
+          <li>美元标价，常年付/季付双档</li>
+          <li>机房 IP = 本站「数据中心 IP」</li>
+          <li>GIA-E 可在多个机房之间迁移</li>
+          <li>适合：建站、学习、要 CN2 GIA 且接受机房 IP</li>
+          <li>同 pid 不按机房拆 SKU</li>
+        </ul>
+        <a class="buy-mini" href="/bwh/">打开搬瓦工页</a>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="section-title">代表 SKU</div>
+      <p class="section-sub" style="margin:12px 0 22px">用于对照，不是广告竞价。</p>
+      <PlanTable rows={samples} tableId="compare-table" />
+    </div>
+  </section>
+</ConsoleLayout>

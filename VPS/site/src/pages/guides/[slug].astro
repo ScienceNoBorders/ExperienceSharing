@@ -1,0 +1,82 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import PlanTable from "../../components/PlanTable.astro";
+import { plans, routeUiGroup } from "../../lib/catalog";
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: "cn2" } },
+    { params: { slug: "cn2-gia" } },
+    { params: { slug: "9929" } },
+    { params: { slug: "4837" } },
+  ];
+}
+
+const slug = Astro.params.slug!;
+const docs: Record<string, { title: string; route: string; body: string[] }> = {
+  cn2: {
+    title: "CN2 是什么",
+    route: "cn2",
+    body: [
+      "CN2 是中国电信的中美精品网（ChinaNet Next Carrying Network）。相对普通 163 骨干，跨境段拥塞更少，延迟更稳。",
+      "注意：市面上「CN2」常被用来统称优化线路。真正的 CN2 GIA 比早期 CN2 GT 更接近直连体验，价格也更高。",
+      "搬瓦工入门 KVM 多数不是 CN2 GIA；本站按表行线路标注，不以精选卡文案为准。",
+    ],
+  },
+  "cn2-gia": {
+    title: "CN2 GIA / GIA-E",
+    route: "cn2_gia",
+    body: [
+      "GIA（Global Internet Access）是电信 CN2 的高优先级产品。回程走 CN2，大陆三大运营商访问通常更稳。",
+      "搬瓦工的 CN2 GIA-E（如 pid=87）可在多个机房间迁移，其中既有 DC6 GIA-E，也可能包含普通线路机房。购买后进哪一个机房，以 KiwiVM 实际为准。",
+      "LisaHost 美国 CERA 高防也走 CN2 GIA 一类路径。筛选里「CN2 GIA」包含 GIA 与 GIA-E。",
+    ],
+  },
+  "9929": {
+    title: "联通 9929 精品网",
+    route: "9929",
+    body: [
+      "AS9929 是中国联通的精品网，常被用作中美优化。延迟一般优于普通联通 4837，但带宽和价格策略因商家而异。",
+      "LisaHost 美国 9929 系列有「非原生」入门年付和「原生」年付两个 pid，不要买错购物车。",
+      "本站金样「500 元美国原生建站」第一名就是 9929 原生年付 lisahost-66。",
+    ],
+  },
+  "4837": {
+    title: "联通 4837 大带宽",
+    route: "4837",
+    body: [
+      "AS4837 是联通普通国际出口，带宽往往更大、单价更低，高峰可能不如 9929/CN2 GIA 稳。",
+      "LisaHost 洛杉矶 4837 常带双 ISP 住宅 IP，适合要家宽属性、能接受大带宽线路的用户。",
+      "金样第二名 lisahost-52 即 4837 双 ISP 年付。建站不强制需要住宅，但预算内可以买到。",
+    ],
+  },
+};
+const doc = docs[slug]!;
+const related = plans.filter((p) => routeUiGroup(p.route) === doc.route || p.route === doc.route).slice(0, 12);
+---
+<ConsoleLayout title={`${doc.title} · 线路科普`} active="guides">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">GUIDES</div>
+      <h1>{doc.title}</h1>
+      <div class="lisa-quicknav" style="margin-top:22px">
+        <a href="/guides/cn2/">CN2</a>
+        <a href="/guides/cn2-gia/">CN2 GIA</a>
+        <a href="/guides/9929/">9929</a>
+        <a href="/guides/4837/">4837</a>
+      </div>
+    </div>
+  </header>
+  <section>
+    <div class="wrap guide-prose">
+      {doc.body.map((p) => <p>{p}</p>)}
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="section-title">相关套餐</div>
+      <p class="section-sub" style="margin:12px 0 22px">从 catalog 按线路自动嵌入，非广告。</p>
+      <PlanTable rows={related} tableId="guide-table" />
+    </div>
+  </section>
+</ConsoleLayout>

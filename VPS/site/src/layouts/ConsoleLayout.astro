@@ -1,0 +1,107 @@
+---
+import "../styles/console.css";
+import { lastVerified } from "../lib/catalog";
+
+interface Props {
+  title?: string;
+  description?: string;
+  active?: string;
+}
+const {
+  title = "VPS 选购神器 · LisaHost + 搬瓦工",
+  description = "按预算、地区、原生/住宅 IP 从 LisaHost 与搬瓦工目录算出推荐套餐。非官方整理。",
+  active = "",
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favor.ico" />
+  <link href="/googleapiscss2.css" rel="stylesheet" />
+  <link rel="canonical" href={Astro.url.pathname} />
+</head>
+<body>
+  <div class="statusbar">
+    <div class="wrap statusbar-scroll">
+      <div><span class="dot"></span>核验 {lastVerified} · 111 套餐 · 非实时库存</div>
+      <nav>
+        <div class="nav-group">
+          <a class={active === "home" ? "active-nav" : ""} href="/">筛选</a>
+          <a class={active === "rank" ? "active-nav" : ""} href="/rankings/2026/">2026榜</a>
+          <a class={active === "wizard" ? "active-nav" : ""} href="/wizard/">选购向导</a>
+        </div>
+        <span class="social-divider"></span>
+        <div class="nav-group">
+          <span class="nav-tag lisa-tag">丽萨</span>
+          <a class={active === "lisa" ? "nav-lisa-highlight" : ""} href="/lisahost/">LisaHost</a>
+        </div>
+        <span class="social-divider"></span>
+        <div class="nav-group">
+          <span class="nav-tag bwh-tag">搬瓦工</span>
+          <a class={active === "bwh" ? "active-nav" : ""} href="/bwh/">BandwagonHost</a>
+        </div>
+        <span class="social-divider"></span>
+        <a class={active === "compare" ? "active-nav" : ""} href="/compare/lisahost-vs-bandwagonhost/">对比</a>
+        <a class={active === "guides" ? "active-nav" : ""} href="/guides/cn2-gia/">线路科普</a>
+        <span class="social-divider"></span>
+        <a href="https://github.com/ScienceNoBorders/ExperienceSharing" target="_blank" rel="noopener" class="social-link">
+          <img src="/github.svg" alt="" class="social-icon" />GitHub
+        </a>
+        <a href="https://x.com/xinzhizhu9795" target="_blank" rel="noopener" class="social-link">
+          <img src="/x.svg" alt="" class="social-icon" />X
+        </a>
+        <a href="https://t.me/xiaoxiavip_vps" target="_blank" rel="noopener" class="social-link">
+          <img src="/telegram.svg" alt="" class="social-icon" />Telegram
+        </a>
+      </nav>
+    </div>
+  </div>
+  <slot />
+  <footer>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <h4>关于本页</h4>
+          <p style="color:var(--muted2);font-size:13.5px;max-width:440px;">
+            数据整理自搬瓦工（BandwagonHost，{lastVerified}）及 LisaHost（{lastVerified}）官网，仅供参考。具体配置、价格及库存请以两家官网实际下单页面为准。
+          </p>
+        </div>
+        <div>
+          <h4>站内导航</h4>
+          <ul>
+            <li><a href="/">套餐筛选</a></li>
+            <li><a href="/wizard/">选购向导</a></li>
+            <li><a href="/lisahost/">LisaHost</a></li>
+            <li><a href="/bwh/">搬瓦工</a></li>
+            <li><a href="/compare/lisahost-vs-bandwagonhost/">Lisa vs 搬瓦工</a></li>
+            <li><a href="/guides/cn2-gia/">线路科普</a></li>
+            <li><a href="/rankings/2026/">2026 推荐榜</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>VPN</h4>
+          <ul>
+            <li><a href="https://fbinv02.fbaff.cc/auth/register?code=7I51vRTE">飞鸟 (年付：year85)</a></li>
+            <li><a href="https://w15.lmva-cfwb04.cc/register?aff=d3M9iveM">龙猫云 (原生IP)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>VPS</h4>
+          <ul>
+            <li><a href="https://www.vircs.com/welcome?vcd=84492811">VIRCS (家宽)</a></li>
+            <li><a href="https://lisahost.com/aff.php?aff=13150">LisaHost (原生IP)</a></li>
+            <li><a href="https://console.ygcloud.com/quick.html?ref=s8j2pugn&promoteWay=LINK">莹光云 (自选带宽)</a></li>
+            <li><a href="https://billing.dedirock.com/aff.php?aff=804">DEDI (最低7$/年)</a></li>
+            <li><a href="https://bwh81.net/aff.php?aff=76211" target="_blank" rel="noopener">搬瓦工官网</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">© 2026 · 搬瓦工 & LisaHost 套餐信息整理</div>
+    </div>
+  </footer>
+</body>
+</html>

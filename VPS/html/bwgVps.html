@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>搬瓦工 VPS 全套餐控制台 · BandwagonHost Plans</title>
+<title>搬瓦工 & LisaHost VPS 全套餐控制台 · BandwagonHost + LisaHost Plans</title>
 <link href="./googleapiscss2.css" rel="stylesheet">
 <style>
   :root{
@@ -37,7 +37,7 @@
   }
   a{color:inherit;text-decoration:none;}
   .mono{font-family:var(--mono);}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .wrap{max-width:1400px;margin:0 auto;padding:0 24px;}
 
   /* status bar */
   .statusbar{
@@ -49,11 +49,22 @@
   .statusbar .wrap{display:flex;align-items:center;justify-content:space-between;height:52px;font-family:var(--mono);font-size:12.5px;color:var(--muted2);}
   .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--signal);margin-right:8px;box-shadow:0 0 8px var(--signal);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-  .statusbar nav{display:flex;gap:18px;}
+  .statusbar nav{display:flex;gap:18px;align-items:center;}
   .statusbar nav a{color:var(--muted2);white-space:nowrap;}
   .statusbar nav a:hover{color:var(--signal);}
   .statusbar-scroll{overflow-x:auto;}
   .statusbar-scroll::-webkit-scrollbar{display:none;}
+  .social-divider{width:1px;height:14px;background:var(--line);margin:0 2px;flex-shrink:0;}
+  .social-link{display:inline-flex;align-items:center;gap:5px;color:var(--muted2);white-space:nowrap;transition:color .2s ease;}
+  .social-link:hover{color:var(--signal);}
+  .social-icon{
+    width:15px;height:15px;display:inline-block;vertical-align:middle;
+    filter: brightness(0) saturate(100%) invert(52%) sepia(11%) saturate(767%) hue-rotate(183deg) brightness(90%) contrast(86%);
+    transition: filter .2s ease;
+  }
+  .social-link:hover .social-icon{
+    filter: brightness(0) saturate(100%) invert(74%) sepia(51%) saturate(526%) hue-rotate(121deg) brightness(97%) contrast(92%);
+  }
 
   /* hero */
   .hero{padding:76px 0 56px;border-bottom:1px solid var(--line);}
@@ -108,30 +119,46 @@
   .speed-name span{display:block;font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:2px;}
 
   /* featured cards */
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
   .card{
-    background:var(--panel);border:1px solid var(--line);border-radius:4px;
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
     padding:26px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:space-between;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   }
-  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line);}
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.45);
+    border-color:rgba(255,255,255,0.15);
+  }
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line);}
   .card.tier-entry::before{background:var(--muted2);}
-  .card.tier-rec::before{background:var(--signal);box-shadow:0 0 10px var(--signal);}
+  .card.tier-rec::before{background:var(--signal);box-shadow:0 0 12px var(--signal);}
   .card.tier-pro::before{background:var(--warn);}
-  .card.tier-top::before{background:var(--alert);}
-  .card-badge{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted2);text-transform:uppercase;}
-  .card.tier-rec .card-badge{color:var(--signal);}
-  .card.tier-top .card-badge{color:var(--alert);}
-  .card h3{font-size:19px;margin:8px 0 2px;}
+  .card.tier-top::before{background:var(--alert);box-shadow:0 0 12px var(--alert);}
+  
+  .card.tier-rec{border-color:rgba(77,216,196,0.3);background:linear-gradient(180deg, rgba(77,216,196,0.04) 0%, var(--panel) 100%);}
+  .card.tier-top{border-color:rgba(255,107,107,0.3);}
+
+  .card-badge{
+    font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;
+    color:var(--muted2);text-transform:uppercase;
+    display:inline-block;padding:3px 9px;border-radius:3px;
+    background:var(--panel-raised);border:1px solid var(--line);width:fit-content;
+  }
+  .card.tier-rec .card-badge{color:var(--signal);border-color:rgba(77,216,196,0.35);background:rgba(77,216,196,0.1);}
+  .card.tier-top .card-badge{color:var(--alert);border-color:rgba(255,107,107,0.35);background:rgba(255,107,107,0.1);}
+  .card h3{font-size:19px;margin:10px 0 2px;}
   .card .price{font-family:var(--mono);font-size:30px;font-weight:700;margin:14px 0 4px;}
   .card .price span{font-size:13px;color:var(--muted2);font-weight:400;}
-  .card .price-year{font-family:var(--mono);font-size:12.5px;color:var(--muted2);margin-bottom:16px;}
-  .card ul{list-style:none;font-size:13.5px;color:var(--text);}
+  .card .price-year{font-family:var(--mono);font-size:12.5px;color:var(--muted2);margin-bottom:16px;min-height:38px;}
+  .card ul{list-style:none;font-size:13.5px;color:var(--text);margin-bottom:16px;}
   .card ul li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line-soft);font-family:var(--mono);font-size:12.8px;}
   .card ul li b{font-family:var(--sans);font-weight:400;color:var(--muted2);}
-  .card .rooms{margin-top:14px;font-size:12px;color:var(--muted2);line-height:1.7;}
-  .card .buy{display:block;text-align:center;margin-top:18px;padding:11px;border-radius:3px;background:var(--panel-raised);border:1px solid var(--line);font-weight:700;font-size:13.5px;}
+  .card .rooms{margin-top:auto;padding-top:14px;font-size:12px;color:var(--muted2);line-height:1.7;}
+  .card .buy{display:block;text-align:center;margin-top:18px;padding:11px;border-radius:4px;background:var(--panel-raised);border:1px solid var(--line);font-weight:700;font-size:13.5px;transition:all .2s ease;}
   .card.tier-rec .buy{background:var(--signal);color:#04231F;border-color:var(--signal);}
-  .card .buy:hover{filter:brightness(1.1);}
+  .card .buy:hover{filter:brightness(1.15);transform:translateY(-1px);}
 
   /* series tables */
   .series-desc{color:var(--muted2);font-size:13.5px;margin-bottom:22px;max-width:640px;}
@@ -156,7 +183,7 @@
   td.price small{display:block;font-weight:400;color:var(--muted2);font-size:11px;margin-top:2px;}
   .buy-mini{
     display:inline-block;padding:8px 16px;border-radius:3px;border:1px solid var(--signal);
-    color:var(--signal);font-size:12.5px;font-weight:700;white-space:nowrap;
+    color:var(--signal);font-size:12.5px;font-weight:700;white-space:nowrap;transition:all .2s ease;
   }
   .buy-mini:hover{background:var(--signal);color:#04231F;}
 
@@ -175,7 +202,7 @@
   }
 
   footer{padding:48px 0 70px;}
-  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:36px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:36px;}
   .footer-grid h4{font-size:13px;margin-bottom:14px;color:var(--muted2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;}
   .footer-grid ul{list-style:none;font-size:13.5px;}
   .footer-grid li{margin-bottom:9px;}
@@ -187,6 +214,49 @@
   .disclaimer b{color:var(--text);}
   .copyright{margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--muted2);}
   @media (max-width:720px){.footer-grid{grid-template-columns:1fr;}}
+
+  /* ---------- brand divider between BandwagonHost and LisaHost ---------- */
+  .brand-divider{padding:52px 0 0;}
+  .brand-divider .wrap{display:flex;align-items:center;gap:18px;}
+  .brand-divider .divider-line{flex:1;height:1px;background:var(--line);}
+  .brand-divider .divider-label{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted2);white-space:nowrap;}
+  
+  /* Statusbar Dual-Brand Navigation */
+  .nav-group{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;}
+  .nav-tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;font-family:var(--mono);}
+  .bwh-tag{background:rgba(77,216,196,0.12);color:var(--signal);border:1px solid rgba(77,216,196,0.3);}
+  .lisa-tag{background:rgba(255,111,168,0.15);color:#FF6FA8;border:1px solid rgba(255,111,168,0.35);}
+  .nav-lisa-highlight{color:#FF6FA8!important;font-weight:700;}
+  .nav-lisa-highlight:hover{color:#ff96c2!important;text-shadow:0 0 8px rgba(255,111,168,0.4);}
+  .copy-code-badge{
+    cursor:pointer;user-select:all;transition:all .2s ease;display:inline-flex;align-items:center;gap:6px;
+  }
+  .copy-code-badge:hover{border-color:var(--signal);box-shadow:0 0 8px rgba(255,111,168,0.3);}
+
+  .tag-green{background:rgba(77,216,196,0.15)!important;color:#4DD8C4!important;border:1px solid rgba(77,216,196,0.35)!important;}
+  .tag-pink{background:rgba(255,111,168,0.15)!important;color:#FF6FA8!important;border:1px solid rgba(255,111,168,0.35)!important;}
+  .tag-gray{background:rgba(255,255,255,0.06)!important;color:var(--muted2)!important;border:1px solid var(--line)!important;}
+  .tag-opt{background:rgba(77,216,196,0.12)!important;color:#4DD8C4!important;border:1px solid rgba(77,216,196,0.3)!important;}
+  .tag-relay{background:rgba(242,184,75,0.15)!important;color:#F2B84B!important;border:1px solid rgba(242,184,75,0.35)!important;}
+
+  /* ---------- LisaHost scope: same components, pink/magenta accent ---------- */
+  .lisa-scope{
+    --signal:#FF6FA8;
+    --signal-dim:#5c2740;
+  }
+  .lisa-scope .card.tier-rec{border-color:rgba(255,111,168,0.35);background:linear-gradient(180deg, rgba(255,111,168,0.05) 0%, var(--panel) 100%);}
+  .lisa-scope .card.tier-rec::before{background:#FF6FA8;box-shadow:0 0 12px #FF6FA8;}
+  .lisa-scope .card.tier-rec .card-badge{color:#FF6FA8;border-color:rgba(255,111,168,0.35);background:rgba(255,111,168,0.12);}
+  .lisa-scope .card.tier-rec .buy,
+  .lisa-scope .btn-primary{color:#2B0F1C;}
+  .lisa-scope tbody tr.rec{background:rgba(255,111,168,0.06);}
+  .lisa-hero-section{padding:56px 0 44px;border-bottom:1px solid var(--line);background-image:radial-gradient(circle at 85% 0%, rgba(255,111,168,0.08), transparent 40%);}
+  .lisa-h1{font-size:clamp(28px,4.4vw,46px);font-weight:900;letter-spacing:-.01em;line-height:1.15;max-width:760px;}
+  .lisa-h1 .accent{color:var(--signal);}
+  .lisa-quicknav{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px;}
+  .lisa-quicknav a{font-family:var(--mono);font-size:12px;padding:7px 14px;border:1px solid var(--line);border-radius:20px;color:var(--muted2);white-space:nowrap;transition:all .2s ease;}
+  .lisa-quicknav a:hover{border-color:var(--signal);color:var(--signal);}
+  .lisa-quicknav a.highlight-annual{border-color:var(--signal);color:var(--signal);background:rgba(255,111,168,0.1);}
 </style>
 </head>
 <body>
@@ -195,23 +265,514 @@
   <div class="wrap statusbar-scroll">
     <div><span class="dot"></span>25+ 全球机房 · 实时库存监测中</div>
     <nav>
-      <a href="#quick">精选</a>
-      <a href="#speed">线路排行</a>
-      <a href="#kvm">KVM</a>
-      <a href="#gia-e">CN2 GIA‑E</a>
-      <a href="#sla">SLA</a>
-      <a href="#sg">新加坡</a>
-      <a href="#osaka">大阪</a>
-      <a href="#tokyo">东京</a>
-      <a href="#hk">香港</a>
-      <a href="#dubai">迪拜</a>
+      <div class="nav-group">
+        <span class="nav-tag lisa-tag">丽萨主机 Lisa</span>
+        <a href="#lisa-quick">Lisa精选</a>
+        <a href="#lisa-annual" class="nav-lisa-highlight">🌸 年付特价</a>
+        <a href="#lisa-us9929">9929住宅</a>
+        <a href="#lisa-us4837">4837大带宽</a>
+        <a href="#lisa-hk">香港CMI</a>
+      </div>
+      <span class="social-divider"></span>
+      <div class="nav-group">
+        <span class="nav-tag bwh-tag">搬瓦工 BWH</span>
+        <a href="#quick">精选</a>
+        <a href="#speed">线路排行</a>
+        <a href="#gia-e">CN2 GIA‑E</a>
+        <a href="#hk">香港GIA</a>
+      </div>
+      <span class="social-divider"></span>
+      <a href="https://github.com/ScienceNoBorders/ExperienceSharing" target="_blank" rel="noopener" class="social-link" title="GitHub">
+        <img src="./github.svg" alt="GitHub" class="social-icon">GitHub
+      </a>
+      <a href="https://x.com/xinzhizhu9795" target="_blank" rel="noopener" class="social-link" title="X">
+        <img src="./x.svg" alt="X" class="social-icon">X
+      </a>
+      <a href="https://t.me/nathan_9795" target="_blank" rel="noopener" class="social-link" title="Telegram">
+        <img src="./telegram.svg" alt="Telegram" class="social-icon">Telegram
+      </a>
     </nav>
+  </div>
+</div>
+
+<div class="lisa-scope">
+
+<section id="lisa-hero" class="lisa-hero-section">
+  <div class="wrap">
+    <div class="eyebrow">LISAHOST · 住宅IP / 原生IP VPS · 2026-08</div>
+    <h2 class="lisa-h1">丽萨主机 LisaHost<br><span class="accent">VPS 全套餐一览</span>，住宅IP首选</h2>
+    <p class="lede">主打双 ISP 家宽住宅 IP 与多国原生 IP，覆盖美国（9929 精品网 / 4837 大带宽 / CERA 高防 CN2 GIA）、中国香港三网直连、新加坡、台湾、日本、英国等机房。IP 纯净、解锁能力强，尤其适合 TikTok、海外社媒营销、Shopee、亚马逊电商等场景。以下汇总目前在售的主力方案，配置与价格一次看清，点击即可直达购买页。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://lisahost.com/aff.php?aff=13150" target="_blank" rel="noopener">进入 LisaHost 官网 →</a>
+      <a class="btn btn-ghost" href="https://lisahost.com/aff.php?aff=13150" target="_blank" rel="noopener">查看官网全部方案</a>
+    </div>
+    <div class="aff-tag">推广专属折扣码：<code id="lisaDiscountCode" onclick="copyDiscountCode()" class="copy-code-badge" title="点击复制折扣码">TS-CBP205DQJE 📋</code><span id="copyTip" style="color:var(--signal);font-weight:bold;font-size:12px;margin-left:8px;display:none;">✓ 已复制 9 折优惠码！</span>（结算时填写享 9 折）</div>
+    <div class="lisa-quicknav">
+      <a href="#lisa-quick">精选套餐</a>
+      <a href="#lisa-annual" class="highlight-annual">🌸 年付特价系列</a>
+      <a href="#lisa-us9929">美国 9929 住宅IP</a>
+      <a href="#lisa-us4837">美国 4837 不限流量</a>
+      <a href="#lisa-cera">美国 CERA 高防</a>
+      <a href="#lisa-hk">香港三网 CMI</a>
+      <a href="#lisa-sg">新加坡</a>
+      <a href="#lisa-tw">台湾</a>
+      <a href="#lisa-jp">日本</a>
+      <a href="#lisa-uk">英国</a>
+    </div>
+  </div>
+</section>
+
+<section id="lisa-quick">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L01</span> 三款最多人选的套餐</div>
+        <div class="section-sub">选择困难看这里：超高性价比年付入门款、全网独家双 ISP 住宅 IP 爆款，以及超低延迟香港直连旗舰。</div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card tier-entry">
+        <div class="card-badge">入门首选</div>
+        <h3>年付特价系列 <span class="mono" style="color:var(--muted2);font-size:13px;">入门款</span></h3>
+        <div class="price">¥199<span>/年起</span></div>
+        <div class="price-year">低至 ¥16.5/月 · 新手试水与轻量建站首选</div>
+        <ul>
+          <li><b>CPU</b> 1 核</li>
+          <li><b>内存</b> 512M / 1G</li>
+          <li><b>硬盘</b> 10G SSD / NVMe</li>
+          <li><b>流量</b> 300G - 2000GB</li>
+          <li><b>带宽</b> 50Mbps - 300Mbps</li>
+        </ul>
+        <div class="rooms">机房：美国 9929/4837、香港 CMI、新加坡、日本、台湾、英国等多节点特价年付可选</div>
+        <a class="buy" href="#lisa-annual">查看年付特价表 ↓</a>
+      </div>
+      <div class="card tier-rec">
+        <div class="card-badge">★ 最多人选</div>
+        <h3>美国 9929 <span class="mono" style="color:var(--muted2);font-size:13px;">双ISP住宅IP</span></h3>
+        <div class="price">¥158<span>/月</span></div>
+        <div class="price-year">三网 9929 精品网 · 纯净双 ISP 家宽住宅原生 IP</div>
+        <ul>
+          <li><b>CPU</b> 2 核</li>
+          <li><b>内存</b> 2G</li>
+          <li><b>硬盘</b> 40G NVMe</li>
+          <li><b>流量</b> 4000GB / 月</li>
+          <li><b>带宽</b> 80Mbps</li>
+        </ul>
+        <div class="rooms">机房：美国洛杉矶，9929 精品网络，双 ISP 真实家宽住宅 IP，TikTok / 跨境电商第一推荐</div>
+        <a class="buy" href="https://lisahost.com/cart.php?a=add&pid=59&aff=13150" target="_blank" rel="noopener">立即购买</a>
+      </div>
+      <div class="card tier-top">
+        <div class="card-badge">高端旗舰</div>
+        <h3>香港三网直连 <span class="mono" style="color:var(--muted2);font-size:13px;">CMI / CN2</span></h3>
+        <div class="price">¥188<span>/月</span></div>
+        <div class="price-year">平均延迟 ~50ms · 解锁 Netflix / TVB / 迪士尼</div>
+        <ul>
+          <li><b>CPU</b> 2 核</li>
+          <li><b>内存</b> 2G</li>
+          <li><b>硬盘</b> 40G NVMe</li>
+          <li><b>流量</b> 2000GB / 月</li>
+          <li><b>带宽</b> 50Mbps</li>
+        </ul>
+        <div class="rooms">机房：中国香港，电信 CN2 / 联通 9929 / 移动 CMIN2 直连，极低延迟，IP 纯净</div>
+        <a class="buy" href="https://lisahost.com/cart.php?a=add&pid=91&aff=13150" target="_blank" rel="noopener">立即购买</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lisa-annual">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L02</span> 年付特价系列全汇总（全节点入门款）</div>
+        <div class="section-sub">预算有限或新手试水的最佳入口！包含 18 款 LisaHost 全节点年付特价方案，低至 ¥199/年 起。已为你全面标注 <b>原生/非原生 IP</b>、<b>双 ISP 住宅属性</b>、<b>⚡ 大陆直连优化</b> 及 <b>⚠️ 建议中转</b> 提醒。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>年付特惠 · 低至¥199/年</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead>
+        <tr>
+          <th>节点名称</th>
+          <th>IP 属性</th>
+          <th>线路 / 中转属性</th>
+          <th>配置</th>
+          <th>流量 / 带宽</th>
+          <th>年付价（月均）</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="rec">
+          <td data-label="节点名称"><b>美国 9929 精品网</b><br><small style="color:var(--muted2);">入门入门特价款</small></td>
+          <td data-label="IP 属性"><span class="tag tag-gray">非原生 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> AS9929 精品网</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">200GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥199<small>/年 (约¥16.6/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=13&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>美国 9929 精品网</b><br><small style="color:var(--muted2);">原生IP特价款</small></td>
+          <td data-label="IP 属性"><span class="tag tag-green">原生 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> AS9929 精品网</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">400GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥299<small>/年 (约¥24.9/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=66&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr class="rec">
+          <td data-label="节点名称"><b>美国 4837 洛杉矶</b><br><small style="color:var(--muted2);">双ISP住宅特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> AS4837 大带宽</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥399<small>/年 (约¥33/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=52&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>美国纽约 住宅 IP</b><br><small style="color:var(--muted2);">美东双ISP特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> BGP大带宽</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥399<small>/年 (约¥33/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=155&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>美国芝加哥 住宅 IP</b><br><small style="color:var(--muted2);">美中双ISP特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> BGP大带宽</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥399<small>/年 (约¥33/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=161&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>新加坡 BGP</b><br><small style="color:var(--muted2);">原生IP特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-green">原生 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 解锁东南亚</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">2000GB / 300Mbps</td>
+          <td class="price" data-label="年付价">¥466<small>/年 (约¥38.8/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=75&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>英国 BGP 住宅 IP</b><br><small style="color:var(--muted2);">双ISP住宅特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 解锁英区服务</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">2000GB / 300Mbps</td>
+          <td class="price" data-label="年付价">¥466<small>/年 (约¥38.8/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=103&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr class="rec">
+          <td data-label="节点名称"><b>日本原生 IP</b><br><small style="color:var(--muted2);">三网优化特价款</small></td>
+          <td data-label="IP 属性"><span class="tag tag-green">原生 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> 中日三网优化</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥499<small>/年 (约¥41.6/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=96&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr class="rec">
+          <td data-label="节点名称"><b>美国 9929 住宅 IP</b><br><small style="color:var(--muted2);">双ISP精品网爆款</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> AS9929 精品网</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥499<small>/年 (约¥41.6/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=61&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr class="rec">
+          <td data-label="节点名称"><b>香港 CMI/CN2/CU2</b><br><small style="color:var(--muted2);">三网直连特价款</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> 三网直连 ~50ms</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥566<small>/年 (约¥47.2/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=97&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>韩国双 ISP 住宅 IP</b><br><small style="color:var(--muted2);">三网直连特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> 三网直连</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥699<small>/年 (约¥58.2/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=134&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>越南双 ISP 住宅 IP</b><br><small style="color:var(--muted2);">大带宽特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 东南亚大带宽</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥699<small>/年 (约¥58.2/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=196&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>香港 iCable 住宅 IP</b><br><small style="color:var(--muted2);">双ISP住宅特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 解锁香港本地</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥699<small>/年 (约¥58.2/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=188&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>台湾原生 IP</b><br><small style="color:var(--muted2);">大带宽特价</small></td>
+          <td data-label="IP 属性"><span class="tag tag-green">原生 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 解锁动画疯</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">2000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥766<small>/年 (约¥63.8/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=82&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>香港 HGC 住宅 IP</b><br><small style="color:var(--muted2);">双ISP三网优化</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 住宅 IP</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> 三网优化</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">600GB / 50Mbps</td>
+          <td class="price" data-label="年付价">¥799<small>/年 (约¥66.6/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=127&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>美国西雅图家宽 VDS</b><br><small style="color:var(--muted2);">静态住宅IP VDS</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">静态家宽 IP VDS</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 独享家宽IP</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥899<small>/年 (约¥74.9/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=141&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr class="rec">
+          <td data-label="节点名称"><b>日本 ISP 静态住宅 VDS</b><br><small style="color:var(--muted2);">静态住宅IP VDS</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">ISP 静态住宅 VDS</span></td>
+          <td data-label="线路/中转"><span class="tag tag-opt">⚡ 大陆优化</span> 中日直连</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥899<small>/年 (约¥74.9/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=147&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+        <tr>
+          <td data-label="节点名称"><b>德国双 ISP 住宅 VDS</b><br><small style="color:var(--muted2);">双ISP原生住宅</small></td>
+          <td data-label="IP 属性"><span class="tag tag-pink">双 ISP 原生住宅</span></td>
+          <td data-label="线路/中转"><span class="tag tag-relay">⚠️ 建议中转</span> 欧洲节点</td>
+          <td class="num" data-label="配置">1核 / 1G / 10G NVMe</td>
+          <td class="num" data-label="流量/带宽">1000GB / 100Mbps</td>
+          <td class="price" data-label="年付价">¥1099<small>/年 (约¥91.6/月)</small></td>
+          <td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=167&aff=13150" target="_blank" rel="noopener">立即订购</a></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-us9929">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L03</span> 美国 9929 精品网络 · 双ISP住宅IP VPS</div>
+        <div class="section-sub">美国洛杉矶机房，国际精品网络 9929 线路，默认分配双 ISP 家宽住宅美国原生 IP，IP 纯净，Tiktok / INS / FB 营销数据好，支持解锁美区流媒体与游戏。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>住宅IP · 高纯净度</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">1000GB</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥68<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=65&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">2000GB</td><td class="num" data-label="带宽">60Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥88<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=58&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">4000GB</td><td class="num" data-label="带宽">80Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥158<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=59&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">8000GB</td><td class="num" data-label="带宽">100Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥899<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=60&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">20Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥498<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=62&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥1288<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=63&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">600GB/月</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥499<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=168&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-us4837">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L04</span> 美国 4837 大带宽 VPS · 不限流量可选</div>
+        <div class="section-sub">中国大陆三网回程 CUVIP 4837 线路优化，默认分配双 ISP 家宽住宅美国原生 IP，带宽规格更大，另有不限流量档位，适合长期挂机与批量业务。</div>
+      </div>
+      <div class="signal t2"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>大带宽 · 高峰不卡顿</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">3000GB</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥68<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=48&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">8000GB</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥100<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=47&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">20000GB</td><td class="num" data-label="带宽">1000Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥300<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=49&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥198<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=50&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8G</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥498<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=51&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">600GB/月</td><td class="num" data-label="带宽">100Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥399<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=169&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-cera">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L05</span> 美国 CERA 高防 CN2 GIA 原生IP VPS</div>
+        <div class="section-sub">美国 CERA 机房，六网（电信/联通/移动/广电有线/鹏博士/科技网）回程 CN2 GIA 精品网络，去程直连，默认 50G DDoS 防御，可付费加至 100G，适合对稳定性和抗攻击有要求的业务。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>CN2 GIA · 50G防御</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G SSD</td><td class="num" data-label="流量">1GB</td><td class="num" data-label="带宽">10Mbps</td><td data-label="标签"><span class="tag">1天试用</span></td><td class="price" data-label="价格">¥2<small>/1天</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=33&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">512M</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G SSD</td><td class="num" data-label="流量">100GB</td><td class="num" data-label="带宽">10Mbps</td><td data-label="标签"><span class="tag">限售10台</span></td><td class="price" data-label="价格">¥40<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=36&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">20G SSD</td><td class="num" data-label="流量">500GB</td><td class="num" data-label="带宽">15Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥50<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=32&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G SSD</td><td class="num" data-label="流量">1200GB/月</td><td class="num" data-label="带宽">25Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥256<small>/季</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=34&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G SSD</td><td class="num" data-label="流量">3000GB</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥396<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=35&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-hk">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L06</span> 香港三网直连 CMI/CU2/CN2 精品网络</div>
+        <div class="section-sub">全新 IP 段，电信 CN2 精品线路、联通 9929 精品线路、移动 CMIN2 精品线路去程直连不绕路，平均延迟约 50ms。IP 纯净，解锁 Netflix / Disney+ / Youtube Premium 等香港本土流媒体服务。</div>
+      </div>
+      <div class="signal t1"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>三网直连 · 低延迟</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">1000GB</td><td class="num" data-label="带宽">30Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥88<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=90&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">2000GB</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥188<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=91&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">30Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥998<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=94&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥1988<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=95&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">600GB/月</td><td class="num" data-label="带宽">50Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥566<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=175&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-sg">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L07</span> 新加坡原生IP 大带宽 VPS</div>
+        <div class="section-sub">新加坡 BGP 国际网络，默认分配新加坡原生 IP，流媒体全解锁，适合 Shopee / TikTok 东南亚业务。⚠️ 非中国大陆直连优化网络，建议通过香港（约 30ms）或日本（约 70ms）线路中转使用。</div>
+      </div>
+      <div class="signal t3"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>东南亚业务优选</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">6000GB</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥68<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=70&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">10000GB</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥88<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=71&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">20000GB</td><td class="num" data-label="带宽">1000Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥388<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=72&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥398<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=73&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥898<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=74&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">2000GB/月</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥466<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=172&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-tw">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L08</span> 台湾原生IP 大带宽 VPS</div>
+        <div class="section-sub">台湾 BGP 国际网络，默认分配台湾原生 IP，解锁动画疯、Netflix、Disney+ 等流媒体。⚠️ 非中国大陆直连优化网络，建议通过香港或日本线路中转使用；不限流量 VDS 系列仅支持退还网站余额。</div>
+      </div>
+      <div class="signal t3"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>解锁动画疯</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">5000GB</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥99<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=78&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">20000GB</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥388<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=79&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">100Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥299<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=108&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥599<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=109&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥1599<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=110&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">2000GB/月</td><td class="num" data-label="带宽">100Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥766<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=180&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-jp">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L09</span> 日本原生IP 大带宽 VPS</div>
+        <div class="section-sub">中日三网优化国际网络，默认分配日本原生 IP，冷门小众 IP 段，解锁能力强，覆盖 Netflix、HULU、DISNEY、Amazon Prime、TVer、Niconico 等日本本土服务。中国大陆直连，建议开启 BBR 加速。</div>
+      </div>
+      <div class="signal t2"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>大陆直连 · 解锁强</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">3000GB</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥88<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=83&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">8000GB</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥158<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=84&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">20000GB</td><td class="num" data-label="带宽">1000Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥300<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=85&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥598<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=86&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">8G</td><td class="num" data-label="CPU">8 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥1598<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=88&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">600GB/月</td><td class="num" data-label="带宽">100Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥499<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=171&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-uk">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="index">L10</span> 英国双ISP住宅IP 大带宽 VPS</div>
+        <div class="section-sub">英国 BGP 国际网络，默认分配双 ISP 家宽住宅原生英国 IP，解锁 BBC iPlayer、英区 Tiktok、Netflix、BritBox 等。⚠️ 非中国大陆直连优化网络，建议通过香港或日本线路中转，并开启 BBR 加速。</div>
+      </div>
+      <div class="signal t4"><div class="bars"><i></i><i></i><i></i><i></i><i></i></div>欧洲线路</div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>内存</th><th>CPU</th><th>硬盘</th><th>流量</th><th>带宽</th><th></th><th>价格</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">6000GB</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"><span class="tag">限售20台</span></td><td class="price" data-label="价格">¥68<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=98&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">20G NVMe</td><td class="num" data-label="流量">8000GB</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">最推荐</span></td><td class="price" data-label="价格">¥100<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=99&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">20000GB</td><td class="num" data-label="带宽">1000Mbps</td><td data-label="标签"></td><td class="price" data-label="价格">¥300<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=100&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">2G</td><td class="num" data-label="CPU">2 核</td><td class="num" data-label="硬盘">40G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">200Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥398<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=101&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">4G</td><td class="num" data-label="CPU">4 核</td><td class="num" data-label="硬盘">80G NVMe</td><td class="num" data-label="流量">不限</td><td class="num" data-label="带宽">500Mbps</td><td data-label="标签"><span class="tag">不限流量</span></td><td class="price" data-label="价格">¥1588<small>/月</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=102&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+        <tr><td class="num" data-label="内存">1G</td><td class="num" data-label="CPU">1 核</td><td class="num" data-label="硬盘">10G NVMe</td><td class="num" data-label="流量">2000GB/月</td><td class="num" data-label="带宽">300Mbps</td><td data-label="标签"><span class="tag">特价年付</span></td><td class="price" data-label="价格">¥466<small>/年</small></td><td data-label=""><a class="buy-mini" href="https://lisahost.com/cart.php?a=add&pid=173&aff=13150" target="_blank" rel="noopener">购买</a></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="lisa-note" style="padding:40px 0 64px;border-bottom:none;">
+  <div class="wrap">
+    <div class="disclaimer">
+      <b>关于 LisaHost 部分：</b>以上数据整理自 LisaHost 官网购物车页面，最后核对于 2026 年 8 月。购买链接为个人推广链接（aff=13150），通过该链接下单不会产生额外费用，结算时填写优惠码 <code style="color:var(--warn);background:var(--panel-raised);padding:2px 6px;border-radius:2px;border:1px solid var(--line);">TS-CBP205DQJE</code> 可享 9 折。标注"非大陆直连优化网络"的机房（新加坡 / 台湾 / 英国）建议通过香港或日本线路中转使用以获得更好速度。具体配置、价格及库存请以 LisaHost 官网下单页面实际显示为准。
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="brand-divider">
+  <div class="wrap">
+    <div class="divider-line"></div>
+    <div class="divider-label">▼ 继续向下滚动 · BANDWAGONHOST 搬瓦工套餐区 ▼</div>
+    <div class="divider-line"></div>
   </div>
 </div>
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">BANDWAGONHOST · 套餐控制台 · 2026-07</div>
+    <div class="eyebrow">BANDWAGONHOST · 套餐控制台 · 2026-08</div>
     <h1>搬瓦工 VPS<br><span class="accent">全套餐一览</span>，一页看完</h1>
     <p class="lede">从年付 $49.99 的入门 KVM，到三网 CN2 GIA 直连的电子商务套餐，再到中国香港 / 日本东京大阪 / 新加坡 / 迪拜多地机房 —— 本页汇总搬瓦工官网目前在售的全部常规方案，配置、价格、可选机房一次看清，点击即可直达购买页。</p>
     <div class="hero-actions">
@@ -492,32 +1053,54 @@
     <div class="footer-grid">
       <div>
         <h4>关于本页</h4>
-        <p style="color:var(--muted2);font-size:13.5px;max-width:440px;">数据整理自搬瓦工官网及第三方评测站点，最后更新于 2026 年 7 月，仅供参考。具体配置、价格及库存请以搬瓦工官网实际页面为准。</p>
+        <p style="color:var(--muted2);font-size:13.5px;max-width:440px;">数据整理自搬瓦工（BandwagonHost，2026 年 8 月）及 LisaHost（2026 年 8 月）官网，仅供参考。具体配置、价格及库存请以两家官网实际下单页面为准。</p>
       </div>
       <div>
         <h4>常用链接</h4>
         <ul>
           <li><a href="https://bwh81.net/aff.php?aff=76211" target="_blank" rel="noopener">搬瓦工官网</a></li>
-          <li><a href="https://bwh81.net/aff.php?aff=76211&gid=1" target="_blank" rel="noopener">全部方案（官网）</a></li>
-          <li><a href="https://x.com/xinzhizhu9795" target="_blank" rel="noopener">技术支持</a></li>
+          <li><a href="https://lisahost.com/aff.php?aff=13150" target="_blank" rel="noopener">丽萨官网</a></li>
+          <li><a href="https://x.com/xiaoxiavip_vps" target="_blank" rel="noopener">技术支持</a></li>
           <li><a href="https://github.com/ScienceNoBorders/ExperienceSharing/issues" target="_blank" rel="noopener">问题反馈</a></li>
         </ul>
       </div>
       <div>
-        <h4>快速跳转</h4>
+        <h4>VPN</h4>
         <ul>
-          <li><a href="#kvm">KVM 常规方案</a></li>
-          <li><a href="#gia-e">CN2 GIA‑E</a></li>
-          <li><a href="#hk">中国香港 CN2 GIA</a></li>
+          <li><a href="https://fbinv02.fbaff.cc/auth/register?code=7I51vRTE">飞鸟 (年付：year85)</a></li>
+          <li><a href="https://w15.lmva-cfwb04.cc/register?aff=d3M9iveM">龙猫云 (原生IP)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>VPS</h4>
+        <ul>
+          <li><a href="https://www.vircs.com/welcome?vcd=84492811">VIRCS (家宽)</a></li>
+          <li><a href="https://lisahost.com/aff.php?aff=13150">LisaHost (原生IP)</a></li>
+          <li><a href="https://console.ygcloud.com/quick.html?ref=s8j2pugn&promoteWay=LINK">莹光云 (自选带宽)</a></li>
+          <li><a href="https://billing.dedirock.com/aff.php?aff=804">DEDI (最低7$/年)</a></li>
         </ul>
       </div>
     </div>
     <div class="disclaimer">
       <b>声明：</b>本页面为个人整理的搬瓦工（BandwagonHost）套餐信息汇总页，<b>并非搬瓦工官方网站</b>，页面内购买链接为个人推广链接，通过该链接购买不会产生额外费用。请合法合规使用 VPS 服务，不得用于任何违法用途。价格与配置可能随官网调整而变化，请以下单页面实际显示为准。
     </div>
-    <div class="copyright">© 2026 · 搬瓦工套餐信息整理 · 非官方页面</div>
+    <div class="copyright">© 2026 · 搬瓦工 & LisaHost 套餐信息整理 · 非官方页面</div>
   </div>
 </footer>
 
+<script>
+function copyDiscountCode() {
+  const code = 'TS-CBP205DQJE';
+  navigator.clipboard.writeText(code).then(() => {
+    const tip = document.getElementById('copyTip');
+    if (tip) {
+      tip.style.display = 'inline';
+      setTimeout(() => { tip.style.display = 'none'; }, 2500);
+    }
+  }).catch(() => {
+    alert('优惠码：' + code);
+  });
+}
+</script>
 </body>
 </html>

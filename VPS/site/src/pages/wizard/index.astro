@@ -1,0 +1,121 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+---
+<ConsoleLayout title="选购向导 · VPS 选购神器" active="wizard">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">WIZARD</div>
+      <h1>四步选出 <span class="accent">Top 3</span></h1>
+      <p class="lede">第 1 步必须选周期。默认年付。勾选「原生 IP」不含搬瓦工。</p>
+    </div>
+  </header>
+  <section>
+    <div class="wrap">
+      <form class="wizard-steps" id="wizard-form">
+        <div class="field">
+          <label for="w-cycle">1. 预算周期（必选）</label>
+          <select id="w-cycle" name="cycle" required>
+            <option value="annual" selected>年付</option>
+            <option value="monthly">月付</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="w-budget">2. 预算（人民币）</label>
+          <input id="w-budget" name="budget" type="number" min="50" step="1" value="500" required />
+        </div>
+        <div class="field">
+          <label for="w-region">3. 地区</label>
+          <select id="w-region" name="region">
+            <option value="US" selected>美国</option>
+            <option value="HK">香港</option>
+            <option value="SG">新加坡</option>
+            <option value="JP">日本</option>
+            <option value="TW">台湾</option>
+            <option value="UK">英国</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="w-ip">4. IP 类型</label>
+          <select id="w-ip" name="ip">
+            <option value="native" selected>原生 IP（不含搬瓦工）</option>
+            <option value="residential">住宅 IP</option>
+            <option value="datacenter">数据中心 IP</option>
+            <option value="any">不限</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" type="submit">算出 Top 3</button>
+      </form>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <span class="query-chip" id="wiz-chip" hidden></span>
+      <p class="empty-filter" id="wiz-empty">没有符合条件的套餐。放宽 IP、提高预算或换地区。</p>
+      <div class="cards" id="wiz-cards"></div>
+    </div>
+  </section>
+</ConsoleLayout>
+<script>
+  import { plans, fx, IP_ZH, VENDOR_ZH, specLine, cnPathHint, ROUTE_UI } from "../../lib/catalog";
+  import { recommendTopK } from "../../lib/score";
+  import { formatPrices, CYCLE_ZH, type BillingCycle } from "../../lib/money";
+  import type { WizardInput } from "../../lib/score";
+
+  const form = document.getElementById("wizard-form") as HTMLFormElement;
+  const cards = document.getElementById("wiz-cards")!;
+  const empty = document.getElementById("wiz-empty")!;
+  const chip = document.getElementById("wiz-chip")!;
+
+  function run() {
+    const fd = new FormData(form);
+    const input: WizardInput = {
+      budget_cny: Number(fd.get("budget") || 500),
+      budget_cycle: (String(fd.get("cycle") || "annual") as BillingCycle),
+      regions: [String(fd.get("region") || "US")],
+      ip_need: String(fd.get("ip") || "native") as WizardInput["ip_need"],
+      exclude_daily: true,
+    };
+    const top = recommendTopK(plans, input, fx, 3);
+    chip.hidden = false;
+    chip.textContent = `¥${input.budget_cny} · ${input.budget_cycle} · ${input.regions.join(",")} · ${input.ip_need}`;
+    empty.classList.toggle("show", top.length === 0);
+    cards.innerHTML = top
+      .map((item, i) => {
+        const p = item.plan;
+        const tone = i === 0 ? "tier-rec" : i === 2 ? "tier-top" : "tier-entry";
+        const hint = cnPathHint(p);
+        const note = p.route_note || ROUTE_UI[p.route] || p.route;
+        const pathHtml = `${hint ? `<span class="${hint.cls}">${hint.text}</span> ` : ""}${note || ""}`;
+        return `<div class="card ${tone}">
+          <div class="card-badge">TOP ${i + 1} · ${VENDOR_ZH[p.vendor]}</div>
+          <h3>${p.name_zh}</h3>
+          <div class="price">¥${item.pay.amount_cny.toFixed(0)}<span>/${CYCLE_ZH[item.pay.source_cycle]}起折算</span></div>
+          <div class="price-year">${formatPrices(p.prices, fx)}${item.pay.inferred ? " · 周期折算" : ""}</div>
+          <ul>
+            <li><b>规格</b> ${specLine(p)}</li>
+            <li><b>IP</b> ${IP_ZH[p.ip_bucket]}</li>
+            <li><b>线路</b> <span class="hint-cell">${pathHtml}</span></li>
+            <li><b>机房</b> ${p.regions.join(" / ")}</li>
+          </ul>
+          <div class="rooms">id <span class="mono">${p.id}</span></div>
+          <a class="buy" href="${p.affiliate_url}" target="_blank" rel="noopener">立即购买</a>
+        </div>`;
+      })
+      .join("");
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+    history.replaceState(null, "", `${location.pathname}?${q.toString()}`);
+    run();
+  });
+  const usp = new URLSearchParams(location.search);
+  if (usp.has("budget") || usp.has("cycle")) {
+    (form.elements.namedItem("budget") as HTMLInputElement).value = usp.get("budget") || "500";
+    (form.elements.namedItem("cycle") as HTMLSelectElement).value = usp.get("cycle") || "annual";
+    (form.elements.namedItem("region") as HTMLSelectElement).value = usp.get("region") || "US";
+    (form.elements.namedItem("ip") as HTMLSelectElement).value = usp.get("ip") || "native";
+    run();
+  }
+</script>

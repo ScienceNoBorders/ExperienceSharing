@@ -1,0 +1,71 @@
+---
+---
+<form class="filterbar" id="filter-form">
+  <div class="filter-grid">
+    <div>
+      <label for="f-budget">预算（人民币）</label>
+      <input id="f-budget" name="budget" type="number" min="0" step="1" placeholder="例如 500" />
+    </div>
+    <div>
+      <label for="f-cycle">计费周期</label>
+      <select id="f-cycle" name="cycle">
+        <option value="annual" selected>年付</option>
+        <option value="monthly">月付</option>
+        <option value="quarterly">季付</option>
+        <option value="semiannual">半年</option>
+      </select>
+    </div>
+    <div>
+      <label for="f-region">地区</label>
+      <select id="f-region" name="region">
+        <option value="">不限</option>
+        <option value="US">美国</option>
+        <option value="HK">香港</option>
+        <option value="SG">新加坡</option>
+        <option value="JP">日本</option>
+        <option value="TW">台湾</option>
+        <option value="UK">英国</option>
+        <option value="NL">荷兰</option>
+        <option value="CA">加拿大</option>
+        <option value="AE">迪拜</option>
+      </select>
+    </div>
+    <div>
+      <label for="f-route">线路</label>
+      <select id="f-route" name="route">
+        <option value="">不限</option>
+        <option value="cn2">CN2</option>
+        <option value="cn2_gia">CN2 GIA（含 GIA-E）</option>
+        <option value="9929">9929</option>
+        <option value="4837">4837</option>
+        <option value="cmi">CMI</option>
+        <option value="bgp">BGP / 基础</option>
+      </select>
+    </div>
+    <div>
+      <label for="f-vendor">厂商</label>
+      <select id="f-vendor" name="vendor">
+        <option value="">不限</option>
+        <option value="lisahost">LisaHost</option>
+        <option value="bwh">搬瓦工</option>
+      </select>
+    </div>
+    <div>
+      <label>IP 类型（可多选）</label>
+      <div class="ip-checks">
+        <label><input type="checkbox" name="ip" value="native" checked /> 原生 IP</label>
+        <label><input type="checkbox" name="ip" value="residential" checked /> 住宅 IP</label>
+        <label><input type="checkbox" name="ip" value="datacenter" checked /> 数据中心 IP</label>
+      </div>
+    </div>
+  </div>
+  <div class="filter-actions">
+    <label style="display:flex;align-items:center;gap:8px;margin:0;text-transform:none;font-family:var(--sans);font-size:13px;color:var(--text);">
+      <input type="checkbox" id="f-strict" name="strict" /> 严格匹配周期（不按 ×12 折算）
+    </label>
+    <button class="btn btn-primary sticky-apply" type="submit">应用筛选</button>
+    <button class="btn btn-ghost" type="reset" id="f-reset">重置</button>
+    <span class="filter-hint" id="f-count"></span>
+  </div>
+  <p class="filter-hint">年付预算会把仅月付套餐按 ×12 折算。搬瓦工机房 IP 只出现在「数据中心 IP」。</p>
+</form>

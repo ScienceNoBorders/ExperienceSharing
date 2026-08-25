@@ -1,0 +1,65 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import PlanCard from "../../components/PlanCard.astro";
+import PlanTable from "../../components/PlanTable.astro";
+import { plans, fx, planById } from "../../lib/catalog";
+import { recommendTopK, NORTH_STAR } from "../../lib/score";
+import { payable } from "../../lib/money";
+
+const pins = ["lisahost-59", "lisahost-91", "bwh-87"]
+  .map((id) => planById(id))
+  .filter((p): p is NonNullable<typeof p> => !!p);
+
+const north = recommendTopK(plans, NORTH_STAR, fx, 3);
+const cheap = [...plans]
+  .map((p) => ({ p, pay: payable(p.prices, "annual", true, fx) }))
+  .filter((x) => x.pay && !x.p.exclude_daily)
+  .sort((a, b) => a.pay!.amount_cny - b.pay!.amount_cny)
+  .slice(0, 10)
+  .map((x) => x.p);
+const nativeUs = recommendTopK(plans, { ...NORTH_STAR, budget_cny: 800 }, fx, 6);
+---
+<ConsoleLayout title="2026 VPS 推荐榜 · 选购神器" active="rank">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">RANKINGS 2026</div>
+      <h1>2026 VPS <span class="accent">推荐榜</span></h1>
+      <p class="lede">编辑置顶（现站「最多人选」）+ 同一套 scorePlan 规则排序。非广告竞价。</p>
+    </div>
+  </header>
+  <section>
+    <div class="wrap">
+      <div class="section-title">编辑置顶</div>
+      <p class="section-sub" style="margin:12px 0 22px">对应现页精选：Lisa 9929 爆款、香港直连、搬瓦 GIA-E。</p>
+      <PlanTable rows={pins} tableId="pin-table" />
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="section-title">规则榜 · ¥500 美国原生建站</div>
+      <span class="query-chip">与首页示例同一查询</span>
+      <div class="cards" style="margin-top:18px">
+        {north.map((item, i) => (
+          <PlanCard item={item} rank={i + 1} />
+        ))}
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="section-title">年付折算最低 10 款</div>
+      <p class="section-sub" style="margin:12px 0 22px">未过滤 IP。日试用已排除。</p>
+      <PlanTable rows={cheap} tableId="cheap-table" />
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="section-title">美国原生 · 预算 800</div>
+      <div class="cards" style="margin-top:18px">
+        {nativeUs.map((item, i) => (
+          <PlanCard item={item} rank={i + 1} tone={i === 0 ? "rec" : "entry"} />
+        ))}
+      </div>
+    </div>
+  </section>
+</ConsoleLayout>

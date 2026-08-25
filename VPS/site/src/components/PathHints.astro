@@ -1,0 +1,15 @@
+---
+import type { Plan } from "../lib/catalog";
+import { cnPathHint, ROUTE_UI } from "../lib/catalog";
+
+interface Props {
+  plan: Plan;
+}
+const { plan } = Astro.props;
+const hint = cnPathHint(plan);
+const note = plan.route_note || ROUTE_UI[plan.route] || plan.route;
+---
+<span class="hint-cell">
+  {hint && <span class={hint.cls}>{hint.text}</span>}
+  {note && <span class="hint-note">{note}</span>}
+</span>

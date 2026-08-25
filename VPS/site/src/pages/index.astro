@@ -1,0 +1,58 @@
+---
+import ConsoleLayout from "../layouts/ConsoleLayout.astro";
+import FilterBar from "../components/FilterBar.astro";
+import PlanCard from "../components/PlanCard.astro";
+import PlanTable from "../components/PlanTable.astro";
+import { plans, fx, lastVerified } from "../lib/catalog";
+import { recommendTopK, NORTH_STAR } from "../lib/score";
+
+const top = recommendTopK(plans, NORTH_STAR, fx, 3);
+const tones = ["rec", "entry", "top"] as const;
+---
+<ConsoleLayout active="home">
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">VPS SELECTOR · LISAHOST + BANDWAGONHOST · {lastVerified}</div>
+      <h1>VPS 选购神器<br /><span class="accent">预算一填，Top 3 算出来</span></h1>
+      <p class="lede">
+        从 LisaHost 与搬瓦工 111 个在售 SKU 里按预算、地区、IP 类型和线路筛选。
+        「原生 IP」不含搬瓦工机房 IP。这不是官网，购买跳转官方购物车。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/wizard/">打开选购向导</a>
+        <a class="btn btn-ghost" href="#catalog">浏览全部套餐</a>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-title"><span class="index">01</span> 示例推荐</div>
+          <div class="section-sub">固定查询，不是「不限地区」的编辑拍脑袋。</div>
+        </div>
+      </div>
+      <span class="query-chip">示例：预算 ¥500 · 美国 · 原生 IP · 建站</span>
+      <div class="cards">
+        {top.map((item, i) => (
+          <PlanCard item={item} rank={i + 1} tone={tones[i] ?? "rec"} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="catalog">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="section-title"><span class="index">02</span> 全部套餐筛选</div>
+          <div class="section-sub">111 个 SKU。筛选只隐藏行，不重新请求。</div>
+        </div>
+      </div>
+      <FilterBar />
+      <PlanTable rows={plans} />
+    </div>
+  </section>
+</ConsoleLayout>
+<script is:inline src="/filter.js"></script>

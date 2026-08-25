@@ -1,0 +1,40 @@
+---
+import ConsoleLayout from "../../layouts/ConsoleLayout.astro";
+import PlanTable from "../../components/PlanTable.astro";
+import { plans, SERIES_LABEL } from "../../lib/catalog";
+
+const lisa = plans.filter((p) => p.vendor === "lisahost");
+const order = ["annual", "us9929", "us4837", "cera", "hk", "sg", "tw", "jp", "uk"];
+const groups = order
+  .map((s) => ({ series: s, rows: lisa.filter((p) => p.series === s) }))
+  .filter((g) => g.rows.length);
+---
+<ConsoleLayout title="LisaHost 套餐 · VPS 选购神器" active="lisa">
+  <section class="lisa-scope lisa-hero-section">
+    <div class="wrap">
+      <div class="eyebrow">LISAHOST · 住宅 / 原生 IP</div>
+      <h1 class="lisa-h1">丽萨主机 LisaHost<br /><span class="accent">独立套餐页</span></h1>
+      <p class="lede">主打双 ISP 住宅与多国原生 IP。年付表已标注原生/住宅，以及 ⚡ 大陆优化 / ⚠️ 建议中转。</p>
+      <div class="lisa-quicknav">
+        {groups.map((g) => (
+          <a href={`#${g.series}`}>{SERIES_LABEL[g.series] || g.series}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <div class="lisa-scope">
+    {groups.map((g) => (
+      <section id={g.series}>
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-title">{SERIES_LABEL[g.series] || g.series}</div>
+              <div class="section-sub">{g.rows.length} 个 SKU</div>
+            </div>
+          </div>
+          <PlanTable rows={g.rows} tableId={`t-${g.series}`} />
+        </div>
+      </section>
+    ))}
+  </div>
+</ConsoleLayout>

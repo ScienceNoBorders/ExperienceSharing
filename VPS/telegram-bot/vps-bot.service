@@ -1,0 +1,19 @@
+[Unit]
+Description=VPS selector Telegram bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vpsbot
+Group=vpsbot
+WorkingDirectory=/opt/vps-bot
+ExecStart=/usr/bin/python3 /opt/vps-bot/bot.py
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

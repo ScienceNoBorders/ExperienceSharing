@@ -1,0 +1,30 @@
+---
+import type { Ranked } from "../lib/score";
+import { IP_ZH, VENDOR_ZH, specLine } from "../lib/catalog";
+import { formatPrices, CYCLE_ZH } from "../lib/money";
+import { fx } from "../lib/catalog";
+import PathHints from "./PathHints.astro";
+
+interface Props {
+  item: Ranked;
+  rank?: number;
+  tone?: "entry" | "rec" | "top";
+}
+const { item, rank, tone = "rec" } = Astro.props;
+const plan = item.plan;
+const tier = tone === "top" ? "tier-top" : tone === "entry" ? "tier-entry" : "tier-rec";
+---
+<div class={`card ${tier}`}>
+  <div class="card-badge">{rank ? `TOP ${rank}` : "推荐"} · {VENDOR_ZH[plan.vendor]}</div>
+  <h3>{plan.name_zh}</h3>
+  <div class="price">¥{item.pay.amount_cny.toFixed(0)}<span>/{CYCLE_ZH[item.pay.source_cycle]}起折算</span></div>
+  <div class="price-year">{formatPrices(plan.prices, fx)}{item.pay.inferred ? " · 周期折算" : ""}</div>
+  <ul>
+    <li><b>规格</b> {specLine(plan)}</li>
+    <li><b>IP</b> {IP_ZH[plan.ip_bucket]}</li>
+    <li><b>线路</b> <PathHints plan={plan} /></li>
+    <li><b>机房</b> {(plan.regions || []).join(" / ")}</li>
+  </ul>
+  <div class="rooms">id <span class="mono">{plan.id}</span></div>
+  <a class="buy" href={plan.affiliate_url} target="_blank" rel="noopener">立即购买</a>
+</div>

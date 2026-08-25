@@ -1,0 +1,4738 @@
+{
+  "last_verified_at": "2026-08-01",
+  "fx_usd_cny": 7.25,
+  "source": "/Users/xiaotijun/Documents/ExperienceSharing/VPS/html/bwgVps.html",
+  "plans": [
+    {
+      "id": "bwh-44",
+      "vendor": "bwh",
+      "pid": 44,
+      "name_zh": "搬瓦工 KVM 1GB 2 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 49.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "1GB",
+        "disk": "20GB",
+        "traffic": "1TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=44",
+      "featured_on_vendor_home": true,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-45",
+      "vendor": "bwh",
+      "pid": 45,
+      "name_zh": "搬瓦工 KVM 2GB 3 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 52.99,
+          "currency": "USD",
+          "cycle": "semiannual"
+        },
+        {
+          "amount": 99.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "3 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "2TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=45",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-46",
+      "vendor": "bwh",
+      "pid": 46,
+      "name_zh": "搬瓦工 KVM 4GB 4 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 19.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 199.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "3TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 3072.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=46",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-47",
+      "vendor": "bwh",
+      "pid": 47,
+      "name_zh": "搬瓦工 KVM 8GB 5 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 39.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 399.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "5 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "4TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=47",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-48",
+      "vendor": "bwh",
+      "pid": 48,
+      "name_zh": "搬瓦工 KVM 16GB 6 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 79.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 799.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "5TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 5120.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=48",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-49",
+      "vendor": "bwh",
+      "pid": 49,
+      "name_zh": "搬瓦工 KVM 24GB 7 核",
+      "html_section": "kvm",
+      "series": "kvm",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "znet",
+      "regions": [
+        "US",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 119.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1199.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "7 核",
+        "ram": "24GB",
+        "disk": "480GB",
+        "traffic": "6TB",
+        "bandwidth": "1Gbps",
+        "rooms": "DC2 AO / DC4 MCOM / DC8 ZNET / 弗里蒙特 FMT / 新泽西 USNJ / 纽约 USNY_2 / USNY_6 / 加拿大 CABC_1 / 荷兰 EUNL_3",
+        "ram_mb": 24576,
+        "disk_gb": 480.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=49",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-87",
+      "vendor": "bwh",
+      "pid": 87,
+      "name_zh": "搬瓦工 CN2 GIA-E 1GB 2 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 49.99,
+          "currency": "USD",
+          "cycle": "quarterly"
+        },
+        {
+          "amount": 169.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "1GB",
+        "disk": "20GB",
+        "traffic": "1TB",
+        "bandwidth": "2.5Gbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=87",
+      "featured_on_vendor_home": true,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-88",
+      "vendor": "bwh",
+      "pid": 88,
+      "name_zh": "搬瓦工 CN2 GIA-E 2GB 3 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 89.99,
+          "currency": "USD",
+          "cycle": "quarterly"
+        },
+        {
+          "amount": 299.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "3 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "2TB",
+        "bandwidth": "2.5Gbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=88",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-89",
+      "vendor": "bwh",
+      "pid": 89,
+      "name_zh": "搬瓦工 CN2 GIA-E 4GB 4 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 56.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "3TB",
+        "bandwidth": "2.5Gbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 3072.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=89",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-90",
+      "vendor": "bwh",
+      "pid": 90,
+      "name_zh": "搬瓦工 CN2 GIA-E 8GB 6 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 86.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 879.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "5TB",
+        "bandwidth": "5Gbps",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 5120.0,
+        "bandwidth_mbps": 5000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=90",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-91",
+      "vendor": "bwh",
+      "pid": 91,
+      "name_zh": "搬瓦工 CN2 GIA-E 16GB 8 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 159.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1599.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "8TB",
+        "bandwidth": "5Gbps",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 8192.0,
+        "bandwidth_mbps": 5000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=91",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-92",
+      "vendor": "bwh",
+      "pid": 92,
+      "name_zh": "搬瓦工 CN2 GIA-E 32GB 10 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 289.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 2759.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "10TB",
+        "bandwidth": "10Gbps",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 10240.0,
+        "bandwidth_mbps": 10000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=92",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-93",
+      "vendor": "bwh",
+      "pid": 93,
+      "name_zh": "搬瓦工 CN2 GIA-E 64GB 12 核",
+      "html_section": "gia-e",
+      "series": "gia-e",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "US",
+        "JP",
+        "NL",
+        "CA"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5399.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "12TB",
+        "bandwidth": "10Gbps",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 12288.0,
+        "bandwidth_mbps": 10000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=93",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-95",
+      "vendor": "bwh",
+      "pid": 95,
+      "name_zh": "搬瓦工 香港 GIA 2GB 2 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 89.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 899.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "0.5TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 512.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=95",
+      "featured_on_vendor_home": true,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-96",
+      "vendor": "bwh",
+      "pid": 96,
+      "name_zh": "搬瓦工 香港 GIA 4GB 4 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 155.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1559.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "1TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=96",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-97",
+      "vendor": "bwh",
+      "pid": 97,
+      "name_zh": "搬瓦工 香港 GIA 8GB 6 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 299.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 2999.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "2TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=97",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-98",
+      "vendor": "bwh",
+      "pid": 98,
+      "name_zh": "搬瓦工 香港 GIA 16GB 8 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 589.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5899.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "4TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=98",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-108",
+      "vendor": "bwh",
+      "pid": 108,
+      "name_zh": "搬瓦工 东京 2GB 2 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 89.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 899.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "0.5TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 512.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=108",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-109",
+      "vendor": "bwh",
+      "pid": 109,
+      "name_zh": "搬瓦工 东京 4GB 4 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 155.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1559.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "1TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=109",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-110",
+      "vendor": "bwh",
+      "pid": 110,
+      "name_zh": "搬瓦工 东京 8GB 6 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 299.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 2999.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "2TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=110",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-111",
+      "vendor": "bwh",
+      "pid": 111,
+      "name_zh": "搬瓦工 东京 16GB 8 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 589.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5899.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "4TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=111",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-114",
+      "vendor": "bwh",
+      "pid": 114,
+      "name_zh": "搬瓦工 迪拜 1GB 2 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia_e",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 19.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 169.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "1GB",
+        "disk": "20GB",
+        "traffic": "0.5TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 512.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=114",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-115",
+      "vendor": "bwh",
+      "pid": 115,
+      "name_zh": "搬瓦工 迪拜 2GB 3 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 32.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 299.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "3 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "1TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=115",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-116",
+      "vendor": "bwh",
+      "pid": 116,
+      "name_zh": "搬瓦工 迪拜 4GB 4 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 56.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "2TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=116",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-117",
+      "vendor": "bwh",
+      "pid": 117,
+      "name_zh": "搬瓦工 迪拜 8GB 6 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 86.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 879.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "3TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 3072.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=117",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-118",
+      "vendor": "bwh",
+      "pid": 118,
+      "name_zh": "搬瓦工 迪拜 16GB 8 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 159.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1599.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "4TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=118",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-119",
+      "vendor": "bwh",
+      "pid": 119,
+      "name_zh": "搬瓦工 迪拜 32GB 10 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 289.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 2759.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "5TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 5120.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=119",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-120",
+      "vendor": "bwh",
+      "pid": 120,
+      "name_zh": "搬瓦工 迪拜 64GB 12 核",
+      "html_section": "dubai",
+      "series": "dubai",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "mixed_premium",
+      "regions": [
+        "JP",
+        "NL",
+        "AE"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5399.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "6TB",
+        "bandwidth": "1Gbps",
+        "rooms": "迪拜 AEDXB_1 / DC6 CN2 GIA‑E / DC9 CN2 GIA / 日本软银 / 荷兰 EUNL_9 等",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=120",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-122",
+      "vendor": "bwh",
+      "pid": 122,
+      "name_zh": "搬瓦工 香港 GIA 32GB 10 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 989.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 9989.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "6TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=122",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-123",
+      "vendor": "bwh",
+      "pid": 123,
+      "name_zh": "搬瓦工 东京 32GB 10 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 989.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 9989.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "6TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=123",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-124",
+      "vendor": "bwh",
+      "pid": 124,
+      "name_zh": "搬瓦工 香港 GIA 64GB 12 核",
+      "html_section": "hk",
+      "series": "bwh-hk",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "HK",
+        "SG",
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1889.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 18989.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "8TB",
+        "bandwidth": "1Gbps",
+        "rooms": "中国香港 / 日本东京 / 日本大阪 / 新加坡 CN2 GIA",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 8192.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=124",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-125",
+      "vendor": "bwh",
+      "pid": 125,
+      "name_zh": "搬瓦工 东京 64GB 12 核",
+      "html_section": "tokyo",
+      "series": "tokyo",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1889.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 18989.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "8TB",
+        "bandwidth": "1.2Gbps",
+        "rooms": "日本东京 CN2 GIA",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 8192.0,
+        "bandwidth_mbps": 1200.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=125",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-134",
+      "vendor": "bwh",
+      "pid": 134,
+      "name_zh": "搬瓦工 大阪 2GB 2 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 49.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 499.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "0.5TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 512.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=134",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-135",
+      "vendor": "bwh",
+      "pid": 135,
+      "name_zh": "搬瓦工 大阪 4GB 4 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "softbank",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 86.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 869.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "1TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=135",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-136",
+      "vendor": "bwh",
+      "pid": 136,
+      "name_zh": "搬瓦工 大阪 8GB 6 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "softbank",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 165.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1665.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "2TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=136",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-137",
+      "vendor": "bwh",
+      "pid": 137,
+      "name_zh": "搬瓦工 大阪 16GB 8 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "softbank",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 329.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 3279.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "4TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=137",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-138",
+      "vendor": "bwh",
+      "pid": 138,
+      "name_zh": "搬瓦工 大阪 32GB 10 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "softbank",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5549.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "6TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=138",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-139",
+      "vendor": "bwh",
+      "pid": 139,
+      "name_zh": "搬瓦工 大阪 64GB 12 核",
+      "html_section": "osaka",
+      "series": "osaka",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "softbank",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1059.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 10559.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "8TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "日本大阪 CN2 GIA",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 8192.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=139",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-164",
+      "vendor": "bwh",
+      "pid": 164,
+      "name_zh": "搬瓦工 SLA 1GB 独享 2 核",
+      "html_section": "sla",
+      "series": "sla",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 65.89,
+          "currency": "USD",
+          "cycle": "quarterly"
+        },
+        {
+          "amount": 239.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "独享 2 核",
+        "ram": "1GB",
+        "disk": "20GB",
+        "traffic": "1TB",
+        "bandwidth": "2.5Gbps",
+        "rooms": "美国 DC5 SLA，NVMe RAID‑10，ECC 内存",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=164",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-165",
+      "vendor": "bwh",
+      "pid": 165,
+      "name_zh": "搬瓦工 SLA 2GB 独享 3 核",
+      "html_section": "sla",
+      "series": "sla",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 116.99,
+          "currency": "USD",
+          "cycle": "quarterly"
+        },
+        {
+          "amount": 399.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "独享 3 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "2TB",
+        "bandwidth": "2.5Gbps",
+        "rooms": "同上 · 外贸建站推荐",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=165",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-173",
+      "vendor": "bwh",
+      "pid": 173,
+      "name_zh": "搬瓦工 新加坡 2GB 2 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 49.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 499.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2GB",
+        "disk": "40GB",
+        "traffic": "0.5TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 512.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=173",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-174",
+      "vendor": "bwh",
+      "pid": 174,
+      "name_zh": "搬瓦工 新加坡 4GB 4 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 86.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 869.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4GB",
+        "disk": "80GB",
+        "traffic": "1TB",
+        "bandwidth": "1.5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 1024.0,
+        "bandwidth_mbps": 1500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=174",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-175",
+      "vendor": "bwh",
+      "pid": 175,
+      "name_zh": "搬瓦工 新加坡 8GB 6 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 165.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 1665.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "6 核",
+        "ram": "8GB",
+        "disk": "160GB",
+        "traffic": "2TB",
+        "bandwidth": "2.5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 8192,
+        "disk_gb": 160.0,
+        "traffic_gb_month": 2048.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=175",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-176",
+      "vendor": "bwh",
+      "pid": 176,
+      "name_zh": "搬瓦工 新加坡 16GB 8 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 329.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 3199.0,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "16GB",
+        "disk": "320GB",
+        "traffic": "4TB",
+        "bandwidth": "2.5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 16384,
+        "disk_gb": 320.0,
+        "traffic_gb_month": 4096.0,
+        "bandwidth_mbps": 2500.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=176",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-177",
+      "vendor": "bwh",
+      "pid": 177,
+      "name_zh": "搬瓦工 新加坡 32GB 10 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 549.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 5549.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "10 核",
+        "ram": "32GB",
+        "disk": "640GB",
+        "traffic": "6TB",
+        "bandwidth": "5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 32768,
+        "disk_gb": 640.0,
+        "traffic_gb_month": 6144.0,
+        "bandwidth_mbps": 5000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=177",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "bwh-178",
+      "vendor": "bwh",
+      "pid": 178,
+      "name_zh": "搬瓦工 新加坡 64GB 12 核",
+      "html_section": "sg",
+      "series": "bwh-sg",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1059.99,
+          "currency": "USD",
+          "cycle": "monthly"
+        },
+        {
+          "amount": 10559.99,
+          "currency": "USD",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "12 核",
+        "ram": "64GB",
+        "disk": "1280GB",
+        "traffic": "8TB",
+        "bandwidth": "5Gbps",
+        "rooms": "新加坡 CN2 GIA",
+        "ram_mb": 65536,
+        "disk_gb": 1280.0,
+        "traffic_gb_month": 8192.0,
+        "bandwidth_mbps": 5000.0
+      },
+      "affiliate_url": "https://bwh81.net/aff.php?aff=76211&pid=178",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-13",
+      "vendor": "lisahost",
+      "pid": 13,
+      "name_zh": "美国 9929 精品网 入门入门特价款",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "datacenter",
+      "native_ip": false,
+      "residential": false,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "AS9929 精品网",
+      "prices": [
+        {
+          "amount": 199.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "200GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 200.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=13&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-32",
+      "vendor": "lisahost",
+      "pid": 32,
+      "name_zh": "美国 CERA 1G 1 核",
+      "html_section": "lisa-cera",
+      "series": "cera",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 50.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "20G SSD",
+        "traffic": "500GB",
+        "bandwidth": "15Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 500.0,
+        "bandwidth_mbps": 15.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=32&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-33",
+      "vendor": "lisahost",
+      "pid": 33,
+      "name_zh": "美国 CERA 1G 1 核",
+      "html_section": "lisa-cera",
+      "series": "cera",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 2.0,
+          "currency": "CNY",
+          "cycle": "daily"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G SSD",
+        "traffic": "1GB",
+        "bandwidth": "10Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1.0,
+        "bandwidth_mbps": 10.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=33&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": true
+    },
+    {
+      "id": "lisahost-34",
+      "vendor": "lisahost",
+      "pid": 34,
+      "name_zh": "美国 CERA 2G 2 核",
+      "html_section": "lisa-cera",
+      "series": "cera",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 256.0,
+          "currency": "CNY",
+          "cycle": "quarterly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G SSD",
+        "traffic": "1200GB/月",
+        "bandwidth": "25Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 1200.0,
+        "bandwidth_mbps": 25.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=34&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-35",
+      "vendor": "lisahost",
+      "pid": 35,
+      "name_zh": "美国 CERA 4G 4 核",
+      "html_section": "lisa-cera",
+      "series": "cera",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 396.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G SSD",
+        "traffic": "3000GB",
+        "bandwidth": "50Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 3000.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=35&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-36",
+      "vendor": "lisahost",
+      "pid": 36,
+      "name_zh": "美国 CERA 512M 1 核",
+      "html_section": "lisa-cera",
+      "series": "cera",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cn2_gia",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 40.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "512M",
+        "disk": "10G SSD",
+        "traffic": "100GB",
+        "bandwidth": "10Mbps",
+        "ram_mb": 512,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 100.0,
+        "bandwidth_mbps": 10.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=36&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-47",
+      "vendor": "lisahost",
+      "pid": 47,
+      "name_zh": "美国 4837 2G 2 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 100.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "8000GB",
+        "bandwidth": "500Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 8000.0,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=47&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-48",
+      "vendor": "lisahost",
+      "pid": 48,
+      "name_zh": "美国 4837 1G 1 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 68.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "20G NVMe",
+        "traffic": "3000GB",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 3000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=48&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-49",
+      "vendor": "lisahost",
+      "pid": 49,
+      "name_zh": "美国 4837 4G 4 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 300.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "20000GB",
+        "bandwidth": "1000Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 20000.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=49&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-50",
+      "vendor": "lisahost",
+      "pid": 50,
+      "name_zh": "美国 4837 2G 2 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 198.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "不限",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=50&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-51",
+      "vendor": "lisahost",
+      "pid": 51,
+      "name_zh": "美国 4837 8G 8 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 498.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "8G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "500Mbps",
+        "ram_mb": 8192,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=51&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-52",
+      "vendor": "lisahost",
+      "pid": 52,
+      "name_zh": "美国 4837 洛杉矶 双ISP住宅特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "AS4837 大带宽",
+      "prices": [
+        {
+          "amount": 399.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=52&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [
+        "lisahost-169"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-58",
+      "vendor": "lisahost",
+      "pid": 58,
+      "name_zh": "美国 9929 1G 1 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 88.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "20G NVMe",
+        "traffic": "2000GB",
+        "bandwidth": "60Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 60.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=58&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-59",
+      "vendor": "lisahost",
+      "pid": 59,
+      "name_zh": "美国 9929 2G 2 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 158.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "4000GB",
+        "bandwidth": "80Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 4000.0,
+        "bandwidth_mbps": 80.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=59&aff=13150",
+      "featured_on_vendor_home": true,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-60",
+      "vendor": "lisahost",
+      "pid": 60,
+      "name_zh": "美国 9929 4G 4 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 899.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "8000GB",
+        "bandwidth": "100Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": 8000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=60&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-61",
+      "vendor": "lisahost",
+      "pid": 61,
+      "name_zh": "美国 9929 住宅 IP 双ISP精品网爆款",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "AS9929 精品网",
+      "prices": [
+        {
+          "amount": 499.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=61&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [
+        "lisahost-168"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-62",
+      "vendor": "lisahost",
+      "pid": 62,
+      "name_zh": "美国 9929 2G 2 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 498.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "20Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 20.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=62&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-63",
+      "vendor": "lisahost",
+      "pid": 63,
+      "name_zh": "美国 9929 4G 4 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1288.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "50Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=63&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-65",
+      "vendor": "lisahost",
+      "pid": 65,
+      "name_zh": "美国 9929 1G 1 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 68.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "1000GB",
+        "bandwidth": "50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=65&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-66",
+      "vendor": "lisahost",
+      "pid": 66,
+      "name_zh": "美国 9929 精品网 原生IP特价款",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "AS9929 精品网",
+      "prices": [
+        {
+          "amount": 299.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "400GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 400.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=66&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-70",
+      "vendor": "lisahost",
+      "pid": 70,
+      "name_zh": "新加坡 1G 1 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 68.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "6000GB",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 6000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=70&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-71",
+      "vendor": "lisahost",
+      "pid": 71,
+      "name_zh": "新加坡 2G 2 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 88.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "10000GB",
+        "bandwidth": "500Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 10000.0,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=71&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-72",
+      "vendor": "lisahost",
+      "pid": 72,
+      "name_zh": "新加坡 4G 4 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 388.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G NVMe",
+        "traffic": "20000GB",
+        "bandwidth": "1000Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 20000.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=72&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-73",
+      "vendor": "lisahost",
+      "pid": 73,
+      "name_zh": "新加坡 2G 2 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 398.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=73&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-74",
+      "vendor": "lisahost",
+      "pid": 74,
+      "name_zh": "新加坡 4G 4 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 898.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "500Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=74&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-75",
+      "vendor": "lisahost",
+      "pid": 75,
+      "name_zh": "新加坡 BGP 原生IP特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "解锁东南亚",
+      "prices": [
+        {
+          "amount": 466.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "2000GB / 300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=75&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-172"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-78",
+      "vendor": "lisahost",
+      "pid": 78,
+      "name_zh": "台湾 2G 2 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 99.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "5000GB",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 5000.0,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=78&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-79",
+      "vendor": "lisahost",
+      "pid": 79,
+      "name_zh": "台湾 4G 4 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 388.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G NVMe",
+        "traffic": "20000GB",
+        "bandwidth": "500Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 20000.0,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=79&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-82",
+      "vendor": "lisahost",
+      "pid": 82,
+      "name_zh": "台湾原生 IP 大带宽特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "解锁动画疯",
+      "prices": [
+        {
+          "amount": 766.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "2000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=82&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-180"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-83",
+      "vendor": "lisahost",
+      "pid": 83,
+      "name_zh": "日本 1G 1 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 88.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "3000GB",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 3000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=83&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-84",
+      "vendor": "lisahost",
+      "pid": 84,
+      "name_zh": "日本 2G 2 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 158.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "8000GB",
+        "bandwidth": "500Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 8000.0,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=84&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-85",
+      "vendor": "lisahost",
+      "pid": 85,
+      "name_zh": "日本 4G 4 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 300.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G NVMe",
+        "traffic": "20000GB",
+        "bandwidth": "1000Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 20000.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=85&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-86",
+      "vendor": "lisahost",
+      "pid": 86,
+      "name_zh": "日本 2G 2 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 598.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=86&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-88",
+      "vendor": "lisahost",
+      "pid": 88,
+      "name_zh": "日本 8G 8 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1598.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "8 核",
+        "ram": "8G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "500Mbps",
+        "ram_mb": 8192,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=88&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-90",
+      "vendor": "lisahost",
+      "pid": 90,
+      "name_zh": "香港 CMI 1G 1 核",
+      "html_section": "lisa-hk",
+      "series": "hk",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 88.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "20G NVMe",
+        "traffic": "1000GB",
+        "bandwidth": "30Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 30.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=90&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-91",
+      "vendor": "lisahost",
+      "pid": 91,
+      "name_zh": "香港 CMI 2G 2 核",
+      "html_section": "lisa-hk",
+      "series": "hk",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 188.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "2000GB",
+        "bandwidth": "50Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=91&aff=13150",
+      "featured_on_vendor_home": true,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-94",
+      "vendor": "lisahost",
+      "pid": 94,
+      "name_zh": "香港 CMI 2G 2 核",
+      "html_section": "lisa-hk",
+      "series": "hk",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 998.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "30Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 30.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=94&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-95",
+      "vendor": "lisahost",
+      "pid": 95,
+      "name_zh": "香港 CMI 4G 4 核",
+      "html_section": "lisa-hk",
+      "series": "hk",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1988.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "50Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=95&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-96",
+      "vendor": "lisahost",
+      "pid": 96,
+      "name_zh": "日本原生 IP 三网优化特价款",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "中日三网优化",
+      "prices": [
+        {
+          "amount": 499.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=96&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [
+        "lisahost-171"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-97",
+      "vendor": "lisahost",
+      "pid": 97,
+      "name_zh": "香港 CMI/CN2/CU2 三网直连特价款",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "三网直连 ~50ms",
+      "prices": [
+        {
+          "amount": 566.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=97&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [
+        "lisahost-175"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-98",
+      "vendor": "lisahost",
+      "pid": 98,
+      "name_zh": "英国 1G 1 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 68.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "6000GB",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 6000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=98&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-99",
+      "vendor": "lisahost",
+      "pid": 99,
+      "name_zh": "英国 2G 2 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 100.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "8000GB",
+        "bandwidth": "500Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": 8000.0,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=99&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-100",
+      "vendor": "lisahost",
+      "pid": 100,
+      "name_zh": "英国 4G 4 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 300.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G NVMe",
+        "traffic": "20000GB",
+        "bandwidth": "1000Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": 20000.0,
+        "bandwidth_mbps": 1000.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=100&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-101",
+      "vendor": "lisahost",
+      "pid": 101,
+      "name_zh": "英国 2G 2 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 398.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=101&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-102",
+      "vendor": "lisahost",
+      "pid": 102,
+      "name_zh": "英国 4G 4 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1588.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "80G NVMe",
+        "traffic": "不限",
+        "bandwidth": "500Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 80.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=102&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-103",
+      "vendor": "lisahost",
+      "pid": 103,
+      "name_zh": "英国 BGP 住宅 IP 双ISP住宅特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "解锁英区服务",
+      "prices": [
+        {
+          "amount": 466.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "2000GB / 300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=103&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-173"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-108",
+      "vendor": "lisahost",
+      "pid": 108,
+      "name_zh": "台湾 1G 1 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 299.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "20G NVMe",
+        "traffic": "不限",
+        "bandwidth": "100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 20.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=108&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-109",
+      "vendor": "lisahost",
+      "pid": 109,
+      "name_zh": "台湾 2G 2 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 599.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "2 核",
+        "ram": "2G",
+        "disk": "20G NVMe",
+        "traffic": "不限",
+        "bandwidth": "200Mbps",
+        "ram_mb": 2048,
+        "disk_gb": 20.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 200.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=109&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-110",
+      "vendor": "lisahost",
+      "pid": 110,
+      "name_zh": "台湾 4G 4 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 1599.0,
+          "currency": "CNY",
+          "cycle": "monthly"
+        }
+      ],
+      "spec": {
+        "cpu": "4 核",
+        "ram": "4G",
+        "disk": "40G NVMe",
+        "traffic": "不限",
+        "bandwidth": "500Mbps",
+        "ram_mb": 4096,
+        "disk_gb": 40.0,
+        "traffic_gb_month": null,
+        "bandwidth_mbps": 500.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=110&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-127",
+      "vendor": "lisahost",
+      "pid": 127,
+      "name_zh": "香港 HGC 住宅 IP 双ISP三网优化",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "三网优化",
+      "prices": [
+        {
+          "amount": 799.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=127&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-134",
+      "vendor": "lisahost",
+      "pid": 134,
+      "name_zh": "韩国双 ISP 住宅 IP 三网直连特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [],
+      "cn_path": "cn_optimized",
+      "route_note": "三网直连",
+      "prices": [
+        {
+          "amount": 699.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=134&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-141",
+      "vendor": "lisahost",
+      "pid": 141,
+      "name_zh": "美国西雅图家宽 VDS 静态住宅IP VDS",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "独享家宽IP",
+      "prices": [
+        {
+          "amount": 899.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=141&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-147",
+      "vendor": "lisahost",
+      "pid": 147,
+      "name_zh": "日本 ISP 静态住宅 VDS 静态住宅IP VDS",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "中日直连",
+      "prices": [
+        {
+          "amount": 899.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=147&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": true,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-155",
+      "vendor": "lisahost",
+      "pid": 155,
+      "name_zh": "美国纽约 住宅 IP 美东双ISP特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "BGP大带宽",
+      "prices": [
+        {
+          "amount": 399.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=155&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-161",
+      "vendor": "lisahost",
+      "pid": 161,
+      "name_zh": "美国芝加哥 住宅 IP 美中双ISP特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "BGP大带宽",
+      "prices": [
+        {
+          "amount": 399.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "600GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=161&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-167",
+      "vendor": "lisahost",
+      "pid": 167,
+      "name_zh": "德国双 ISP 住宅 VDS 双ISP原生住宅",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [],
+      "cn_path": "relay_suggested",
+      "route_note": "欧洲节点",
+      "prices": [
+        {
+          "amount": 1099.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=167&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-168",
+      "vendor": "lisahost",
+      "pid": 168,
+      "name_zh": "美国 9929 1G 1 核",
+      "html_section": "lisa-us9929",
+      "series": "us9929",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "9929",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 499.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "600GB/月",
+        "bandwidth": "50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=168&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-61"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-169",
+      "vendor": "lisahost",
+      "pid": 169,
+      "name_zh": "美国 4837 1G 1 核",
+      "html_section": "lisa-us4837",
+      "series": "us4837",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "4837",
+      "regions": [
+        "US"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 399.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "600GB/月",
+        "bandwidth": "100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=169&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-52"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-171",
+      "vendor": "lisahost",
+      "pid": 171,
+      "name_zh": "日本 1G 1 核",
+      "html_section": "lisa-jp",
+      "series": "jp",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "JP"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 499.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "600GB/月",
+        "bandwidth": "100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=171&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-96"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-172",
+      "vendor": "lisahost",
+      "pid": 172,
+      "name_zh": "新加坡 1G 1 核",
+      "html_section": "lisa-sg",
+      "series": "sg",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "SG"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 466.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "2000GB/月",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=172&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-75"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-173",
+      "vendor": "lisahost",
+      "pid": 173,
+      "name_zh": "英国 1G 1 核",
+      "html_section": "lisa-uk",
+      "series": "uk",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "UK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 466.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "2000GB/月",
+        "bandwidth": "300Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 300.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=173&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-103"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-175",
+      "vendor": "lisahost",
+      "pid": 175,
+      "name_zh": "香港 CMI 1G 1 核",
+      "html_section": "lisa-hk",
+      "series": "hk",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "cmi",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "cn_optimized",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 566.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "600GB/月",
+        "bandwidth": "50Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 600.0,
+        "bandwidth_mbps": 50.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=175&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-97"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-180",
+      "vendor": "lisahost",
+      "pid": 180,
+      "name_zh": "台湾 1G 1 核",
+      "html_section": "lisa-tw",
+      "series": "tw",
+      "ip_bucket": "native",
+      "native_ip": true,
+      "residential": false,
+      "route": "bgp",
+      "regions": [
+        "TW"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "",
+      "prices": [
+        {
+          "amount": 766.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "cpu": "1 核",
+        "ram": "1G",
+        "disk": "10G NVMe",
+        "traffic": "2000GB/月",
+        "bandwidth": "100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 2000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=180&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [
+        "lisahost-82"
+      ],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-188",
+      "vendor": "lisahost",
+      "pid": 188,
+      "name_zh": "香港 iCable 住宅 IP 双ISP住宅特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [
+        "HK"
+      ],
+      "cn_path": "relay_suggested",
+      "route_note": "解锁香港本地",
+      "prices": [
+        {
+          "amount": 699.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=188&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    },
+    {
+      "id": "lisahost-196",
+      "vendor": "lisahost",
+      "pid": 196,
+      "name_zh": "越南双 ISP 住宅 IP 大带宽特价",
+      "html_section": "lisa-annual",
+      "series": "annual",
+      "ip_bucket": "residential",
+      "native_ip": true,
+      "residential": true,
+      "route": "bgp",
+      "regions": [],
+      "cn_path": "relay_suggested",
+      "route_note": "东南亚大带宽",
+      "prices": [
+        {
+          "amount": 699.0,
+          "currency": "CNY",
+          "cycle": "annual"
+        }
+      ],
+      "spec": {
+        "config_text": "1核 / 1G / 10G NVMe",
+        "traffic_bw": "1000GB / 100Mbps",
+        "ram_mb": 1024,
+        "disk_gb": 10.0,
+        "traffic_gb_month": 1000.0,
+        "bandwidth_mbps": 100.0
+      },
+      "affiliate_url": "https://lisahost.com/cart.php?a=add&pid=196&aff=13150",
+      "featured_on_vendor_home": false,
+      "rec_row": false,
+      "similar_to": [],
+      "exclude_daily": false
+    }
+  ]
+}
