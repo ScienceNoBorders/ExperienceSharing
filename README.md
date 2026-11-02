@@ -243,6 +243,7 @@ When getting an answer becomes easy, a good question becomes all the more precio
 - [X 用户检测助手（X Users Checker）插件安装与使用说明](./other/script/xUsersCheckerInstall.md)
 - [443端口被其他应用占了怎么办？试试Cloudflare Tunnel](./other/other-port-ssl.md)
 - [2026申请ITIN教程](./other/ITIN/2026ITIN.md)
+- [ZLMedia + WVP国标摄像头接入教程](./other/WVP_ZLMediaKit_CentOS8.md)
 
 
 ## Issues
